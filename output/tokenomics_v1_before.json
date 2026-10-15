@@ -1,0 +1,326 @@
+{
+ "architecture": "v1: 4 web-native scouts + web-native route planner",
+ "runs": [
+  {
+   "event": "Harbor Lights Community Gala 2027",
+   "status": "done",
+   "usage": {
+    "by_agent": {
+     "Brief Analyst": {
+      "input_tokens": 3796,
+      "cached_tokens": 3670,
+      "cache_write_tokens": 0,
+      "output_tokens": 2411,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.0012548,
+      "runs": 1
+     },
+     "Roster Analyst": {
+      "input_tokens": 6509,
+      "cached_tokens": 6131,
+      "cache_write_tokens": 0,
+      "output_tokens": 4497,
+      "requests": 3,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.00234761,
+      "runs": 3
+     },
+     "Entity Resolver": {
+      "input_tokens": 1908,
+      "cached_tokens": 0,
+      "cache_write_tokens": 1782,
+      "output_tokens": 529,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.00049985,
+      "runs": 1
+     },
+     "Program Strategist": {
+      "input_tokens": 4854,
+      "cached_tokens": 1103,
+      "cache_write_tokens": 3625,
+      "output_tokens": 2852,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.0019027550000000001,
+      "runs": 1
+     },
+     "Talent Scout": {
+      "input_tokens": 303893,
+      "cached_tokens": 113909,
+      "cache_write_tokens": 48885,
+      "output_tokens": 17659,
+      "requests": 12,
+      "tool_calls": 45,
+      "web_searches": 63,
+      "cost_usd": 0.660189115,
+      "runs": 4
+     },
+     "Route Planner": {
+      "input_tokens": 158541,
+      "cached_tokens": 93441,
+      "cache_write_tokens": 46133,
+      "output_tokens": 10605,
+      "requests": 17,
+      "tool_calls": 14,
+      "web_searches": 7,
+      "cost_usd": 0.083900235,
+      "runs": 8
+     },
+     "Drafter": {
+      "input_tokens": 43316,
+      "cached_tokens": 25837,
+      "cache_write_tokens": 15967,
+      "output_tokens": 4684,
+      "requests": 12,
+      "tool_calls": 6,
+      "web_searches": 0,
+      "cost_usd": 0.0047474449999999994,
+      "runs": 6
+     },
+     "Reviewer": {
+      "input_tokens": 79992,
+      "cached_tokens": 42457,
+      "cache_write_tokens": 30581,
+      "output_tokens": 16004,
+      "requests": 22,
+      "tool_calls": 11,
+      "web_searches": 0,
+      "cost_usd": 0.012944595000000001,
+      "runs": 11
+     }
+    },
+    "totals": {
+     "input_tokens": 602809,
+     "cached_tokens": 286548,
+     "cache_write_tokens": 146973,
+     "output_tokens": 59241,
+     "requests": 69,
+     "tool_calls": 76,
+     "web_searches": 70,
+     "cost_usd": 0.767786405,
+     "runs": 35
+    }
+   }
+  },
+  {
+   "event": "Yale SOM Energy Club — Clean Energy Conference 2027",
+   "status": "done",
+   "usage": {
+    "by_agent": {
+     "Brief Analyst": {
+      "input_tokens": 5422,
+      "cached_tokens": 1898,
+      "cache_write_tokens": 3398,
+      "output_tokens": 2773,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.00184283,
+      "runs": 1
+     },
+     "Roster Analyst": {
+      "input_tokens": 8056,
+      "cached_tokens": 4533,
+      "cache_write_tokens": 3145,
+      "output_tokens": 8243,
+      "requests": 3,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.004597755,
+      "runs": 3
+     },
+     "Entity Resolver": {
+      "input_tokens": 2596,
+      "cached_tokens": 0,
+      "cache_write_tokens": 2470,
+      "output_tokens": 537,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.00058985,
+      "runs": 1
+     },
+     "Program Strategist": {
+      "input_tokens": 6845,
+      "cached_tokens": 1103,
+      "cache_write_tokens": 5616,
+      "output_tokens": 3217,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.0023341300000000002,
+      "runs": 1
+     },
+     "Talent Scout": {
+      "input_tokens": 378797,
+      "cached_tokens": 130068,
+      "cache_write_tokens": 97924,
+      "output_tokens": 19993,
+      "requests": 13,
+      "tool_calls": 52,
+      "web_searches": 72,
+      "cost_usd": 0.75861818,
+      "runs": 4
+     },
+     "Route Planner": {
+      "input_tokens": 185477,
+      "cached_tokens": 107126,
+      "cache_write_tokens": 24899,
+      "output_tokens": 10905,
+      "requests": 16,
+      "tool_calls": 16,
+      "web_searches": 18,
+      "cost_usd": 0.194981335,
+      "runs": 8
+     },
+     "Drafter": {
+      "input_tokens": 44904,
+      "cached_tokens": 24969,
+      "cache_write_tokens": 18423,
+      "output_tokens": 4285,
+      "requests": 12,
+      "tool_calls": 6,
+      "web_searches": 0,
+      "cost_usd": 0.004846265,
+      "runs": 6
+     },
+     "Reviewer": {
+      "input_tokens": 73027,
+      "cached_tokens": 44170,
+      "cache_write_tokens": 22521,
+      "output_tokens": 14066,
+      "requests": 20,
+      "tool_calls": 10,
+      "web_searches": 0,
+      "cost_usd": 0.010923425,
+      "runs": 10
+     }
+    },
+    "totals": {
+     "input_tokens": 705124,
+     "cached_tokens": 313867,
+     "cache_write_tokens": 178396,
+     "output_tokens": 64019,
+     "requests": 67,
+     "tool_calls": 84,
+     "web_searches": 90,
+     "cost_usd": 0.9787337700000001,
+     "runs": 34
+    }
+   }
+  },
+  {
+   "event": "US–China Business Summit 2027",
+   "status": "done",
+   "usage": {
+    "by_agent": {
+     "Brief Analyst": {
+      "input_tokens": 6645,
+      "cached_tokens": 6519,
+      "cache_write_tokens": 0,
+      "output_tokens": 3668,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.00191179,
+      "runs": 1
+     },
+     "Roster Analyst": {
+      "input_tokens": 9237,
+      "cached_tokens": 4533,
+      "cache_write_tokens": 4326,
+      "output_tokens": 11418,
+      "requests": 3,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.006332880000000001,
+      "runs": 3
+     },
+     "Entity Resolver": {
+      "input_tokens": 2913,
+      "cached_tokens": 0,
+      "cache_write_tokens": 2787,
+      "output_tokens": 589,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.000655475,
+      "runs": 1
+     },
+     "Program Strategist": {
+      "input_tokens": 8905,
+      "cached_tokens": 1103,
+      "cache_write_tokens": 7676,
+      "output_tokens": 3670,
+      "requests": 1,
+      "tool_calls": 0,
+      "web_searches": 0,
+      "cost_usd": 0.0028181300000000003,
+      "runs": 1
+     },
+     "Talent Scout": {
+      "input_tokens": 438337,
+      "cached_tokens": 178242,
+      "cache_write_tokens": 89565,
+      "output_tokens": 20646,
+      "requests": 14,
+      "tool_calls": 34,
+      "web_searches": 80,
+      "cost_usd": 0.840354045,
+      "runs": 4
+     },
+     "Route Planner": {
+      "input_tokens": 128496,
+      "cached_tokens": 90603,
+      "cache_write_tokens": 25312,
+      "output_tokens": 5884,
+      "requests": 12,
+      "tool_calls": 13,
+      "web_searches": 4,
+      "cost_usd": 0.04827013,
+      "runs": 5
+     },
+     "Drafter": {
+      "input_tokens": 26468,
+      "cached_tokens": 15541,
+      "cache_write_tokens": 10171,
+      "output_tokens": 1993,
+      "requests": 6,
+      "tool_calls": 3,
+      "web_searches": 0,
+      "cost_usd": 0.002498885,
+      "runs": 3
+     },
+     "Reviewer": {
+      "input_tokens": 8910,
+      "cached_tokens": 5137,
+      "cache_write_tokens": 2919,
+      "output_tokens": 2291,
+      "requests": 2,
+      "tool_calls": 1,
+      "web_searches": 0,
+      "cost_usd": 0.001647145,
+      "runs": 1
+     }
+    },
+    "totals": {
+     "input_tokens": 629911,
+     "cached_tokens": 301678,
+     "cache_write_tokens": 142756,
+     "output_tokens": 50159,
+     "requests": 40,
+     "tool_calls": 51,
+     "web_searches": 84,
+     "cost_usd": 0.90448848,
+     "runs": 19
+    }
+   }
+  }
+ ]
+}

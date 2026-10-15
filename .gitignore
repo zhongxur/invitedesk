@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+workspace/
+private/
+.DS_Store
+static/.redesign_done
+output/*.log
+static/.redesign_done_v2
+output/crn_case_metrics.json
+static/.redesign_done_v3
+static/.redesign_done*

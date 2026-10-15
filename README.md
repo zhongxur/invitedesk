@@ -1,18 +1,54 @@
 # InviteDesk — a multi-agent desk for event guest & speaker outreach
 
-InviteDesk takes an organiser's messy planning folder (Word / Excel / PowerPoint / PDF, as a `.zip`) — or just the
-name of a public event — and runs the outreach work around it: it writes a single **Fact Sheet** (estimating the
-budget when no document states one), extracts every guest, sponsor and intermediary into a **roster**, ranks who
-matters most, **generates new invitation lists** with web research, plans **multi-level contact routes** (existing
-thread → warm introduction through someone the team knows → official management → direct message), drafts
-invitations in **English, Simplified Chinese and Traditional Chinese** that an independent **Reviewer agent** checks, audits every document for
-**inconsistencies** (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text), tracks
-**follow-ups** and **reimbursements**, and keeps a **Drive folder** of consistent outputs. Everything persists over time:
-per-person timelines, an **integrated directory across events**, and a **team list** of who owns which relationship.
-Humans approve everything; the desk never sends a message itself.
+**InviteDesk finds the right people for an NGO gala or a summit — and the warmest way to reach each of them.**
+Give it the organiser's messy planning folder (Word / Excel / PowerPoint / PDF, as a `.zip`) or just the name of a
+public event, and its agents:
+
+- **find who to invite** — new, web-verified speakers, sponsors and VIPs beyond the team's own network
+  (Talent Scouts + Verifier, Event Researcher);
+- **find how to reach them** — the best route for each person: an existing thread, a **warm introduction through
+  someone the organisation already knows** (team owners, partner organisations, sponsors, people from past events,
+  team contact lists), the person's official management or agency, or a direct message
+  (Connection Finder → Contact Researcher → Route Planner);
+- **write and check the invitation** in English, Simplified Chinese or Traditional Chinese, reviewed by an independent
+  **Reviewer agent** against a single **Fact Sheet** (the budget is estimated and labelled when no document states one);
+- **keep everything consistent and on track** — a consistency audit of every document (old dates, wrong links, price
+  mismatches, unprovable claims, prompt-injection text), follow-ups, reimbursements, a Drive folder of outputs, and
+  memory across events (per-person timelines, an integrated directory, and who on the team owns which relationship).
+
+**One desk for the whole event lifecycle, run for the organisation.** It plans (Fact Sheet, program slots,
+priorities), finds people, reaches them, invites and reviews, tracks replies and follow-ups, and closes the books
+(reimbursement checks against the budget). Budget alignment runs through every step: the working budget is read from
+the documents or estimated and labelled, invitations may not promise money beyond the guest policy or the sponsorship
+tiers, price mismatches across documents are flagged, expenses are tracked against the budget, and every agent run has
+a hard spend cap. Relationships and history belong to the organisation and survive volunteer and staff turnover.
+
+Built first for **NGOs and summit / conference organisers** (case studies: the Chinese Rainbow Network's Global Gala and
+the Yale Innovation Summit); student clubs that run conferences are a secondary use. Humans approve everything; the
+desk never sends a message itself.
 
 > Yale SOM MGT 409 (Fall 2026) final project · model: `gpt-6-luna` via the course Portkey key ·
 > report and slides: [`deliverables/report.html`](deliverables/report.html), [`deliverables/slides.html`](deliverables/slides.html)
+
+## What the app does
+
+| Stage | Feature | Where |
+|---|---|---|
+| **Plan** | Import a planning folder (.zip of Word/Excel/PowerPoint/PDF) or **start from a public event** (Event Researcher writes a cited research memo) | + New event |
+| | **Fact Sheet**: every value with its source, conflicts between documents to confirm, budget stated or **assumed with its basis** | Overview |
+| | Program slots, weighted rubric and Tier A/B/C priorities; guest pipeline | Overview |
+| **Find people** | **Auto-generated invitation lists** for each open slot — Fast (model knowledge + web Verifier) or Deep (scout researches the web); every candidate has evidence links and a fit score | Lists |
+| | Roster built from all files, with Chinese/English aliases merged (Entity Resolver) | Guests |
+| **Reach** | **Connection map**: who can introduce you (team owners, partner organisations, sponsors, people from past events) | Guests → person |
+| | Contact Researcher finds official management / agency / press channels with source links; **ranked routes** with warmth, next action and holds | Guests → person |
+| **Invite** | Drafts in English, Simplified or Traditional Chinese in the organiser's own voice; independent **Reviewer** checks facts, claims, money promises and injected text; edit, comment, approve | Drafts |
+| | Approved messages exported to the Drive outbox (.eml for email, copy-paste text for DMs) — you send them | Drive |
+| **Track** | **Log a reply** (Reply Interpreter updates status, contacts and follow-up), follow-ups by due date, per-person timeline | Guests, Follow-ups |
+| | **Today**: top 3 priorities across all events + Chief of Staff daily brief | Today |
+| **Close & control** | **Consistency audit** of every document (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text) | Consistency |
+| | **Reimbursement checks** against the budget (currency, missing receipts or approvals, items over $1,000) | Reimbursement |
+| | **Budget Guard** spend cap per run; tokens and cost per agent and run; live agent board | Agent run, Usage & cost |
+| **Organisation memory** | **Integrated directory** across events, **Team** view of who owns which relationship (handover), Drive folder of consistent outputs | Directory, Team, Drive |
 
 ## Run it (about 1 minute)
 
@@ -76,7 +112,7 @@ share one long handbook prefix so the prompt cache is reused:
 - **Talent Scouts** (one per list, parallel) → new candidates; **Verifier** checks each on the web
   (fast mode), or the scout searches itself (deep mode).
 - Per person, in parallel: **Connection Finder** (deterministic relationship graph: owners, notes, partner orgs, past
-  events, team LinkedIn exports) → **Contact Researcher** (web, only when needed) → **Route Planner** → **Drafter** →
+  events, team contact lists) → **Contact Researcher** (web, only when needed) → **Route Planner** → **Drafter** →
   independent **Reviewer** (revises once).
 - Deterministic **Consistency Auditor**, **Finance Clerk**, **Follow-up Planner**, Drive export.
 - On demand: **Reply Interpreter** (paste a reply), **Chief of Staff** (daily brief). **Budget Guard** on every run.

@@ -5,7 +5,7 @@ name of a public event — and runs the outreach work around it: it writes a sin
 budget when no document states one), extracts every guest, sponsor and intermediary into a **roster**, ranks who
 matters most, **generates new invitation lists** with web research, plans **multi-level contact routes** (existing
 thread → warm introduction through someone the team knows → official management → direct message), drafts
-invitations in **English / 简体 / 繁體** that an independent **Reviewer agent** checks, audits every document for
+invitations in **English, Simplified Chinese and Traditional Chinese** that an independent **Reviewer agent** checks, audits every document for
 **inconsistencies** (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text), tracks
 **follow-ups** and **reimbursements**, and keeps a **Drive folder** of consistent outputs. Everything persists over time:
 per-person timelines, an **integrated directory across events**, and a **team list** of who owns which relationship.
@@ -71,7 +71,7 @@ share one long handbook prefix so the prompt cache is reused:
 - **Event Researcher** (web search) — only for "start from a public event": writes a cited research memo.
 - **Brief Analyst** → Fact Sheet + conflicts between documents; estimates the budget when none is stated (labelled *assumed*).
 - **Roster Analyst ×3** (parallel) → people/organisations with aliases, contacts, outreach history; **Entity Resolver**
-  merges cross-language duplicates (林嘉明 = Jiaming Lin) and refuses unsafe merges.
+  merges cross-language duplicates (a Chinese name and its pinyin spelling) and refuses unsafe merges.
 - **Program Strategist** → slots, weighted rubric, Tier A/B/C priorities, scouting briefs.
 - **Talent Scouts** (one per list, parallel) → new candidates; **Verifier** checks each on the web
   (fast mode), or the scout searches itself (deep mode).

@@ -26,7 +26,7 @@ with costs written in mixed formats (`1250`, `332.15`, `$44.97`, `$1,120.00`, `�
 | Wrong website | `Invitations/Invitation_Catherine_Lau_Panel.docx` (signature) | `www.gcsummit.example.org` |
 | Price mismatch | `GCC Summit Master Tracker.xlsx` › Sponsorship | Eastbridge Partners Gold = **$4,000**; package says Gold = **$5,000** |
 | Unverified superlative | `Promo_Flyer_Copy.docx` | "the largest China-focused business conference in North America" |
-| Status conflict | 林嘉明 / Jiaming Lin | **Confirmed** in Master Tracker › Guests & Program; **Waiting for reply** in `Guest_Invitation_List_v3.xlsx` (written "Lin Jiaming") |
+| Status conflict | Jiaming Lin (Chinese-character name in the tracker) | **Confirmed** in Master Tracker › Guests & Program; **Waiting for reply** in `Guest_Invitation_List_v3.xlsx` (written "Lin Jiaming") |
 | Expense flag | `Budget-Reimbursement/GCC_Summit_Expenses.xlsx` | Evans Hall AV deposit **$1,250**, Receipt Uploaded = No, Pending |
 
 ### Energy conference (correct facts: Fri **2027-03-26**, `https://cleanenergy-yale.example.org`)
@@ -44,37 +44,40 @@ with costs written in mixed formats (`1250`, `332.15`, `$44.97`, `$1,120.00`, `�
 | Check | Where | What |
 |---|---|---|
 | Stale date | `Sponsorship_Package_HLCA.docx` | says **Saturday, May 8, 2027** |
-| Wrong website | `邀請函_黃慧君醫生.docx` (signature) | `www.harborlight-gala.example.org` |
+| Wrong website | the Traditional-Chinese invitation letter to Dr. Grace Wong (signature) | `www.harborlight-gala.example.org` |
 | Price mismatch | `Harbor_Lights_Gala_2027_Plan.docx` (flyer copy section) | Harbor Table = **$1,200**; package and ticket line say **$1,500** |
 | Unverified superlative | `Harbor_Lights_Gala_2027_Plan.docx` (flyer copy section) | "the most celebrated community gala on the East Coast" |
-| Status conflict | 陳麗莉 Lily Chan (honoree) | **Waiting / 待回覆** in the Plan's program table; **Confirmed** in `Gala_Tracker_2027.xlsx` › Guest List |
+| Status conflict | Lily Chan (honoree) | **Waiting** (written in Chinese) in the Plan's program table; **Confirmed** in `Gala_Tracker_2027.xlsx` › Guest List |
 | Expense flag | `Budget-Reimbursement/Gala_Expenses.xlsx` | Lion dance deposit **$1,200**, no receipt, Pending |
 
 ## Cross-event people (should merge in the integrated directory)
 
 | Person | Greater China summit | Energy conference | Gala |
 |---|---|---|---|
-| **Yawen Chen 陈雅文 / "Vivian Chen"** (Lumenfield Capital) | "Yawen Chen 陈雅文", "Chen, Yawen (Vivian)", "Ms. Chen (Vivian)" — Panel A + Alumni Impact Award | "Vivian Chen", "Chen Yawen (Vivian)" — Panel 3 + Platinum sponsor contact | — |
-| **Jiaming Lin 林嘉明 / "Jimmy Lin"** (Northgrid Storage) | "林嘉明 (Jimmy Lin)", "Lin Jiaming" — Keynote I | "Jimmy Lin (Northgrid Storage)", `Lin, Jiaming "Jimmy"` — Panel 2 + Gold sponsor | — |
-| **Prof. Weilin Huang 黄伟霖 / 黄老师** (SOM faculty) | "Prof. Weilin Huang (黄老师)", "Weilin Huang" — opener + moderator; intermediary to Hao Sun | "Prof. W. Huang", "Huang Weilin" — Panel 3 moderator; intermediary to Priya Raman and Ben Carter | "黃偉霖教授 (黃老師)" (Traditional) — guest of honor |
+| **Yawen Chen / "Vivian Chen"** (Lumenfield Capital) | "Yawen Chen" + her Chinese-character name, "Chen, Yawen (Vivian)", "Ms. Chen (Vivian)" — Panel A + Alumni Impact Award | "Vivian Chen", "Chen Yawen (Vivian)" — Panel 3 + Platinum sponsor contact | — |
+| **Jiaming Lin / "Jimmy Lin"** (Northgrid Storage) | his Chinese-character name + "(Jimmy Lin)", "Lin Jiaming" — Keynote I | "Jimmy Lin (Northgrid Storage)", `Lin, Jiaming "Jimmy"` — Panel 2 + Gold sponsor | — |
+| **Prof. Weilin Huang / "Prof. Huang" in Chinese** (SOM faculty) | "Prof. Weilin Huang (Chinese honorific)", "Weilin Huang" — opener + moderator; intermediary to Hao Sun | "Prof. W. Huang", "Huang Weilin" — Panel 3 moderator; intermediary to Priya Raman and Ben Carter | his name in Traditional Chinese characters — guest of honor |
 | **Marcus Feng** (Solaris Bay Energy, SOM '15) | Panel A | "Feng, Marcus" — Panel 1; intermediary to Sarah Whitfield | — |
 
 Same email address is used for each shared person across files (e.g.
 `weilin.huang@faculty.example.edu`), so a deterministic merge on email is
 possible as well as a name/alias merge.
 
-**Internal team members in both clubs:** Kevin Zhou 周凯文 (GCC Co-President;
-Energy Club VP Partnerships) and Rachel Wu 吴瑞秋 (GCC VP Finance; Energy Club
+**Internal team members in both clubs:** Kevin Zhou (GCC Co-President;
+Energy Club VP Partnerships) and Rachel Wu (GCC VP Finance; Energy Club
 Treasurer).
 
 ## Intermediary routes planted
-- 王立群 Liqun Wang (Keynote II target) — reachable **only** via Dr. Arthur Leung 梁文博 (SOM Board of Advisors); "do not cold email".
-- 孙浩 Hao Sun — "passed message via 黄老师".
-- 林嘉明 Jiaming Lin — alumnus Peter Ng 吴柏德 introduced us at the 2026 summit.
+- Liqun Wang (Keynote II target) — reachable **only** via Dr. Arthur Leung (SOM Board of Advisors); "do not cold email".
+- Hao Sun — "passed message via Prof. Huang" (written in Chinese).
+- Jiaming Lin — alumnus Peter Ng introduced us at the 2026 summit.
 - Dr. Priya Raman and Ben Carter — introduced via Prof. Huang; Sarah Whitfield via alumnus Marcus Feng; Naomi Brandt via Vivian Chen.
-- Gala: Lily Chan and Prof. Huang reached via board member Raymond Tse 謝國華.
+- Gala: Lily Chan and Prof. Huang reached via board member Raymond Tse.
 
 ## Declined / dated outreach examples
 - Siyuan Zhao: "10/3 emailed, 10/8 replied: too far, declined".
 - Oliver Grant: "10/7 replied: schedule conflict, declined".
-- Contact channels include email, LinkedIn, Instagram, WeChat and a speaker-agency email (TalentBridge for 何美玲 Meiling He).
+- Contact channels include email, LinkedIn, Instagram, WeChat and a speaker-agency email (TalentBridge for Meiling He).
+
+Note: the sample documents themselves are intentionally bilingual (English, Simplified and Traditional
+Chinese) to exercise cross-language matching; this answer key refers to people by their English names.

@@ -84,6 +84,7 @@ figcaption b{color:var(--head)}
 .lifecycle span{font-size:11px;line-height:1.3;color:var(--text);display:block}
 .lifecycle>div:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:30%;color:var(--accent);font-weight:700;font-size:16px}
 .themes{margin:10px 0}.themes .card{margin:0;font-size:12.8px}.themes ul{padding-left:16px;margin:4px 0}.themes li{margin:3px 0}
+.ideas{margin:6px 0;padding-left:20px}.ideas li{margin:2px 0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .two figure{margin:0}
 figure.c11 img{aspect-ratio:1/1.02;object-fit:cover;object-position:top left}
@@ -128,7 +129,7 @@ li{margin:3px 0}
   .two{grid-template-columns:1fr}
   table{display:block;overflow-x:auto}
 }
-@page{size:letter;margin:0.5in 0.55in 0.55in}
+@page{size:letter;margin:0.45in 0.5in 0.5in}
 @media print{
   /* light, ink-friendly version of the same theme */
   :root{
@@ -180,7 +181,7 @@ li{margin:3px 0}
 <div class="eyebrow">Yale SOM · MGT 409 · Fall 2026 · Final project</div>
 <h2 class="first"><span class="n">1</span>Title &amp; links</h2>
 <h1>InviteDesk</h1>
-<p class="lede">InviteDesk finds the right speakers, sponsors and VIPs for an NGO gala or a summit, and the warmest way to reach each one, including who can introduce you. Then it drafts, checks and tracks every invitation.</p>
+<p class="lede">InviteDesk is an agentic <b>speaker-acquisition and relationship desk</b> for mission-driven organisations and summit producers. It finds the right speakers, sponsors and VIPs, and the warmest way to reach each one, including who can introduce you. Then it drafts, checks and tracks every invitation.</p>
 <div class="meta">
   <span><b>Author</b> David (Zhongxuan) Ruan</span>
   <span><b>Repo</b> <a href="https://github.com/zhongxur/invitedesk">https://github.com/zhongxur/invitedesk</a></span>
@@ -238,7 +239,19 @@ li{margin:3px 0}
   <li><b>Dead-end cold DMs.</b> Eileen Gu got a cold Instagram DM on 10/9 and never replied, even though her agency contact was already in CRN's own influencer spreadsheet (Section 4.1).</li>
   <li><b>Relationships lost at turnover.</b> When volunteers and staff change, the knowledge of who knows whom leaves with them.</li>
 </ul>
-<p><b>What else it costs.</b> The audit of CRN's folder also found errors that would have reached guests and sponsors. The Chinese-language sponsorship package still gave the old date (November 14, 2026). A signature used the wrong domain (crn.org). The organisation's Chinese name appeared two ways. Gigi Chao was "Waiting" in one tracker and "confirmed" in another. A $3,400 sponsor offer matched no tier, and the copy used unverifiable superlatives ('world's largest', 'world's only').</p>
+<h3>Demand evidence: a job organisations already pay for</h3>
+<p><b>Commercial layer: conference and summit producers.</b> Speaker acquisition is a full-time paid role. Web Summit hires Speaker Producers, including a Mandarin-speaking one. Business of Apps (App Events) hires a Conference Producer. Veloxx Media hires a "Speaker Acquisition (Conference Producer)". The duties in those postings map one-to-one onto InviteDesk:</p>
+<table class="keep">
+  <tr><th style="width:44%">Duty in the postings</th><th>InviteDesk feature</th></tr>
+  <tr><td>Identify and approach speakers tied to the event's themes</td><td>Talent Scouts + Verifier for each program slot</td></tr>
+  <tr><td>Deep-dive research on each prospect's recent announcements before pitching</td><td>Candidate profile with evidence links → personalised draft</td></tr>
+  <tr><td>Outreach, calls and pitches; work out how best to reach a speaker</td><td>Connection Finder + Route Planner: warm route first, cold last</td></tr>
+  <tr><td>Manage speaker data, track confirmation status, follow up</td><td>Guests board, Follow-ups, Reply Interpreter</td></tr>
+  <tr><td>Briefing documents, travel logistics, scheduling with high-profile offices</td><td>Logistics drafts, guest-policy caps (budget alignment), reimbursement checks</td></tr>
+</table>
+<p class="src">Postings: Web Summit "Speaker Producer (Mandarin)" (builtindublin.ie/job/speaker-producer-mandarin/10892796); Business of Apps "Conference Producer (Remote) – B2B App Events" (jobs.workable.com/jobs/dd0a13c7-e570-4cb6-aad4-f3568574e660); Veloxx Media "Speaker Acquisition (Conference Producer)" (jobs.weekday.works, title only). Accessed 2026-10-16. The postings give no hours-per-event figure, so none is claimed here.</p>
+<p><b>Mission layer: NGOs.</b> In BoardSource's governance survey, 58% of nonprofit executives said it is difficult to find board members, up from 44% in 2012 (Leading with Intent, 2015, as summarised by Hiland Consulting). Recruiting board members, ambassadors, honorees and speakers is the same find-and-reach problem. CRN faced it for its scholarship ambassador and opening speakers.</p>
+
 <div class="userquote">
   <div class="who">Real user · Shuai Shao, President, Chinese Rainbow Network (CRN) — hands-on session with InviteDesk on CRN's Gala folder, Oct 14, 2026</div>
   <blockquote>"For an NGO, this is incredible. It is also of great direct help to startups, VCs and all kinds of conferences."</blockquote>
@@ -250,7 +263,24 @@ li{margin:3px 0}
 
 <!-- ============================================================ 2 -->
 <h2><span class="n">3</span>What is new</h2>
-<p>The gap is <b>finding people</b>: who to invite, and how to reach each one. Warm-intro tools such as Village and The Swarm are built for sales teams and map only the connections that team members sync. Event platforms such as Sessionize and Cvent start once the speakers are already known. Nonprofit CRMs are built around donors. ChatGPT has no memory of your relationships. InviteDesk puts the people-finding engine inside <b>one desk for the whole event</b>.</p>
+<p>We found no product that does this end to end. Six ideas are new together:</p>
+<ol class="ideas">
+<li><b>A relationship graph mined from the organisation's own operating records</b> (trackers, letters, notes, sponsor lists, past events), not from a social network.</li>
+<li><b>Route planning with judgement:</b> it weighs warmth, respects holds and declines, goes agency-first for public figures, and picks the language for each recipient.</li>
+<li><b>A cross-document consistency audit</b> as a guardrail on everything that goes out.</li>
+<li><b>Organisation-owned memory</b> that survives volunteer and staff turnover.</li>
+<li><b>A zero-file start from a public event</b>, with labelled assumptions.</li>
+<li><b>Budget-aligned invitations:</b> no promise beyond the guest policy or the sponsorship tiers.</li>
+</ol>
+<p>Each neighbouring category covers one piece. Warm-intro tools (Village, The Swarm, Introhive, Affinity) serve sales and VC teams and map only connections members sync. Event platforms (Sessionize, Sessionboard, Cvent, Bizzabo) start once speakers are known. Nonprofit CRMs (Virtuous Momentum, Bloomerang, Givebutter, DonorSearch) are built around donors. AI SDRs (Clay, Apollo, 11x) send volume cold email. ChatGPT has no memory of your relationships. Campus platforms (CampusGroups, Hivebrite) handle publicity, not outreach.</p>
+<h3>What is new beyond the course homework</h3>
+<table class="keep">
+  <tr><th style="width:36%">Course homework</th><th>What InviteDesk adds</th></tr>
+  <tr><td><b>HW2:</b> find prospects on public websites, verify them, draft cold emails, never send</td><td>Finds the <b>route</b>: who in the organisation's own records and past events can introduce you. It ranks warm intro → official management/agency → DM, and respects context (declined, "do not cold email", wait for another person's answer first).</td></tr>
+  <tr><td><b>HW6:</b> read one vendor document against one handbook; injection defence; token cost</td><td>Reads a whole messy multi-language folder (32 files for CRN), builds a sourced Fact Sheet and audits <b>across</b> documents (old dates, wrong domains, price mismatches, status conflicts). Estimates a budget, labelled, when none is stated.</td></tr>
+  <tr><td><b>HW5:</b> a multi-agent desk that resolves tickets once</td><td>Institutional memory over time: integrated directory across events, per-person timelines, reply interpretation, team ownership and handover. It can also start from a public event with zero files.</td></tr>
+  <tr><td>Course data was fictional and in one language</td><td>Two <b>real</b> cases (CRN Gala, Yale Innovation Summit) and real-user evidence from CRN's President. English, Simplified and Traditional Chinese, with entity resolution across languages.</td></tr>
+</table>
 <figure class="lc"><div class="lifecycle">
   <div><b>Plan</b><span>Fact Sheet with sources and conflicts · slots · rubric and tiers</span></div>
   <div class="hot"><b>Find people</b><span>Talent Scouts + Verifier · Event Researcher</span></div>
@@ -266,18 +296,8 @@ li{margin:3px 0}
 <li>The Consistency Auditor flags prices that don't match the sponsorship tiers: CRN's $3,400 offer matches no tier, and in the samples Gold was $7,500 vs $8,000, Eastbridge $4,000 vs $5,000 and the Harbor Table $1,200 vs $1,500.</li>
 <li>The Finance Clerk tracked CRN's $4,449.67 across 9 items, all needing action: 6 awaiting finance approval, 5 in CNY converted to USD, 2 approved but not reimbursed, and 1 over $1,000.</li>
 <li>The Budget Guard caps every agent run, and the app shows the cost of each run.</li></ul></div>
-<div class="card"><b>An operations tool, not a networking or sales tool.</b> The unit of work is an event program and its guests, not a sales pipeline or one person's network. The outputs are invitations, logistics, follow-ups and closed books.<br><br>
-<b>It helps the organisation, not just one person.</b> Institutional memory carries across events and years: the integrated directory, per-person timelines, and the Team view of who owns which relationship give a clean handover when volunteers and officers rotate. One source of truth keeps every flyer, letter and sponsor package on the same date, venue and prices. Human approval gates stay in place, and the cost is cents per event, which a volunteer-run NGO can afford.</div>
+<div class="card"><b>An operations tool, not a networking or sales tool.</b> The unit of work is an event program and its guests. The outputs are invitations, logistics, follow-ups and closed books.<br><br><b>It helps the organisation, not one person.</b> The directory, per-person timelines and Team view give a clean handover when volunteers rotate. One source of truth keeps every flyer, letter and package on the same date, venue and prices. Human approval gates stay in place, and the cost is cents per event.</div>
 </div>
-<table>
-  <tr><th style="width:19%">Category</th><th style="width:22%">Named products</th><th>Why they don't cover this job</th></tr>
-  <tr><td>Warm-intro / relationship intelligence</td><td>Village (village.ai), The Swarm, Introhive, Affinity</td><td>Built for sales and VC deal flow, and they map only connections team members sync (Village: 4.77B relationships, from $79/month). They don't source candidates for program slots or draw on the organisation's trackers, past events, sponsors or agencies.</td></tr>
-  <tr><td>Speaker / event management</td><td>Sessionboard, Sessionize, Cvent, Bizzabo</td><td>Start <i>once speakers are known</i>. No sourcing, intro paths or invitation drafting.</td></tr>
-  <tr><td>Nonprofit CRM with AI drafting</td><td>Virtuous Momentum, Bloomerang, Givebutter, DonorSearch</td><td>Built around donors you already have (Momentum drafts donor emails), not around a gala's speakers. They need a data migration first.</td></tr>
-  <tr><td>AI SDRs / outbound</td><td>Clay, Apollo, 11x</td><td>Volume cold email, the opposite of a warm, personal invitation.</td></tr>
-  <tr><td>General chat assistant</td><td>ChatGPT</td><td>No memory of the organisation's relationships, no roster, no verification, no review gate.</td></tr>
-  <tr><td>Campus / alumni platforms (secondary)</td><td>CampusGroups, Hivebrite, PeopleGrove</td><td>Publicity and RSVPs, not outreach.</td></tr>
-</table>
 <table class="matrix">
   <tr><th>Capability</th><th>Warm intro</th><th>Speaker mgmt</th><th>Nonprofit CRM</th><th>AI SDR</th><th>ChatGPT</th><th>InviteDesk</th></tr>
   <tr><td><b>Who to invite:</b> new, verified people for open slots, with evidence</td><td class="no">○</td><td class="no">○</td><td class="p">◐</td><td class="p">◐</td><td class="p">◐</td><td class="y">●</td></tr>
@@ -471,7 +491,6 @@ li{margin:3px 0}
 <figcaption><b>Figure 1. InviteDesk architecture.</b> Five stages run in order. Fan-out happens inside stages: 3 Roster Analysts in parallel, up to 2 Talent Scouts, and the per-person chain for the top 12 people, 4 at a time. Purple "WEB" tags mark the only agents that pay for web search.</figcaption>
 </figure>
 <p><b>Model choice.</b> Every agent uses <b>gpt-6-luna</b> through the course Portkey key. It is the only model the key allows, it is cheap ($0.10 / M input, $0.01 / M cached, $0.50 / M output), and the gateway passes through OpenAI's native web search with citations, which the scouts, Verifier and Contact Researcher need. The split into agents is what makes one small model good enough: each call has one narrow job, a typed Pydantic output (<code>models.py</code>) and only the context it needs.</p>
-<p><b>Shared memory.</b> Everything persists in one local SQLite file: events, documents, people, contacts with their sources, routes, drafts with review history, issues, follow-ups, expenses, runs and a full trace. On top of it sit an <b>integrated directory</b> (one entry per person across events) and a <b>team list</b> (who owns which relationship). Next year's officer inherits both.</p>
 
 <!-- ============================================================ 4 -->
 <h3>4.1 One real run traced step by step: Eileen Gu at the CRN Gala</h3>

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import csv
 import io
 from datetime import date
@@ -194,7 +196,10 @@ def _route_sentence(p: dict[str, Any], r: dict[str, Any] | None) -> str:
     via, ch, tgt = (r.get("via") or "").split(";")[0].strip(), r.get("channel") or "", r.get("target") or ""
     kind = r.get("route_type")
     if kind == "intermediary_intro" and via:
-        return f"Ask {via} to introduce {p['name']}"
+        unverified = r.get("warmth") == "cold" or re.search(r"unverified|not (?:a )?verified|no evidence",
+                                                             f"{r.get('rationale') or ''} {r.get('evidence') or ''}", re.I)
+        return f"Check whether {via} can introduce {p['name']} (unverified)" if unverified \
+            else f"Ask {via} to introduce {p['name']}"
     if kind == "existing_thread":
         short = ch.split(" via ")[0].split("(")[0].strip()
         through = tgt if tgt and "@" not in tgt and tgt != p["name"] and len(tgt) < 40 else ""

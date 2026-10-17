@@ -1963,7 +1963,7 @@ function routeSentence(p, r) {
   if (!r) return `Plan the best way to reach ${shortName(name)}`;
   const via = ((r.via || "").split(";")[0] || "").split(/[,(（]/)[0].trim(), ch = r.channel || "";
   switch (r.route_type) {
-    case "intermediary_intro": return via ? `Ask ${via} to introduce ${shortName(name)}` : `Find someone to introduce ${shortName(name)}`;
+    case "intermediary_intro": return via ? (unverifiedIntro(r) ? `Check whether ${via} can introduce ${shortName(name)} (unverified)` : `Ask ${via} to introduce ${shortName(name)}`) : `Find someone to introduce ${shortName(name)}`;
     case "existing_thread": return `Follow up on the existing ${ch || "thread"}`;
     case "official_management": return `Contact ${shortName(name)}'s management`;
     case "partner_org": return via ? `Reach them through ${via}` : "Reach them through a partner organisation";
@@ -2379,6 +2379,11 @@ function evidenceSources(text) {
 }
 function uniqSrc(list) { const seen = new Set(); return list.filter(Boolean).filter((x) => { const k = isURL(x) ? domainOf(x) : x.split("/").pop(); if (seen.has(k)) return false; seen.add(k); return true; }); }
 
+// an introduction nobody has evidence for (e.g. suggested only in model-written notes) is shown as unverified
+function unverifiedIntro(r) {
+  return !!r && r.route_type === "intermediary_intro" && (r.warmth === "cold" || /unverified|not (?:a )?verified|no evidence|suggested by the talent scout/i.test(`${r.rationale || ""} ${r.evidence || ""}`));
+}
+
 function profileHero(p, o) {
   const fit = p.priority_score != null ? Math.max(0, Math.min(100, Math.round(num(p.priority_score)))) : null;
   const statusOpts = Object.entries(PSTATUS).map(([k, v]) => `<option value="${k}" ${p.status === k ? "selected" : ""}>${v[0]}</option>`).join("");
@@ -2459,7 +2464,7 @@ function routeViz(p, routes, paths, o) {
   };
   const alts = routes.slice(1).map((r) => {
     const src = uniqSrc([r.source_url, ...evidenceSources(r.evidence)]).slice(0, 2);
-    const label = r.route_type === "intermediary_intro" ? `Intro via ${cleanVia(r.via) || "intermediary"}` : `${ROUTE_TYPES[r.route_type] || r.route_type}${cleanVia(r.via) && r.route_type !== "public_contact" ? " · " + cleanVia(r.via) : ""}`;
+    const label = r.route_type === "intermediary_intro" ? (unverifiedIntro(r) ? `Suggested intro via ${cleanVia(r.via) || "intermediary"} (unverified)` : `Intro via ${cleanVia(r.via) || "intermediary"}`) : `${ROUTE_TYPES[r.route_type] || r.route_type}${cleanVia(r.via) && r.route_type !== "public_contact" ? " · " + cleanVia(r.via) : ""}`;
     return `<div class="ralt"><span class="rk">${r.rank || ""}</span>${warmBars(r.warmth)}<span class="rch-i" title="${esc(r.channel || "")}">${chIco(r.channel)}</span>
       <div class="ralt-t"><div class="ellipsis" title="${esc(r.next_action || r.rationale || "")}">${esc(label)}</div>${src.length ? `<div class="srcs">${src.map((x) => srcChip(x, p.event_id)).join("")}</div>` : ""}</div>
       ${r.target ? `<button class="btn xs ghost" data-act="copy" data-v="${esc(r.target)}" title="Copy ${esc(r.target)}">Copy</button>` : ""}</div>`;

@@ -43,7 +43,8 @@ def main() -> None:
         print(f"Run #{rid}: {run['status']} {run['note'] or ''}")
         print(run["usage"]["totals"] if run.get("usage") else "")
         return
-    if not args.no_demo and not db.q("SELECT id FROM events LIMIT 1") and snapshot.SNAPSHOT.exists():
+    if not args.no_demo and not db.q("SELECT id FROM events LIMIT 1") and snapshot.SNAPSHOT.exists() \
+            and not (config.WORKSPACE / ".demo_dismissed").exists():
         print("Empty workspace: loading the demo snapshot (fictional sample events)…", flush=True)
         snapshot.load()
 

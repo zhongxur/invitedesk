@@ -1587,6 +1587,25 @@ function statusPill(ev) {
 }
 const neverRun = (ev) => !ev.last_run && !ev.fact_sheet;
 
+async function deleteEvent(eid) {
+  closePopovers();
+  const ev = S.ev && S.ev.id === eid ? S.ev : S.events.find((e) => e.id === eid) || { name: "this event" };
+  const demo = ev.status === "demo";
+  const ok = await confirmBox(`Delete “${esc(shortEventName(ev.name))}”?`,
+    `This removes the event from InviteDesk: its people, routes, messages and drafts, follow-ups, agent runs, the imported copy of its files and its Drive folder. ` +
+    `Your original files are not touched, and people who also appear in other events stay there. ` +
+    (demo ? "You can bring the demo back any time from Settings › Demo &amp; samples." : "<b>This can’t be undone.</b>"),
+    "Delete event", true);
+  if (!ok) return;
+  try {
+    const r = await api(`/api/events/${eid}`, { method: "DELETE" });
+    S.ev = null; S.evId = null; S.projects = null;
+    await loadEvents();
+    go("#/projects");
+    toast(`Deleted “${esc(shortEventName(r.name || ev.name))}”.`, "ok", 3500);
+  } catch (e) { toastErr(e); }
+}
+
 function eventHeader(ev, tab) {
   const fs = ev.fact_sheet || {};
   const title = fv(fs.event_name) || ev.name;
@@ -1606,7 +1625,10 @@ function eventHeader(ev, tab) {
       <div class="crumbs"><a href="#/projects">Projects</a>${icon("chevron").replace("<svg", '<svg style="width:12px;height:12px"')}</div>
       <div class="evh-row"><div class="evh-l"><h1 class="evh-name" title="${esc(title)}">${esc(title)}${zh ? `<span class="zh2">${esc(zh)}</span>` : ""}</h1>
           <div class="evh-meta">${meta.map(esc).join(" · ")}</div></div>
-        <div class="evh-r"><button class="spill ${pk}" data-act="open-sheet" data-sheet="agent" title="Open the agent run">${pill}</button>${(S.review || {}).count ? `<button class="spill warn review" data-act="open-sheet" data-sheet="review" title="Facts and file checks waiting for you">${S.review.count} to confirm</button>` : ""}${ghost}${primary}</div></div>
+        <div class="evh-r"><button class="spill ${pk}" data-act="open-sheet" data-sheet="agent" title="Open the agent run">${pill}</button>${(S.review || {}).count ? `<button class="spill warn review" data-act="open-sheet" data-sheet="review" title="Facts and file checks waiting for you">${S.review.count} to confirm</button>` : ""}${ghost}${primary}
+          <div class="pop-wrap"><button class="btn ghost icon-only" data-act="pop-toggle" data-pop="evmenu" aria-label="More event actions">${icon("more")}</button>
+            <div class="popover right" data-popover="evmenu" hidden>
+              <button class="menu-item danger" data-act="event-delete" data-eid="${ev.id}" ${ev.running ? "disabled" : ""}>${icon("trash")}Delete event…</button></div></div></div></div>
     </div></div>
     <div class="ev-sticky"><div class="segtabs" role="tablist">
       ${TABS.map(([id, label]) => `<a class="segtab ${tab === id ? "active" : ""}" role="tab" aria-selected="${tab === id}" href="${evHash(ev.id, id)}">${label}${id === "messages" && msgBadge ? `<span class="count-badge">${msgBadge}</span>` : ""}</a>`).join("")}
@@ -2559,6 +2581,7 @@ const ACTIONS = {
   reload: () => location.reload(),
   "reload-tab": () => renderTab(),
   "close-modal": () => closeModal(),
+  "event-delete": (el) => deleteEvent(+el.dataset.eid),
   "p-photo": (el) => photoModal(+el.dataset.pid),
   "p-photo-save": (el) => savePhoto(el),
   "p-photo-remove": (el) => savePhoto(el, true),

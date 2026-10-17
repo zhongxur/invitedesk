@@ -473,6 +473,34 @@ def reset_roster(eid: int) -> None:
     db.execute("DELETE FROM directory WHERE id NOT IN (SELECT DISTINCT global_id FROM people WHERE global_id IS NOT NULL)")
 
 
+def delete_event(eid: int) -> dict[str, Any]:
+    """Delete one event and everything the desk made for it (people, messages, follow-ups, runs, imported copies of
+    its files, Drive folder, stored photos). The organiser's original files are never touched; other events and the
+    integrated directory entries still used by other events are kept."""
+    ev = db.one("SELECT id, name, status FROM events WHERE id=?", (eid,))
+    if not ev:
+        return {}
+    pids = [p["id"] for p in db.q("SELECT id FROM people WHERE event_id=?", (eid,))]
+    marks = ",".join("?" * len(pids)) or "NULL"
+    for t in ("contacts", "routes"):
+        db.execute(f"DELETE FROM {t} WHERE person_id IN ({marks})", pids)
+    db.execute(f"DELETE FROM timeline WHERE event_id=? OR person_id IN ({marks})", [eid, *pids])
+    db.execute("DELETE FROM comments WHERE draft_id IN (SELECT id FROM drafts WHERE event_id=?)", (eid,))
+    for t in ("drafts", "followups", "issues", "expenses", "trace", "runs", "documents", "people"):
+        db.execute(f"DELETE FROM {t} WHERE event_id=?", (eid,))
+    db.execute("DELETE FROM events WHERE id=?", (eid,))
+    db.execute("DELETE FROM directory WHERE id NOT IN (SELECT DISTINCT global_id FROM people WHERE global_id IS NOT NULL)")
+    if event_dir(eid).exists():
+        shutil.rmtree(event_dir(eid))
+    photos = config.WORKSPACE / "photos"
+    for pid in pids:
+        for f in photos.glob(f"{pid}.*") if photos.exists() else []:
+            f.unlink()
+    if ev.get("status") == "demo":  # don't bring the demo back on the next start
+        (config.WORKSPACE / ".demo_dismissed").touch()
+    return {"deleted": eid, "name": ev["name"], "people": len(pids)}
+
+
 async def scout_list(eid: int, rid: int | None, meter: Meter, facts: dict, brief: str, count: int = 8,
                      mode: str = "fast") -> dict:
     """One Talent Scout builds one list for one brief; results are saved as candidates (origin='scout').

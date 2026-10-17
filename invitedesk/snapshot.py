@@ -80,6 +80,8 @@ def load() -> dict[str, Any]:
     existing = db.q("SELECT id, source FROM events WHERE status='demo'")
     if existing and sources <= {e["source"] for e in existing}:
         return {"loaded": [], "already_loaded": [e["id"] for e in existing]}
+    data["events"] = [b for b in data["events"] if b["event"].get("source") not in {e["source"] for e in existing}]
+    (config.WORKSPACE / ".demo_dismissed").unlink(missing_ok=True)
     days = (date.today() - date.fromisoformat(data.get("recorded_on", date.today().isoformat()))).days
     for block in data["events"]:
         for f in block["followups"]:

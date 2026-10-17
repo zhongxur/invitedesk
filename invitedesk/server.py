@@ -634,6 +634,15 @@ def clear_person_photo(pid: int):
     return {"ok": True}
 
 
+@app.delete("/api/events/{eid}")
+def delete_event(eid: int):
+    """Delete an event and everything the desk produced for it. The user confirms in the UI first."""
+    ev = _event(eid)
+    if ev.get("status") == "running":
+        raise HTTPException(409, "Agents are still working on this event. Wait for the run to finish, then delete it.")
+    return coordinator.delete_event(eid)
+
+
 @app.post("/api/events/{eid}/photos")
 async def event_photos(eid: int):
     _event(eid)

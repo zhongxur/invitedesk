@@ -12,7 +12,7 @@ import shutil
 from datetime import date, timedelta
 from typing import Any
 
-from . import config, db
+from . import config, db, tools
 from .exporter import export_drive
 
 SNAPSHOT = config.SAMPLE_EVENT / "demo_snapshot.json"
@@ -102,6 +102,7 @@ def load() -> dict[str, Any]:
         eid = _ins("events", block["event"], status="demo")
         pmap: dict[int, int] = {}
         for p in block["people"]:
+            p = {**p, "role": tools.tidy_roles(p.get("role"))}
             pmap[p["id"]] = _ins("people", p, event_id=eid, global_id=gmap.get(p.get("global_id")))
         dmap: dict[int, int] = {}
         for d in block["drafts"]:

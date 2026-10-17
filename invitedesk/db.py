@@ -99,7 +99,8 @@ def conn() -> sqlite3.Connection:
 
 MIGRATIONS = [("people", "entity", "TEXT DEFAULT 'person'"), ("people", "status_variants", "TEXT DEFAULT '[]'"),
               ("people", "hold", "TEXT DEFAULT ''"), ("routes", "evidence", "TEXT"),
-              ("routes", "source_url", "TEXT")]
+              ("routes", "source_url", "TEXT"), ("people", "photo_url", "TEXT"),
+              ("people", "photo_source", "TEXT"), ("people", "photo_checked", "TEXT")]
 
 
 def _row(r: sqlite3.Row | None) -> dict[str, Any] | None:

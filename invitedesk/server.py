@@ -20,6 +20,15 @@ from .llm import MissingKey, run_agent, Meter
 app = FastAPI(title="InviteDesk")
 
 
+@app.middleware("http")
+async def no_stale_ui(request, call_next):
+    """Make browsers revalidate the UI files so an updated app.js is never served from cache."""
+    response = await call_next(request)
+    if not request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 def _event(eid: int) -> dict[str, Any]:
     ev = db.one("SELECT * FROM events WHERE id=?", (eid,))
     if not ev:
@@ -545,6 +554,18 @@ def team_connections_summary():
 @app.get("/api/people/{pid}/paths")
 def person_paths(pid: int):
     return graph.find_paths(pid)
+
+
+@app.get("/api/people/{pid}/photo")
+async def person_photo(pid: int, force: bool = False):
+    """Public portrait (Wikimedia Commons) for a person, looked up once and cached; url is null when none."""
+    return await coordinator.find_photo_for(pid, force=force)
+
+
+@app.post("/api/events/{eid}/photos")
+async def event_photos(eid: int):
+    _event(eid)
+    return {"found": await coordinator.find_photos(eid)}
 
 
 @app.get("/api/usage")

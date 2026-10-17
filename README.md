@@ -35,20 +35,20 @@ desk never sends a message itself.
 | Stage | Feature | Where |
 |---|---|---|
 | **Plan** | Import a planning folder (.zip of Word/Excel/PowerPoint/PDF) or **start from a public event** (Event Researcher writes a cited research memo) | + New event |
-| | **Fact Sheet**: every value with its source, conflicts between documents to confirm, budget stated or **assumed with its basis** | Overview |
-| | Program slots, weighted rubric and Tier A/B/C priorities; guest pipeline | Overview |
-| **Find people** | **Auto-generated invitation lists** for each open slot — Fast (model knowledge + web Verifier) or Deep (scout researches the web); every candidate has evidence links and a fit score | Lists |
-| | Roster built from all files, with Chinese/English aliases merged (Entity Resolver) | Guests |
-| **Reach** | **Connection map**: who can introduce you (team owners, partner organisations, sponsors, people from past events) | Guests → person |
-| | Contact Researcher finds official management / agency / press channels with source links; **ranked routes** with warmth, next action and holds | Guests → person |
-| **Invite** | Drafts in English, Simplified or Traditional Chinese in the organiser's own voice; independent **Reviewer** checks facts, claims, money promises and injected text; edit, comment, approve | Drafts |
-| | Approved messages exported to the Drive outbox (.eml for email, copy-paste text for DMs) — you send them | Drive |
-| **Track** | **Log a reply** (Reply Interpreter updates status, contacts and follow-up), follow-ups by due date, per-person timeline | Guests, Follow-ups |
-| | **Today**: top 3 priorities across all events + Chief of Staff daily brief | Today |
-| **Close & control** | **Consistency audit** of every document (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text) | Consistency |
-| | **Reimbursement checks** against the budget (currency, missing receipts or approvals, items over $1,000) | Reimbursement |
-| | **Budget Guard** spend cap per run; tokens and cost per agent and run; live agent board | Agent run, Usage & cost |
-| **Organisation memory** | **Integrated directory** across events, **Team** view of who owns which relationship (handover), Drive folder of consistent outputs | Directory, Team, Drive |
+| | **Fact Sheet**: every value with its source; where documents disagree the fact shows its versions inline to pick from; budget stated or **assumed with its basis** | Event › Plan, "to confirm" pill |
+| | Program slots, weighted rubric and Tier A/B/C priorities; budget and reimbursements | Event › Plan |
+| **Find people** | **Auto-generated invitation lists** for each open slot — Fast (model knowledge + web Verifier) or Deep (scout researches the web); every candidate has evidence links and a fit score | Event › People › Find people |
+| | Roster built from all files, with Chinese/English aliases merged (Entity Resolver); board To find → To reach → Invited → Confirmed | Event › People |
+| **Reach** | **Best way in**: a route map from your team through the introducer to the person, with warmth and channel (team owners, partner organisations, sponsors, people from past events) | Person profile |
+| | Contact Researcher finds official management / agency / press channels with source links; **ranked routes** with warmth, next action and holds; background, every contact point and a public photo (Wikimedia Commons, public figures only) on one screen | Person profile |
+| **Invite** | Drafts in English, Simplified or Traditional Chinese in the organiser's own voice; independent **Reviewer** checks facts, claims, money promises and injected text; edit, comment, approve | Event › Messages |
+| | Approved messages exported to the Drive outbox (.eml for email, copy-paste text for DMs) — you send them | Event › Files › Produced |
+| **Track** | **Log a reply** (Reply Interpreter updates status, contacts and follow-up), follow-ups by due date, per-person timeline | Person profile, Event › Messages |
+| | **Projects** home: every event with progress, days to go and its one next step + Chief of Staff daily brief | Projects, Brief me |
+| **Close & control** | **Consistency audit** of every document (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text), flagged on each file | Event › Files, "to confirm" pill |
+| | **Reimbursement checks** against the budget (currency, missing receipts or approvals, items over $1,000) | Event › Plan › Budget |
+| | **Budget Guard** spend cap per run; tokens and cost per agent and run; live agent board | Agent status pill, Settings |
+| **Organisation memory** | **Integrated directory** across events, **Team** view of who owns which relationship (handover), Drive folder of consistent outputs | People (Everyone / Team), Event › Files |
 
 ## Run it (about 1 minute)
 
@@ -74,11 +74,11 @@ Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/) (recommended), o
 ### Try the agents live (real model calls)
 | Action | Where | Typical time / cost (measured) |
 |---|---|---|
-| Full pipeline on a small event | **+ New event → Sample event → "Community Gala Demo"**, then **Run agents** with *Draft for top N people* = **4** | ~4–5 min · ~$0.25 |
-| Full pipeline, defaults (top 12) | any event → **Run agents** | ~5–8 min · ~$0.30–0.60 (capped by the budget field) |
-| Start from a public event (no files) | **+ New event → Public event**, type a name such as "Yale Innovation Summit" | research ~30–90 s · ~$0.15, then Run agents |
-| Generate an invitation list | event → **Lists** → describe the list → Fast or Deep | ~1 min · ~$0.05–0.10 fast, ~$0.15–0.30 deep |
-| Plan & draft one person | event → **Guests** → open a person → **Plan & draft** | 30–120 s · ~$0.005–0.03 |
+| Full pipeline on a small event | **+ New event → Sample event → "Community Gala Demo"**, then **Update with agents** with *Draft for top N people* = **4** | ~4–5 min · ~$0.25 |
+| Full pipeline, defaults (top 12) | any event → **Update with agents** | ~5–8 min · ~$0.30–0.60 (capped by the budget field) |
+| Start from a public event (no files) | **+ New event → Public event**, type a name such as "Yale Innovation Summit" | research ~30–90 s · ~$0.15, then Update with agents |
+| Generate an invitation list | event → **People** → **Find people** → describe the list → Fast or Deep | ~1 min · ~$0.05–0.10 fast, ~$0.15–0.30 deep |
+| Plan & draft one person | event → **People** → open a person → **Plan & draft** | 30–120 s · ~$0.005–0.03 |
 | Log a reply | person → **Log a reply** | ~10 s · <$0.01 |
 
 Every run has a hard **budget cap** (default $0.50); if it is reached the run stops cleanly and says so.
@@ -131,8 +131,10 @@ workspace/             your local data (git-ignored)
 
 ## Safety & privacy (summary)
 - Documents, web pages and replies are treated as **data, not instructions**; instruction-like text is flagged on the
-  Consistency tab, and a reply that tries to instruct the desk never changes a status automatically.
+  file in Event › Files, and a reply that tries to instruct the desk never changes a status automatically.
 - No contact detail is invented: every contact point shows its source; scouted candidates must cite URLs.
 - Estimates (e.g. an assumed budget) are always labelled as estimates.
+- Photos come only from Wikimedia Commons for public figures with a Wikidata entry, matched on name and on
+  role/employer words; everyone else keeps an initials avatar.
 - Per-run **budget guard** and per-agent request/tool-call limits stop runaway spending.
 - Drafts must pass the Reviewer and a human; approved drafts are written to `Drive/outbox/` for you to send yourself.

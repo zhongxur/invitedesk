@@ -88,7 +88,7 @@ def directory(qtext: str = "") -> list[dict[str, Any]]:
     out = []
     for g in db.q("SELECT * FROM directory ORDER BY name"):
         apps = db.q("SELECT p.id, p.role, p.status, p.owner, p.relationship, p.tier, p.category, p.intro, "
-                    "e.id AS event_id, e.name AS event_name, e.org FROM people p JOIN events e ON e.id=p.event_id "
+                    "p.photo_url, p.photo_source, e.id AS event_id, e.name AS event_name, e.org FROM people p JOIN events e ON e.id=p.event_id "
                     "WHERE p.global_id=?", (g["id"],))
         if not apps:
             continue
@@ -104,7 +104,9 @@ def directory(qtext: str = "") -> list[dict[str, Any]]:
                     "owners": sorted({a["owner"] for a in apps if a["owner"]}),
                     "contacts": contacts, "last_touch": last["d"] if last else None,
                     "category": next((a["category"] for a in apps if a["category"]), ""),
-                    "intro": next((a["intro"] for a in apps if a["intro"]), "")})
+                    "intro": next((a["intro"] for a in apps if a["intro"]), ""),
+                    "photo_url": next((a["photo_url"] for a in apps if a["photo_url"]), None),
+                    "photo_source": next((a["photo_source"] for a in apps if a["photo_url"]), None)})
     return out
 
 

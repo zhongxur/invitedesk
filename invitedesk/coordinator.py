@@ -178,6 +178,8 @@ def merge_people(lists: list[list[dict]]) -> list[dict]:
                         uniq.setdefault(x.strip().lower(), x.strip())
                     hit[f] = "; ".join(uniq.values()) if f != "intro" else (
                         hit[f] if len(hit.get(f) or "") >= len(p[f]) else p[f])
+                    if f == "role":
+                        hit[f] = tools.tidy_roles(hit[f])
             variants = hit.setdefault("status_variants", _variants(hit))
             for v in p["status_variants"]:
                 if v["status"] not in ("unknown",) and all(v["status"] != x["status"] for x in variants):
@@ -904,6 +906,41 @@ def stage_followups(eid: int, rid: int | None, today: date | None = None) -> int
 # ---------------------------------------------------------------- the full run
 
 
+async def find_photo_for(pid: int, force: bool = False) -> dict[str, Any]:
+    """Look up (once) a public portrait for one person; caches the answer, including "no photo"."""
+    p = db.one("SELECT * FROM people WHERE id=?", (pid,))
+    if not p or (p.get("photo_checked") and not force) or (p.get("entity") or "person") != "person":
+        return {"url": (p or {}).get("photo_url"), "source": (p or {}).get("photo_source")}
+    ev = db.one("SELECT org, name FROM events WHERE id=?", (p["event_id"],)) or {}
+    if (p.get("owner") or "").strip().lower() == "self" or "team member" in (p.get("role") or "").lower():
+        found = {}  # organisers are not looked up
+    else:
+        hints = " ".join(str(x or "") for x in (p.get("role"), p.get("intro"), p.get("relationship"),
+                                                p.get("rationale"), p.get("category")))
+        hints = hints.replace(ev.get("org") or "\0", " ").replace(ev.get("name") or "\0", " ")
+        found = await tools.find_photo([p["name"], *(p.get("aliases") or [])], hints)
+    if "error" in found:
+        return {"url": None, "source": None, "error": found["error"]}
+    db.update("people", pid, photo_url=found.get("url"), photo_source=found.get("source"), photo_checked=db.now())
+    if found.get("url"):
+        db.timeline(pid, "photo", f"Public photo found on Wikimedia Commons (matched on {', '.join(found['matched_on'])})",
+                    actor="Contact Researcher")
+    return {"url": found.get("url"), "source": found.get("source")}
+
+
+async def find_photos(eid: int, limit: int = 150) -> int:
+    """Fill public portraits for an event's people (free: Wikidata/Wikimedia only, no model call)."""
+    pids = [r["id"] for r in db.q("SELECT id FROM people WHERE event_id=? AND photo_checked IS NULL AND "
+                                  "COALESCE(entity,'person')='person' ORDER BY CASE tier WHEN 'A' THEN 0 WHEN 'B' "
+                                  "THEN 1 ELSE 2 END LIMIT ?", (eid, limit))]
+    sem = asyncio.Semaphore(2)  # stay well inside Wikimedia's rate limits
+
+    async def one(pid: int) -> bool:
+        async with sem:
+            return bool((await find_photo_for(pid)).get("url"))
+    return sum(await asyncio.gather(*(one(pid) for pid in pids)))
+
+
 async def run_pipeline(eid: int, budget_usd: float | None = None, top_n: int | None = None,
                        stages: tuple[str, ...] = ("brief", "roster", "strategy", "scout", "outreach")) -> int:
     ev = db.one("SELECT * FROM events WHERE id=?", (eid,))
@@ -930,6 +967,12 @@ async def run_pipeline(eid: int, budget_usd: float | None = None, top_n: int | N
         if n_linked:
             db.log(eid, rid, "Coordinator", "note", f"Integrated directory: linked {n_linked} people across events "
                                                     "(shared full name, email or handle).")
+        try:
+            n_photos = await find_photos(eid)
+            if n_photos:
+                db.log(eid, rid, "Contact Researcher", "note", f"Found {n_photos} public photo(s) on Wikimedia Commons.")
+        except Exception:  # noqa: BLE001  (photos are optional decoration)
+            pass
         stage_audit(eid, rid, facts)
         stage_finance(eid, rid, facts)
         stage_followups(eid, rid)

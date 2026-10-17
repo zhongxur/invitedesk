@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -88,7 +89,7 @@ async def web_search(query: str, max_results: int = 6) -> list[dict[str, str]]:
 
 # ---------------- Wikipedia / Wikidata public profile (no key) ----------------
 
-WIKI_UA = "InviteDesk/0.1 (Yale MGT409 course project)"
+WIKI_UA = "InviteDesk/0.2 (https://github.com/zhongxur/invitedesk; Yale MGT409 course project)"
 WD_PROPS = {"P856": "official_website", "P2003": "instagram", "P2002": "x_twitter", "P6634": "linkedin",
             "P2013": "facebook", "P2397": "youtube_channel", "P3267": "flickr", "P108": "employer",
             "P106": "occupation", "P1416": "affiliation", "P39": "position_held", "P463": "member_of"}
@@ -139,6 +140,76 @@ async def wiki_profile(name: str) -> dict[str, Any]:
                     "other_matches": [f"{h.get('label')} — {h.get('description', '')}" for h in hits[1:]]}
     except (httpx.HTTPError, KeyError, ValueError) as exc:
         return {"error": f"wiki lookup failed: {exc}"[:200]}
+
+
+_PHOTO_STOP = {"the", "and", "for", "with", "from", "former", "chief", "senior", "head", "member", "team",
+               "speaker", "panelist", "guest", "invitee", "prospect", "potential", "event", "panel", "keynote",
+               "american", "chinese", "born", "people", "person", "company", "group", "university"}
+
+
+def _words(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z][a-z'-]{3,}", (text or "").lower()) if w not in _PHOTO_STOP}
+
+
+async def _wd(c: "httpx.AsyncClient", params: dict[str, Any]) -> dict[str, Any]:
+    """Wikidata API GET with polite backoff on HTTP 429 (Wikimedia rate limits)."""
+    for wait in (0, 2, 5):
+        if wait:
+            await asyncio.sleep(wait)
+        r = await c.get("https://www.wikidata.org/w/api.php", params={**params, "format": "json"})
+        if r.status_code != 429:
+            r.raise_for_status()
+            return r.json()
+    raise httpx.HTTPError("Wikidata rate limit (429)")
+
+
+async def find_photo(names: list[str], hints: str) -> dict[str, Any]:
+    """Portrait of a public figure from Wikimedia Commons (via Wikidata P18), or {} when not confident.
+
+    Only accepted when the Wikidata item is a human (P31=Q5) whose label matches one of the person's names AND whose
+    description / occupation / employer shares a word with what we know about them (org, role, notes), so a common
+    name never picks up a stranger's face. No LLM call, no key; private individuals simply have no photo.
+    """
+    hint_words = _words(hints)
+    if not hint_words:
+        return {}
+    try:
+        async with httpx.AsyncClient(timeout=15, headers={"User-Agent": WIKI_UA}) as c:
+            for name in [n for n in names if n][:2]:
+                lang = "zh" if re.search(r"[\u4e00-\u9fff]", name) else "en"
+                hits = (await _wd(c, {"action": "wbsearchentities", "search": name, "language": lang,
+                                      "uselang": "en", "limit": 5, "type": "item"})).get("search") or []
+                if not hits:
+                    continue
+                ents = (await _wd(c, {"action": "wbgetentities", "ids": "|".join(h["id"] for h in hits),
+                                      "props": "claims|labels", "languages": "en|zh"})).get("entities", {})
+                for h in hits:
+                    ent = ents.get(h["id"], {})
+                    claims = ent.get("claims", {})
+                    is_human = any(x["mainsnak"].get("datavalue", {}).get("value", {}).get("id") == "Q5"
+                                   for x in claims.get("P31", []))
+                    image = next((x["mainsnak"].get("datavalue", {}).get("value") for x in claims.get("P18", [])), None)
+                    labels = {v.get("value", "").lower() for v in ent.get("labels", {}).values()}
+                    if not (is_human and image) or name.lower() not in labels | {h.get("label", "").lower()}:
+                        continue
+                    refs = [x["mainsnak"].get("datavalue", {}).get("value", {}).get("id")
+                            for pid in ("P106", "P108", "P39", "P463", "P1416") for x in claims.get(pid, [])[:5]]
+                    refs = [r for r in refs if r][:40]
+                    about = h.get("description", "")
+                    if refs:
+                        lab = (await _wd(c, {"action": "wbgetentities", "ids": "|".join(refs), "props": "labels",
+                                             "languages": "en"})).get("entities", {})
+                        about += " " + " ".join(v.get("labels", {}).get("en", {}).get("value", "") for v in lab.values())
+                    shared = hint_words & _words(about)
+                    if not shared:
+                        continue
+                    return {"url": "https://commons.wikimedia.org/wiki/Special:FilePath/"
+                                   f"{image.replace(' ', '_')}?width=320",
+                            "source": f"https://www.wikidata.org/wiki/{h['id']}",
+                            "credit": "Wikimedia Commons", "matched_on": sorted(shared)[:5]}
+    except (httpx.HTTPError, KeyError, ValueError) as exc:
+        return {"error": f"photo lookup failed: {exc}"[:200]}
+    return {}
 
 
 # ---------------- roster lookup ----------------
@@ -309,3 +380,26 @@ def allowed_prices(facts: dict[str, Any]) -> set[int]:
     for m in re.finditer(r"\$\s?([\d,]{2,7})", facts.get("guest_policy") or ""):
         vals.add(int(m.group(1).replace(",", "")))
     return vals
+
+
+_ROLE_SYNONYMS = {"organiser": "organizer", "organisers": "organizer", "organizers": "organizer",
+                  "speakers": "speaker", "panelists": "panelist", "former": ""}
+
+
+def _role_words(seg: str) -> frozenset[str]:
+    words = re.findall(r"[\w']+", seg.lower())
+    return frozenset(w2 for w in words if (w2 := _ROLE_SYNONYMS.get(w, w)))
+
+
+def tidy_roles(text: str | None) -> str:
+    """Collapse near-duplicate role segments ("panelist, Panel 1; Panel 1 panelist" -> "panelist, Panel 1").
+
+    A segment is dropped when its words are already covered by another segment; the more specific one is kept.
+    """
+    segs = [x.strip() for x in re.split(r"\s*;\s*", text or "") if x.strip()]
+    keep: list[str] = []
+    for seg in sorted(segs, key=lambda x: -len(_role_words(x))):
+        w = _role_words(seg)
+        if w and not any(w <= _role_words(k) for k in keep):
+            keep.append(seg)
+    return "; ".join(sorted(keep, key=segs.index))

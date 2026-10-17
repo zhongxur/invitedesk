@@ -67,7 +67,8 @@ function initials(name) {
   return cjk ? cjk[0] : (s[0] || "?").toUpperCase();
 }
 function hueOf(str) { let h = 7; for (const ch of String(str || "")) h = (h * 31 + ch.codePointAt(0)) >>> 0; return h % 360; }
-function avatar(name, size = "") {
+function avatar(name, size = "", photo = "") {
+  if (photo) return `<span class="av ${size} has-photo" style="--h:${hueOf(name)}" title="${esc(name || "")}" aria-hidden="true"><img src="${esc(photo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('has-photo');this.remove()"><i>${esc(initials(name))}</i></span>`;
   return `<span class="av ${size}" style="--h:${hueOf(name)}" title="${esc(name || "")}" aria-hidden="true">${esc(initials(name))}</span>`;
 }
 function shortName(n) {
@@ -149,6 +150,7 @@ const ICONS = {
   zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
   info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
   dollar: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  more: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
   activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
   edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
   chevron: '<polyline points="9 18 15 12 9 6"/>',
@@ -397,121 +399,8 @@ function renderMd(src) {
   return `<div class="md">${html}</div>`;
 }
 
-/* ================================================================== state & routing */
 
-const S = {
-  health: null,
-  events: [],
-  today: null,
-  route: { parts: [], query: new URLSearchParams() },
-  mainKey: null,
-  ev: null, // current event detail
-  evId: null,
-  trace: {}, // eid -> {entries:[], lastId}
-  poll: null, // {eid, timer}
-  planning: new Set(), // person ids being planned
-  generating: null, // {eid, brief}
-  draftDirty: false,
-  runSel: null,
-  guestsFilter: store.get("guestsFilter", { q: "", tier: "", status: "", slot: "", origin: "", entity: "person", needs: false }),
-};
-
-function parseHash() {
-  const h = location.hash.replace(/^#\/?/, "");
-  const [path, qs] = h.split("?");
-  return { parts: path.split("/").filter(Boolean).map(decodeURIComponent), query: new URLSearchParams(qs || "") };
-}
-function go(hash) { if (location.hash !== hash) location.hash = hash; else route(); }
-function setQuery(key, val, replace = false) {
-  const { parts, query } = parseHash();
-  if (val == null || val === "") query.delete(key); else query.set(key, val);
-  const qs = query.toString();
-  const h = "#/" + parts.map(encodeURIComponent).join("/") + (qs ? "?" + qs : "");
-  if (replace) { history.replaceState(null, "", h); route(); } else location.hash = h;
-}
-const evHash = (eid, tab = "overview", sub = "", q = "") => `#/event/${eid}/${tab}${sub ? "/" + encodeURIComponent(sub) : ""}${q ? "?" + q : ""}`;
-const personHash = (eid, pid, tab = "guests") => evHash(eid, tab, "", "p=" + pid);
-
-async function route() {
-  const r = parseHash();
-  S.route = r;
-  const [head, a, b, c] = r.parts;
-  // main key ignores the person drawer (?p=) so opening/closing it doesn't re-render the page behind
-  const q2 = new URLSearchParams(r.query); q2.delete("p");
-  const key = r.parts.join("/") + "?" + q2.toString();
-  if (S.draftDirty && key !== S.mainKey && !(await confirmLeaveDraft())) { history.replaceState(null, "", "#/" + S.mainKey.replace(/\?$/, "")); return; }
-  const changed = key !== S.mainKey;
-  S.mainKey = key;
-  renderSidebar();
-  if (changed) {
-    $("#main").scrollTop = 0;
-    try {
-      if (!head) { go(S.events.length ? "#/today" : "#/welcome"); return; }
-      if (head === "today") await viewToday();
-      else if (head === "welcome") viewWelcome();
-      else if (head === "directory") await (a ? viewProfile(+a) : viewDirectory());
-      else if (head === "team") await viewTeam();
-      else if (head === "usage") await viewUsage();
-      else if (head === "event" && a) await viewEvent(+a, b || "overview", c);
-      else go("#/today");
-    } catch (e) {
-      $("#view").innerHTML = `<div class="page">${emptyState("alert", "Something went wrong", esc(e.message || e), `<a class="btn" href="#/today">Back to Today</a><button class="btn" data-act="reload">Retry</button>`)}</div>`;
-      if (e.status !== 404) console.warn(e);
-    }
-  }
-  syncDrawer();
-}
-
-async function confirmLeaveDraft() {
-  const ok = await confirmBox("Discard unsaved edits?", "You edited this draft but didn't save. Leave without saving?", "Discard edits", true);
-  if (ok) S.draftDirty = false;
-  return ok;
-}
-
-/* ================================================================== sidebar & banner */
-
-async function loadEvents() {
-  try { S.events = await api("/api/events"); } catch (e) { toastErr(e); }
-  renderSidebar();
-}
-
-function renderSidebar() {
-  const [head, a] = S.route.parts;
-  const nav = (href, ic, en, active, count = "") =>
-    `<a class="nav-item ${active ? "active" : ""}" href="${href}" ${active ? 'aria-current="page"' : ""}>${icon(ic)}<span>${en}</span>${count}</a>`;
-  const overdue = S.today ? S.today.followups.filter((f) => f.overdue).length : 0;
-  const evs = S.events.map((e) => {
-    const act = head === "event" && +a === e.id;
-    return `<a class="event-link ${act ? "active" : ""}" href="${evHash(e.id)}" title="${esc(e.name)}" style="--h:${hueOf(e.name)}">
-      <span class="edot"></span><div class="name">${e.running ? '<span class="live-dot" title="Agents running"></span>' : ""}<span class="ellipsis">${esc(e.name)}</span></div>
-      <div class="meta">${e.date ? esc(fmtDate(e.date, { weekday: false })) : "Date to be confirmed"} · ${e.people || 0} people</div></a>`;
-  }).join("");
-  const h = S.health;
-  $("#sidebar").innerHTML = `
-    <a class="brand" href="#/today"><span class="brand-mark">${SEAL}</span>
-      <span><div class="brand-name">InviteDesk</div><div class="brand-sub">Outreach desk</div></span></a>
-    <nav class="nav">
-      ${nav("#/today", "sun", "Today", head === "today" || head === "welcome", overdue ? `<span class="count hot" title="Overdue follow-ups">${overdue}</span>` : "")}
-      ${nav("#/directory", "book", "Directory", head === "directory")}
-      ${nav("#/team", "users", "Team", head === "team")}
-      ${nav("#/usage", "chart", "Usage & cost", head === "usage")}
-    </nav>
-    <div class="nav-section"><span class="eyebrow">Events</span><span class="count-badge">${S.events.length}</span></div>
-    <div class="events-list">${evs || `<div class="small muted" style="padding:6px 10px">No events yet.</div>`}</div>
-    <div class="sidebar-foot">
-      <button class="btn primary block" data-act="new-event">${icon("plus")}New event</button>
-      <div class="model-line" title="Language model used by every agent"><span class="kd ${h && h.key_present ? "" : "off"}"></span><span class="ellipsis">${esc(h ? h.model : "…")} · ${h ? (h.key_present ? "API key found" : "no API key") : ""}</span></div>
-    </div>`;
-}
-
-function renderBanner() {
-  const h = S.health;
-  $("#banner").innerHTML = h && !h.key_present
-    ? `<div class="banner">${icon("alert")}<span><b>No API key found.</b> Browsing works; agents need <code>PORTKEY_API_KEY</code> in <code>.env</code> (this folder or the one above). Restart the app after adding it.</span></div>`
-    : "";
-}
-
-/* ================================================================== new event / import */
+/* ================================================================== reused v3 blocks */
 
 function newEventModal(defaultMode) {
   const h = S.health || { samples: [], demo_snapshot: false };
@@ -619,9 +508,11 @@ function newEventModal(defaultMode) {
 async function afterImport(eid, msg) {
   closeModal();
   await loadEvents();
-  toast(`${msg}. Next step: <b>Run agents</b> to build the Fact Sheet and roster.`, "ok", 6000);
-  go(evHash(eid, "overview"));
+  toast(`${msg}. Next step: <b>Update with agents</b> to build the fact sheet and roster.`, "ok", 6000);
+  await loadProjects(); renderSidebar();
+  go(evHash(eid, "plan"));
 }
+
 async function loadDemo(btn) {
   if (btn) setBusy(btn, true, "Loading demo…");
   try {
@@ -629,10 +520,12 @@ async function loadDemo(btn) {
     closeModal();
     await loadEvents();
     toast(`Demo loaded: ${plural((r.loaded || []).length, "event")} with a recorded agent run.`, "ok");
-    go("#/today");
-    if (S.mainKey && S.mainKey.startsWith("today")) { S.mainKey = null; route(); }
+    await loadProjects(); renderSidebar();
+    closeSheetDom(); S.sheetKey = null;
+    S.mainKey = null; go("#/projects"); route();
   } catch (e) { toastErr(e); if (btn) setBusy(btn, false); }
 }
+
 async function importSample(name, btn) {
   setBusy(btn, true, "Importing…");
   try {
@@ -640,8 +533,6 @@ async function importSample(name, btn) {
     await afterImport(r.event_id, "Sample imported");
   } catch (e) { toastErr(e); setBusy(btn, false); }
 }
-
-/* ================================================================== welcome / first run */
 
 function viewWelcome() {
   const h = S.health || { samples: [], demo_snapshot: false };
@@ -669,94 +560,6 @@ function viewWelcome() {
         .map(([n, t, s]) => `<div class="card step"><div class="num">STEP ${n}</div><b>${t}</b><span>${s}</span></div>`).join("")}
     </div></div>`;
 }
-
-/* ================================================================== today */
-
-async function viewToday() {
-  if (!S.events.length) { await loadEvents(); if (!S.events.length) { viewWelcome(); return; } }
-  $("#view").innerHTML = `<div class="page">${skel(3)}</div>`;
-  const t = await api("/api/today");
-  S.today = t;
-  renderSidebar();
-  const overdue = t.followups.filter((f) => f.overdue), dueToday = t.followups.filter((f) => f.due_today);
-  const soon = t.followups.filter((f) => !f.overdue && !f.due_today).slice(0, 8);
-  const review = t.drafts.filter((d) => d.status !== "approved");
-  const d = new Date(), hr = d.getHours();
-  const greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
-  const whoRaw = (store.get("author", "") || "").trim();
-  const who = /^(organi[sz]er|admin|me|user)$/i.test(whoRaw) ? "" : whoRaw;
-  const changes = t.drafts.filter((x) => x.status === "needs_changes" || x.status === "blocked");
-  const conflicts = [...t.issues].sort((a, b) => (a.kind === "conflict" ? 0 : 1) - (b.kind === "conflict" ? 0 : 1));
-  const cand = [
-    ...overdue.map((f) => ({ k: "overdue", eb: `Overdue follow-up · ${relDue(f.due)}`, who: f.name, tt: f.name, ss: f.action, href: personHash(f.event_id, f.person_id, "followups"), go: "Open person" })),
-    ...changes.map((x) => ({ k: "changes", eb: x.status === "blocked" ? "Draft blocked by reviewer" : "Draft needs changes", who: x.name, tt: `${x.name} — ${DKIND[x.kind] || x.kind}`, ss: x.event_name, href: evHash(x.event_id, "drafts", x.id), go: "Fix the draft" })),
-    ...conflicts.map((i) => ({ k: "issue", eb: i.kind === "conflict" ? "High-severity conflict" : "High-severity issue", tt: i.field, ss: `${i.found || ""}${i.expected ? " → " + i.expected : ""}`, href: evHash(i.event_id, "consistency"), go: "Resolve" })),
-    ...dueToday.map((f) => ({ k: "today", eb: "Due today", who: f.name, tt: f.name, ss: f.action, href: personHash(f.event_id, f.person_id, "followups"), go: "Open person" })),
-    ...review.filter((x) => x.status !== "needs_changes" && x.status !== "blocked").map((x) => ({ k: "review", eb: "Draft ready for review", who: x.name, tt: `${x.name} — ${DKIND[x.kind] || x.kind}`, ss: x.event_name, href: evHash(x.event_id, "drafts", x.id), go: "Review" })),
-  ];
-  const top = [];
-  for (const k of ["overdue", "changes", "issue"]) { const c = cand.find((x) => x.k === k); if (c) top.push(c); }
-  for (const c of cand) { if (top.length >= 3) break; if (!top.includes(c)) top.push(c); }
-  top.length = Math.min(top.length, 3);
-  const rest = cand.length - top.length;
-  const fuRow = (f) => {
-    const cls = f.overdue ? "overdue" : f.due_today ? "today" : "";
-    return `<div class="fu ${cls}"><div class="due">${esc(fmtDate(f.due, { year: false, weekday: false }))}<small>${esc(relDue(f.due))}</small></div>
-      <div class="person" style="align-items:flex-start">${avatar(f.name, "sm")}<div style="min-width:0"><a class="who" href="${personHash(f.event_id, f.person_id, "followups")}">${esc(f.name)}</a> <span class="muted xsmall">· ${esc(f.event_name)}</span>
-      <div class="small ellipsis" title="${esc(f.action)}">${esc(f.action)}</div><div class="xsmall muted ellipsis">${esc(f.reason || "")}</div></div></div>
-      <button class="btn sm" data-act="fu-done" data-id="${f.id}">${icon("check")}Done</button></div>`;
-  };
-  const kpi = (k, v, s, ic, cls = "") => `<div class="kpi ${cls}"><div class="k">${icon(ic)}${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
-  $("#view").innerHTML = `<div class="page">
-    <div class="greet"><div><div class="eyebrow brass">${d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div>
-      <h1 class="mt8">${greet}${who ? `, ${esc(who)}` : ""}</h1>
-      <div class="sub">${top.length ? "Your top 3 for today" : "Nothing urgent today — enjoy the calm."}</div></div>
-      <button class="btn" data-act="new-event">${icon("plus")}New event</button></div>
-    ${top.length ? `<div class="top3">${top.map((c) => `<a class="tcard k-${c.k}" href="${c.href}"><div class="eyebrow">${esc(c.eb)}</div>
-        <div class="row" style="gap:12px;align-items:flex-start">${c.who ? avatar(c.who) : `<span class="av" style="--h:210">${icon("alert").replace("<svg", '<svg style="width:15px;height:15px"')}</span>`}<div style="min-width:0"><div class="tt" title="${esc(c.tt)}">${esc(c.tt)}</div><div class="ss" title="${esc(c.ss)}">${esc(c.ss)}</div></div></div>
-        <div class="go">${esc(c.go)}${icon("chevron")}</div></a>`).join("")}</div>
-      ${rest > 0 ? `<button class="more-link btn ghost sm" data-act="scroll-queue">and ${rest} more in your queue ${icon("chevron")}</button>` : `<div class="mb16"></div>`}` : ""}
-    ${dailyBriefCard()}
-    <div class="kpis light">
-      ${kpi("Overdue follow-ups", overdue.length, "need a nudge", "clock", overdue.length ? "alert" : "")}
-      ${kpi("Due today", dueToday.length, "follow-ups", "calendar")}
-      ${kpi("Drafts to review", review.length, "checked by the reviewer agent", "edit", "accent")}
-      ${kpi("High-severity issues", t.issues.length, "dates, links, injections", "alert", t.issues.length ? "alert" : "")}
-    </div>
-    <div class="subhead">Your events</div>
-    <div class="ev-cards mb16">${t.events.map((e) => {
-      const ev = S.events.find((x) => x.id === e.id) || {};
-      const pct = e.needed > 0 ? Math.min(100, Math.round((e.confirmed / e.needed) * 100)) : e.people ? Math.round((e.confirmed / e.people) * 100) : 0;
-      return `<a class="card ev-card" href="${evHash(e.id)}" style="--h:${hueOf(e.name)}"><div class="row" style="align-items:flex-start"><div class="t" style="flex:1;min-width:0"><span class="edot"></span>${esc(e.name)}</div>${ev.running ? '<span class="live-dot"></span>' : ""}</div>
-        ${e.org && e.org !== e.name ? `<div class="eyebrow ellipsis" title="${esc(e.org)}">${esc(e.org)}</div>` : ""}
-        <div class="m">${icon("calendar")}<span class="ellipsis">${e.date ? esc(fmtDate(e.date)) : "Date to be confirmed"}</span></div>
-        <div class="bar thin green"><i style="width:${pct}%"></i></div>
-        <div class="row small wrap" style="gap:6px">${e.needed > 0 ? `<span class="nowrap"><b class="serif" style="font-size:15px">${e.confirmed}</b> confirmed <span class="muted">/ ${e.needed} needed${e.open_slots ? ` · ${e.open_slots} open` : ""}</span></span>` : e.people ? `<span class="nowrap"><b class="serif" style="font-size:15px">${e.confirmed}</b> confirmed <span class="muted">of ${e.people} on the roster</span></span>` : `<span class="muted nowrap">No roster yet</span>`}<span class="spacer"></span>${evStatusChip(ev.running ? "running" : e.status)}</div></a>`;
-    }).join("")}</div>
-    <div class="split" id="queue" style="scroll-margin-top:20px">
-      <div class="stack">
-        <div class="card"><div class="card-head"><h3>${icon("clock")}Follow-ups</h3><span class="small muted">${overdue.length} overdue · ${dueToday.length} today</span></div>
-          ${[...overdue, ...dueToday, ...soon].length ? `<div>${[...overdue, ...dueToday, ...soon].map(fuRow).join("")}</div>` : emptyState("check", "Nothing due", "No open follow-ups. Run agents on an event to schedule them.", "", true)}</div>
-        <div class="card"><div class="card-head"><h3>${icon("edit")}Drafts awaiting review</h3><span class="count-badge">${review.length}</span></div>
-          ${review.length ? review.slice(0, 12).map((x) => `<a class="li" href="${evHash(x.event_id, "drafts", x.id)}"><div class="mli">${avatar(x.name)}<div style="min-width:0"><div class="l1"><span class="nm">${esc(x.name)}</span>${dStatusChip(x.status)}</div>
-            <div class="subj">${esc(DKIND[x.kind] || x.kind)} · ${esc(LANGS[x.language] || x.language || "")} · ${esc(x.channel || "")} · ${esc(x.event_name)}</div></div></div></a>`).join("") : emptyState("inbox", "Inbox zero", "No drafts waiting for a human decision.", "", true)}</div>
-      </div>
-      <div class="stack">
-        <div class="card"><div class="card-head"><h3>${icon("alert")}High-severity issues</h3><span class="count-badge ${t.issues.length ? "hot" : ""}">${t.issues.length}</span></div>
-          ${t.issues.length ? t.issues.slice(0, 8).map((i) => `<a class="li" href="${evHash(i.event_id, "consistency")}"><div class="t"><span class="sev high">${esc(ISSUE_KIND[i.kind]?.[0] || i.kind)}</span><span class="muted xsmall" style="font-weight:400">${esc(i.event_name)}</span></div>
-            <div class="small ellipsis" style="margin-top:4px" title="${esc(i.found || "")}">${esc(i.field)}: <b>${esc((i.found || "").slice(0, 80))}</b>${i.expected ? ` → ${esc(i.expected)}` : ""}</div><div class="s mono">${esc(i.document)}</div></a>`).join("") : emptyState("shield", "All clear", "No open high-severity issues.", "", true)}</div>
-        <div class="card"><div class="card-head"><h3>${icon("activity")}Recent activity</h3></div>
-          ${t.recent.length ? `<div>${t.recent.slice(0, 14).map(feedItem).join("")}</div>` : emptyState("activity", "No activity yet", "", "", true)}</div>
-      </div>
-    </div></div>`;
-}
-
-function feedItem(x) {
-  return `<div class="feed-item">${avatar(x.name, "sm")}<div class="tx"><a class="who" href="${personHash(x.event_id, x.person_id)}">${esc(x.name)}</a> <span class="small">${esc(x.note)}</span>
-    <div class="m">${esc(x.actor || "")} · ${esc(fmtDate(x.date, { year: false }))} · ${esc(x.event_name || "")}</div></div></div>`;
-}
-
-/* ================================================================== daily brief (Chief of Staff agent) */
 
 function dailyBriefCard() {
   const saved = store.get("dailyBrief", null);
@@ -796,150 +599,10 @@ function dailyBriefCard() {
     <div class="card-body" style="padding:20px 22px">${inner}</div></div>`;
 }
 
-/* ================================================================== event workspace */
-
-const TABS = [
-  ["overview", "Overview", "", "grid"],
-  ["lists", "Lists", "", "list"],
-  ["guests", "Guests", "", "users"],
-  ["drafts", "Drafts", "", "edit"],
-  ["consistency", "Consistency", "", "shield"],
-  ["followups", "Follow-ups", "", "clock"],
-  ["reimbursement", "Reimbursement", "", "receipt"],
-  ["drive", "Drive", "", "cloud"],
-  ["documents", "Documents", "", "file"],
-  ["run", "Agent run", "", "activity"],
-];
-
-async function loadEvent(eid) {
-  const [ev, ppl] = await Promise.all([api(`/api/events/${eid}`), api(`/api/events/${eid}/people`).catch(() => null)]);
-  S.ev = ev;
-  if (ppl) {
-    const persons = ppl.filter((p) => (p.entity || "person") !== "organization" && p.relationship !== "team_member");
-    S.ev.personCounts = { people: persons.length, confirmed: persons.filter((p) => p.status === "confirmed").length };
-  }
-  S.evId = eid;
-  const evRow = S.events.find((e) => e.id === eid);
-  if (evRow && evRow.running !== S.ev.running) { evRow.running = S.ev.running; renderSidebar(); }
-  if (S.ev.running) startPoll(eid);
-  return S.ev;
-}
-
-function eventHeader(ev, tab) {
-  const fs = ev.fact_sheet || {};
-  const date = fv(fs.date);
-  const c = ev.counts || {};
-  const counts = { guests: c.people, drafts: c.drafts, consistency: c.issues, followups: c.followups, documents: (ev.documents || []).length };
-  const hot = { consistency: c.issues > 0 };
-  const compact = tab !== "overview";
-  const title = fv(fs.event_name) || ev.name;
-  const zh = fv(fs.event_name_zh);
-  const time = fv(fs.main_time) || fv(fs.vip_time);
-  const venueFull = fv(fs.venue) || fv(fs.city_region);
-  const venueShort = venueFull.split(";")[0].split(",").slice(0, 2).join(",").trim();
-  const where = venueFull ? [venueShort] : [];
-  const dateLine = date ? (isISODate(date) ? asDate(date).toLocaleDateString("en-US", compact ? { weekday: "short", month: "short", day: "numeric", year: "numeric" } : { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : date) : "Date to be confirmed";
-  const pill = (k, v, t, cls = "") => `<a class="kpill ${cls}" href="${evHash(ev.id, t)}"><b>${v}</b><span>${k}</span></a>`;
-  return `<div class="ev-hero ${compact ? "compact" : ""}"><div class="ev-hero-in">
-      <div class="ev-top"><div class="crumbs" style="margin:0"><a href="#/today">Events</a>${icon("chevron").replace("<svg", '<svg style="width:12px;height:12px"')}<span class="ellipsis" style="max-width:340px">${esc(fv(fs.org_name_en) || ev.org || "Event")}</span></div>
-        ${evStatusChip(ev.running ? "running" : ev.status)}<span class="spacer"></span>
-        <span class="xsmall muted nowrap">${fmtCost(ev.spent_usd)} spent on agents${ev.last_run ? " · last run " + esc(fmtDateTime(ev.last_run.started_at)) : ""}</span>
-        ${ev.running ? `<a class="btn sm" href="${evHash(ev.id, "run")}"><span class="live-dot"></span>Agents running — watch</a>` : `<button class="btn primary sm" data-act="open-run" ${S.health && !S.health.key_present ? "disabled" : ""}>${icon("play")}Run agents</button>`}</div>
-      <div class="inv">
-        ${compact ? "" : `<div class="eyebrow">${esc(fv(fs.org_name_en) || ev.org || "Event")}</div>`}
-        <h1 class="inv-title" title="${esc(title)}">${esc(title)}${compact && zh ? `<span class="zh2">${esc(zh)}</span>` : ""}</h1>
-        ${!compact && zh ? `<div class="inv-sub">${esc(zh)}</div>` : ""}
-        ${compact ? "" : `<div class="ornament"><i></i></div>`}
-        <div class="engraved"><span>${esc(dateLine)}</span>${time ? `<span>${esc(time)}</span>` : ""}${where.length ? `<span title="${esc(venueFull)}">${esc(where.join(", "))}</span>` : ""}</div>
-        <div class="kpi-pills">${pill("people", (ev.personCounts || c).people || 0, "guests")}${pill("confirmed", (ev.personCounts || c).confirmed || 0, "guests")}${pill("drafts", c.drafts || 0, "drafts")}${pill("open issues", c.issues || 0, "consistency", c.issues ? "hot" : "")}${pill("follow-ups", c.followups || 0, "followups")}</div>
-      </div></div></div>
-    <div class="ev-sticky"><div class="tabs" role="tablist">
-      ${TABS.map(([id, en]) => `<a class="tab ${tab === id ? "active" : ""}" role="tab" aria-selected="${tab === id}" href="${evHash(ev.id, id)}">${en}${
-        id === "run" && ev.running ? '<span class="live-dot"></span>' : counts[id] ? `<span class="count-badge ${hot[id] ? "hot" : ""}">${counts[id]}</span>` : ""}</a>`).join("")}
-    </div></div>`;
-}
-
-async function viewEvent(eid, tab, sub) {
-  if (!TABS.find((t) => t[0] === tab)) tab = "overview";
-  const first = S.evId !== eid || !S.ev;
-  if (first) $("#view").innerHTML = `<div class="page">${skel()}</div>`;
-  try { await loadEvent(eid); } catch (e) {
-    if (e.status === 404) { $("#view").innerHTML = `<div class="page">${emptyState("alert", "Event not found", "It may have been removed from this workspace.", `<a class="btn" href="#/today">Back to Today</a>`)}</div>`; return; }
-    throw e;
-  }
-  $("#view").innerHTML = eventHeader(S.ev, tab) + `<div class="page" id="tab-body">${skel()}</div>`;
-  S.tab = tab; S.sub = sub;
-  await renderTab();
-}
-
-async function renderTab() {
-  const body = $("#tab-body");
-  if (!body) return;
-  const fn = { overview: tabOverview, lists: tabLists, guests: tabGuests, drafts: tabDrafts, consistency: tabConsistency, followups: tabFollowups,
-    reimbursement: tabReimbursement, drive: tabDrive, documents: tabDocuments, run: tabRun }[S.tab];
-  try { await fn(body, S.sub); }
-  catch (e) { body.innerHTML = emptyState("alert", "Couldn't load this tab", esc(e.message), `<button class="btn" data-act="reload-tab">${icon("refresh")}Retry</button>`); }
-}
-
-/** Refresh only the event header (hero KPIs, status, tab counts) — used while agents run. */
-async function refreshHeader() {
-  if (!S.evId || !$(".ev-hero")) return;
-  try {
-    await loadEvent(S.evId);
-    const tmp = document.createElement("div");
-    tmp.innerHTML = eventHeader(S.ev, S.tab);
-    const head = $(".ev-hero"), sticky = $(".ev-sticky");
-    if (head && sticky) { head.replaceWith(tmp.children[0]); sticky.replaceWith(tmp.children[0]); }
-  } catch { /* keep the old header */ }
-}
-
-/** Refresh the event header counts + current tab without a loading flash. */
-async function refreshEventView() {
-  if (!S.evId || !$("#tab-body")) return;
-  try {
-    await loadEvent(S.evId);
-    const tmp = document.createElement("div");
-    tmp.innerHTML = eventHeader(S.ev, S.tab);
-    const head = $(".ev-hero"), sticky = $(".ev-sticky");
-    if (head && sticky) { head.replaceWith(tmp.children[0]); sticky.replaceWith(tmp.children[0]); }
-    await renderTab();
-  } catch (e) { toastErr(e); }
-}
-
-/* ---------------------------------------------------------------- overview */
-
 function factRow(label, x, opts = {}) {
   const v = fv(x);
   if (!v && !opts.always) return "";
   return `<dt>${label}</dt><dd>${v ? (opts.link ? linkify(v) : esc(v)) : '<span class="faint">—</span>'}${opts.extra || ""}${srcTip(x)}</dd>`;
-}
-
-function runPanel(ev, compact = false) {
-  const h = S.health || {};
-  if (ev.running) {
-    return `<div class="working"><span class="spinner"></span><div style="flex:1"><b>Agents are working on this event.</b><div class="small muted">Watch each agent hand off on the live board.</div></div>
-      <a class="btn sm" href="${evHash(ev.id, "run")}">${icon("activity")}Open board</a></div>`;
-  }
-  const stages = [
-    ["brief", "Brief Analyst", "Fact Sheet + conflicts"],
-    ["roster", "Roster Analyst", "people, aliases, contacts"],
-    ["strategy", "Program Strategist", "slots, rubric, tiers A/B/C"],
-    ["scout", "Talent Scouts", "new candidates, cited URLs"],
-    ["outreach", "Routes → drafts → review", "for the top N people"],
-  ];
-  const saved = store.get("runOpts", { budget: 0.5, top: 12, stages: stages.map((s) => s[0]) });
-  return `<div class="stack" style="gap:12px" data-runpanel>
-    ${!h.key_present ? `<div class="callout warn">${icon("alert")}<div>Agents need <code>PORTKEY_API_KEY</code> in <code>.env</code>. Everything else works without it.</div></div>` : ""}
-    <div class="grid cols-2" style="gap:10px">
-      <div class="field"><label for="rp-budget">Budget (USD) ${infoTip("The run stops cleanly when this much has been spent. A full run on a sample event usually costs $0.05–0.30.")}</label>
-        <input id="rp-budget" class="input" type="number" min="0.05" max="5" step="0.05" value="${saved.budget}" data-budget></div>
-      <div class="field"><label for="rp-top">Draft for top N people ${infoTip("Route Planner → Drafter → Reviewer run for this many Tier A/B people (cost scales with N).")}</label>
-        <input id="rp-top" class="input" type="number" min="1" max="40" step="1" value="${saved.top}" data-top></div>
-    </div>
-    ${compact ? "" : `<div><div class="label mb8">Stages</div><div class="stages">${stages.map(([id, n, d]) => `<label class="check"><input type="checkbox" value="${id}" data-stage ${saved.stages.includes(id) ? "checked" : ""}><span>${n}<small>${d}</small></span></label>`).join("")}</div>
-      <div class="hint mt8">Consistency audit, reimbursement check, follow-ups and the Drive export always run (no AI cost).</div></div>`}
-    <button class="btn primary lg block" data-act="run-agents" ${h.key_present ? "" : "disabled"}>${icon("play")}Run agents</button>
-  </div>`;
 }
 
 async function startRun(btn) {
@@ -955,154 +618,33 @@ async function startRun(btn) {
   try {
     await api(`/api/events/${S.evId}/run`, { method: "POST", body: { budget_usd: budget, top_n: top, ...(stages ? { stages } : {}) } });
     toast("Agents started. Watch them on the board.", "ok");
-    closeModal();
+    closeModal(); refreshHeader();
     const ev = S.events.find((e) => e.id === S.evId); if (ev) ev.running = true;
     S.runSel = null;
     startPoll(S.evId);
-    S.mainKey = null;
-    go(evHash(S.evId, "run"));
+    go(evHash(S.evId, S.tab || "plan", "", "sheet=agent"));
   } catch (e) { toastErr(e); setBusy(btn, false); }
-}
-
-const STAGES = [
-  ["not", "Not contacted", ["not_started", "unknown", "backup"]],
-  ["contacted", "Contacted", ["contacted_no_reply"]],
-  ["waiting", "Waiting", ["pending", "likely"]],
-  ["confirmed", "Confirmed", ["confirmed"]],
-  ["declined", "Declined", ["declined"]],
-];
-const stageOf = (status) => (STAGES.find((s) => s[2].includes(status)) || STAGES[0])[0];
-function pipelineCard(people) {
-  const ppl = (people || []).filter((p) => p.relationship !== "team_member" && (p.entity || "person") !== "organization");
-  const n = ppl.length;
-  const cnt = Object.fromEntries(STAGES.map(([k]) => [k, ppl.filter((p) => stageOf(p.status) === k).length]));
-  const pct = (v) => (n ? Math.round((v / n) * 100) : 0);
-  return `<div class="card mb16"><div class="card-head"><h3>${icon("route")}Guest pipeline</h3>
-      <a class="small muted" href="${evHash(S.evId, "guests")}">${plural(n, "person", "people")} · open board ${icon("chevron").replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"')}</a></div>
-    <div class="card-body" style="padding:20px 6px 18px">
-      ${n ? `<div class="pipeline">${STAGES.map(([k, l]) => `<div class="pstage"><div class="lbl"><i class="st-${k}"></i><span class="eyebrow">${l}</span></div><div class="num">${cnt[k]}</div><div class="pct">${pct(cnt[k])}%</div></div>`).join("")}</div>
-        <div style="padding:0 18px"><div class="pbar">${STAGES.map(([k]) => cnt[k] ? `<i class="st-${k}" style="width:${(cnt[k] / n) * 100}%" title="${cnt[k]}"></i>` : "").join("")}</div></div>`
-      : `<div style="padding:0 18px" class="small muted">No people yet — run the agents to build the roster.</div>`}
-    </div></div>`;
-}
-
-async function tabOverview(body) {
-  const ev = S.ev, fs = ev.fact_sheet, st = ev.strategy || {}, c = ev.counts || {};
-  const people = await api(`/api/events/${ev.id}/people`).catch(() => []);
-  const kpis = pipelineCard(people);
-  const reimport = `<div class="card"><div class="card-head"><h3>${icon("refresh")}Re-import updated folder</h3></div><div class="card-body">
-      <p class="small muted mb12">Changed the tracker or added a document? Upload the new .zip. People, timelines, drafts and your decisions are kept; documents are replaced.</p>
-      <div class="row"><input type="file" accept=".zip" class="input" style="padding-top:5px" data-reimport-file aria-label="Updated folder .zip"><button class="btn" data-act="reimport">${icon("upload")}Upload</button></div></div></div>`;
-
-  const nextStep = !ev.last_run && !ev.running ? `<div class="nextstep"><div style="flex:1;min-width:0"><div class="eyebrow" style="color:var(--accent)">Next step</div><h4>Run the agents on this event</h4>
-      <div class="small muted">The Brief Analyst writes the Fact Sheet from ${plural((ev.documents || []).length, "document")}; the Roster Analyst and Strategist build and rank your guest list; routes and reviewed drafts follow. Nothing is sent.</div></div>
-      <button class="btn primary lg" data-act="open-run" ${(S.health || {}).key_present ? "" : "disabled"}>${icon("play")}Run agents</button></div>` : "";
-  if (!fs) {
-    body.innerHTML = `${nextStep}${kpis}<div class="split"><div class="stack">
-      <div class="card"><div class="card-body">${emptyState("sparkle", "No Fact Sheet yet", `${plural((ev.documents || []).length, "document")} imported. Run the agents to read them: the Brief Analyst writes the Fact Sheet (with sources and conflicts), the Roster Analyst finds every person, and the Program Strategist ranks them.`,
-        `<a class="btn" href="${evHash(ev.id, "documents")}">${icon("file")}See imported documents</a>`)}</div></div>
-      ${(ev.documents || []).some((d) => (d.flags || []).length) ? `<div class="callout danger">${icon("shield")}<div><b>Instruction-like text found in your files.</b> InviteDesk treats it as data, never as instructions. See the Documents tab.</div></div>` : ""}
-      </div><div class="stack"><div class="card"><div class="card-head"><h3>${icon("play")}Run agents</h3></div><div class="card-body">${runPanel(ev)}</div></div>${reimport}</div></div>`;
-    return;
-  }
-
-  const prog = fs.program || [];
-  const conflicts = fs.conflicts || [];
-  const openConf = conflicts.filter((x) => !x.resolved).length;
-  const weekday = fs.weekday || weekdayOf(fv(fs.date));
-  const factCard = `<div class="card"><div class="card-head"><h3>${icon("file")}Fact Sheet</h3>
-      <span class="small muted">Single source of truth · hover ${icon("info").replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"')} for sources</span></div>
-    <div class="card-body"><dl class="facts">
-      ${factRow("Event", fs.event_name)}${factRow("Chinese name", fs.event_name_zh)}${factRow("Organiser", fs.org_name_en)}${factRow("Organiser (Chinese)", fs.org_name_zh)}
-      ${factRow("Date", fs.date, { always: true, extra: weekday ? ` ${chip(esc(weekday), "purple", "sq")}` : "" })}
-      ${factRow("VIP reception", fs.vip_time)}${factRow("Main program", fs.main_time)}${factRow("Venue", fs.venue, { always: true })}${factRow("City / region", fs.city_region)}
-      ${fs.budget && fv(fs.budget) ? `<dt>Budget</dt><dd>${esc(fv(fs.budget))}${fs.budget_assumed ? ` <span class="tip" tabindex="0" style="cursor:help">${chip("Assumed", "amber")}<span class="tip-body" role="tooltip">No document states a budget — estimated by the Brief Analyst.</span></span>` : ""}${srcTip(fs.budget)}${fs.budget_basis ? `<div class="basis">${esc(fs.budget_basis)}</div>` : ""}</dd>` : ""}
-      ${factRow("Website", fs.website, { link: true })}${factRow("Event page", fs.event_page, { link: true })}${factRow("Contact", fs.contact_email, { link: true })}${factRow("Instagram", fs.instagram)}
-      ${fs.audience ? `<dt>Audience</dt><dd>${esc(fs.audience)}</dd>` : ""}
-    </dl>
-    ${fs.org_description ? `<div class="subhead">About the organiser</div><p class="small" style="color:var(--text-2)">${esc(fs.org_description)}</p>` : ""}
-    </div></div>`;
-  const progCard = `<div class="card"><div class="card-head"><h3>${icon("clock")}Program & tiers</h3></div><div class="card-body">
-      ${prog.length ? `<div class="subhead">Program timeline</div><div class="timeline-prog">${prog.map((s) => `<div class="seg"><span class="time">${esc(s.time || "—")}</span><span>${esc(s.segment)}</span></div>`).join("")}</div>` : ""}
-      ${(fs.ticket_tiers || []).length ? `<div class="subhead">Tickets</div><div class="tiers">${fs.ticket_tiers.map((t) => `<div class="tier-card"><div class="n">${esc(t.name)}</div><div class="p">${esc(t.price)}</div><div class="i">${esc(t.includes || "")}</div></div>`).join("")}</div>` : ""}
-      ${(fs.sponsorship_tiers || []).length ? `<div class="subhead">Sponsorship</div><div class="tiers">${fs.sponsorship_tiers.map((t) => `<div class="tier-card"><div class="n">${esc(t.name)}</div><div class="p">${esc(t.price)}</div><div class="i">${esc(t.includes || "")}</div></div>`).join("")}</div>` : ""}
-      ${fs.guest_policy ? `<div class="subhead">Guest policy</div><div class="callout plain">${icon("shield")}<div class="small">${esc(fs.guest_policy)}</div></div>` : ""}
-      ${(fs.key_messages || []).length ? `<div class="subhead">Key messages</div><ul class="bullets small">${fs.key_messages.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
-      ${(fs.team || []).length ? `<div class="subhead">Organising team</div><div class="row wrap">${fs.team.map((t) => `<span class="chip outline wrap" style="max-width:100%" title="${esc(t.email || "")}">${esc(t.name)} · ${esc(t.role)}</span>`).join("")}</div>` : ""}
-      ${(fs.open_questions || []).length ? `<div class="subhead">Open questions</div><ul class="bullets small">${fs.open_questions.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
-    </div></div>`;
-  const conflictCard = `<div class="card"><div class="card-head"><h3>${icon("alert")}Conflicts</h3>
-      ${conflicts.length ? chip(openConf ? `${openConf} to decide` : "All resolved", openConf ? "red" : "green") : ""}</div>
-    <div class="card-body">${conflicts.length ? conflicts.map((cf, i) => conflictBlock(cf, i)).join("") : `<div class="small muted">${icon("check").replace("<svg", '<svg style="width:14px;height:14px;vertical-align:-2px;color:var(--green-dot)"')} The documents agree on the key facts.</div>`}</div></div>`;
-  const slots = st.slots || [];
-  const slotCard = slots.length ? `<div class="card"><div class="card-head"><h3>${icon("grid")}Program slots</h3><span class="small muted">${slots.reduce((a, s) => a + (s.gap > 0 ? s.gap : 0), 0)} still open</span></div><div class="card-body tight" style="padding:4px 20px">
-      ${slots.map((s) => {
-        const filled = (s.filled_by || []).length, need = Math.max(s.needed || 0, filled, 1);
-        const segs = Array.from({ length: Math.min(need, 12) }, (_, i) => `<i class="${i < filled ? "on" : s.gap > 0 && i < filled + s.gap ? "gap" : ""}"></i>`).join("");
-        return `<div class="slot"><div class="top"><b>${esc(s.name)}</b><span class="small">${s.gap > 0 ? `<span class="nowrap" style="color:var(--amber-fg);font-weight:600">${s.gap} open</span>` : `<span class="nowrap" style="color:var(--green-fg);font-weight:600">filled</span>`}</span></div>
-          <div class="segbar" title="${filled} of ${s.needed} filled">${segs}</div>
-          ${filled ? `<div class="xsmall muted ellipsis" title="${esc(s.filled_by.join(", "))}">${s.filled_by.map(esc).join(", ")}</div>` : ""}${s.criteria ? `<div class="xsmall faint">${esc(s.criteria)}</div>` : ""}</div>`;
-      }).join("")}</div></div>` : "";
-  const rub = st.rubric || [];
-  const rubricCard = rub.length ? `<div class="card"><div class="card-head"><h3>${icon("chart")}Priority rubric</h3></div><div class="card-body">
-      ${rub.map((r) => `<div class="hbar" style="grid-template-columns:130px minmax(0,1fr) 44px" title="${esc(r.description)}"><span class="small ellipsis">${esc(r.name)}</span><div class="track" style="height:10px"><i class="cost" style="width:${Math.round(num(r.weight) * 100)}%"></i></div><span class="v small">${Math.round(num(r.weight) * 100)}%</span></div>`).join("")}
-      ${(st.scouting_briefs || []).length ? `<div class="subhead">Scouting briefs</div><ul class="bullets small">${st.scouting_briefs.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
-    </div></div>` : "";
-  body.innerHTML = `${nextStep}${kpis}<div class="split"><div class="stack">${factCard}${progCard}</div>
-    <div class="stack">${conflictCard}<div class="card"><div class="card-head"><h3>${icon("play")}Run agents</h3>${ev.last_run ? `<span class="small muted">last: ${esc(ev.last_run.status)}</span>` : ""}</div><div class="card-body">${runPanel(ev)}</div></div>
-    ${slotCard}${rubricCard}${reimport}</div></div>`;
-}
-
-function conflictBlock(cf, i) {
-  const vals = (cf.values || []).map((v) => `<div class="cval"><div class="q"><span class="doc">${esc(v.document)}</span><span class="quote">“${esc(v.quote)}”</span></div>
-      ${cf.resolved ? "" : `<button class="btn xs" data-act="conflict-use" data-i="${i}" data-v="${esc(v.value || v.quote)}" title="Use this value — you can still edit it below">Use this</button>`}</div>`).join("");
-  if (cf.resolved) {
-    return `<div class="conflict resolved"><div class="f">${esc(cf.field)} ${chip(icon("check") + "Resolved", "green")}</div>
-      <div class="small mt8">Using <b>${esc(cf.recommended)}</b> <span class="muted">— ${esc(cf.reason || "")}</span></div>
-      <details class="mt8"><summary class="small muted" style="cursor:pointer">Show sources / change</summary>${vals}
-        <div class="row mt8"><input class="input sm" value="${esc(cf.recommended)}" data-conf-input="${i}" aria-label="Correct value"><button class="btn sm" data-act="conflict-resolve" data-i="${i}">Save</button></div></details></div>`;
-  }
-  const ask = /ASK/i.test(cf.recommended || "");
-  return `<div class="conflict"><div class="f">${esc(cf.field)} ${chip("Needs your decision", "red")}</div>
-    <div class="mt8">${vals}</div>
-    <div class="callout plain mt8" style="padding:9px 11px">${icon("sparkle")}<div class="small">${ask ? "The Brief Analyst couldn't tell which is right — <b>please decide</b>." : `Recommended: <b>${esc(cf.recommended)}</b>`}<div class="muted xsmall">${esc(cf.reason || "")}</div></div></div>
-    <div class="row mt8"><input class="input sm" value="${ask ? "" : esc(cf.recommended)}" placeholder="Type the correct value" data-conf-input="${i}" aria-label="Correct value for ${esc(cf.field)}">
-      <button class="btn sm primary" data-act="conflict-resolve" data-i="${i}">${icon("check")}Confirm</button></div></div>`;
 }
 
 async function resolveConflict(btn) {
   const i = +btn.dataset.i;
   const cf = S.ev.fact_sheet.conflicts[i];
-  const input = $(`[data-conf-input="${i}"]`);
+  const input = btn.closest("[data-cf-box]").querySelector("[data-conf-input]");
   const value = input.value.trim();
   if (!value) { toast("Type or pick the correct value first.", "error"); input.focus(); return; }
   setBusy(btn, true, "Saving…");
   try {
     await api(`/api/events/${S.evId}/facts/resolve`, { method: "POST", body: { field: cf.field, value } });
-    toast(`“${esc(cf.field)}” set to <b>${esc(value)}</b>. Audit re-run and Drive updated.`, "ok");
+    toast(`“${esc(cf.field)}” set to <b>${esc(value)}</b>. Files re-checked and Drive updated.`, "ok");
     await refreshEventView();
   } catch (e) { toastErr(e); setBusy(btn, false); }
 }
-
-async function reimport(btn) {
-  const f = $("[data-reimport-file]").files[0];
-  if (!f) { toast("Choose the updated .zip first.", "error"); return; }
-  const fd = new FormData();
-  fd.append("file", f); fd.append("name", S.ev.name || ""); fd.append("org", S.ev.org || ""); fd.append("event_id", S.evId);
-  setBusy(btn, true, "Uploading…");
-  try {
-    await api("/api/events/import", { method: "POST", form: fd });
-    toast("Documents refreshed. Run the agents again to pick up the changes.", "ok", 6000);
-    await refreshEventView();
-  } catch (e) { toastErr(e); setBusy(btn, false); }
-}
-
-/* ---------------------------------------------------------------- lists (generated + extracted) */
 
 const LIST_MODES = {
   fast: { label: "Fast", hint: "≈ $0.05–0.10 · model knowledge + web verification", help: "Fast: the scout proposes people from model knowledge, then verifies each on the web. ~$0.05–0.10." },
   deep: { label: "Deep research", hint: "≈ $0.15–0.30 · scout searches the web itself", help: "Deep research: the scout searches the web itself — best for niche community lists. ~$0.15–0.30." },
 };
+
 const listMode = () => (store.get("listMode", "fast") === "deep" ? "deep" : "fast");
 
 function listExamples() {
@@ -1114,64 +656,6 @@ function listExamples() {
     open ? `Panelists for “${open.name.replace(/\s*\([^)]*\)\s*$/, "")}”, ${Math.max(3, Math.min(8, (open.gap || open.needed || 4) + 2))} names` : "Panelists for the main panel, 6 names",
     "Alumni founders or investors for networking",
   ];
-}
-const LIST_EXAMPLES_UNUSED = [
-  "Keynote speakers: Bay Area Chinese tech executives who are LGBTQ+ allies",
-  "Sponsors: Bay Area companies with Asian/LGBTQ+ ERGs",
-  "Panelists on clean-energy finance, 6 names",
-  "Private-session invitees: alumni founders/investors",
-];
-
-async function tabLists(body) {
-  const lists = await api(`/api/events/${S.evId}/lists`);
-  S.lists = lists;
-  const gen = S.generating && S.generating.eid === S.evId;
-  const h = S.health || {};
-  const composer = `<div class="card mb16" style="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)">
-    <div class="card-head"><h3>${icon("sparkle")}Generate a list</h3><span class="small muted">A Talent Scout agent researches the web and returns people with cited evidence</span></div>
-    <div class="card-body">
-      <textarea class="textarea" rows="2" data-list-brief placeholder="Describe who you need, e.g. “Panelists for the main panel, 6 names, ideally based nearby and bilingual”" ${gen ? "disabled" : ""}>${esc(gen ? S.generating.brief : store.get("listBrief", ""))}</textarea>
-      <div class="row wrap mt8"><span class="xsmall muted">Try:</span>${listExamples().map((x) => `<button class="chip outline" style="cursor:pointer;border:0" data-act="list-example" data-v="${esc(x)}" ${gen ? "disabled" : ""}>${esc(x)}</button>`).join("")}</div>
-      <div class="row wrap mt12"><label class="small muted" for="list-count">How many</label>
-        <select id="list-count" class="select sm" style="width:80px" data-list-count ${gen ? "disabled" : ""}>${[3, 5, 6, 8, 10, 12, 15].map((n) => `<option ${n === 8 ? "selected" : ""}>${n}</option>`).join("")}</select>
-        <div class="seg-ctl" role="group" aria-label="Research mode" style="margin-left:8px">${Object.entries(LIST_MODES).map(([k, m]) => `<button data-act="list-mode" data-v="${k}" aria-pressed="${listMode() === k}" title="${esc(m.help)}" ${gen ? "disabled" : ""}>${m.label}</button>`).join("")}</div>
-        <span class="spacer"></span><span class="xsmall muted" data-list-mode-hint>${esc(LIST_MODES[listMode()].hint)} · nothing is sent to anyone</span>
-        <button class="btn primary" style="margin-left:auto" data-act="list-generate" ${gen || !h.key_present ? "disabled" : ""}>${gen ? '<span class="spinner"></span>Researching…' : icon("sparkle") + "Generate"}</button></div>
-      <div data-list-progress>${gen ? listProgressHtml() : ""}</div>
-    </div></div>`;
-  if (!lists.length) {
-    body.innerHTML = composer + `<div class="card">${emptyState("list", "No lists yet", "Generate a list above, or run the agents: the roster from your files is grouped into lists by program slot, and scouted candidates appear here first.")}</div>`;
-    return;
-  }
-  const open = store.get("listsOpen", {});
-  body.innerHTML = composer + lists.map((l, i) => {
-    const isOpen = open[l.name] != null ? open[l.name] : l.scouted || i < 3;
-    return `<details class="card mb16" ${isOpen ? "open" : ""} data-list-name="${esc(l.name)}">
-      <summary class="card-head" style="cursor:pointer;list-style:none"><h3>${icon(l.scouted ? "sparkle" : "list")}${esc(l.name.replace(/^Scouted · /, ""))}
-        ${l.scouted ? chip("Scouted", "pink") : chip("From your files", "gray")}<span class="count-badge">${l.people.length}</span></h3>
-        <div class="btn-row"><button class="btn sm" data-act="list-csv" data-i="${i}">${icon("download")}Export CSV</button></div></summary>
-      <div class="table-wrap"><table class="tbl" style="table-layout:fixed"><colgroup><col style="width:27%"><col style="width:52px"><col style="width:86px"><col style="width:13%"><col style="width:16%"><col style="width:108px"><col style="width:162px"></colgroup><thead><tr><th>Person</th><th>Tier</th><th>Fit</th><th>Evidence</th><th>Best route</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead>
-      <tbody>${l.people.map((p) => listRow(p)).join("")}</tbody></table></div></details>`;
-  }).join("");
-  $$("details[data-list-name]", body).forEach((d) => d.addEventListener("toggle", () => { const o = store.get("listsOpen", {}); o[d.dataset.listName] = d.open; store.set("listsOpen", o); }));
-}
-
-function listRow(p) {
-  const score = p.priority_score == null ? null : Math.round(p.priority_score);
-  const ev = (p.evidence || []).filter(Boolean);
-  const urls = ev.filter(isURL), docs = ev.filter((e) => !isURL(e));
-  const planning = S.planning.has(p.id);
-  return `<tr class="clickable" data-act="open-person" data-pid="${p.id}">
-    <td><div class="person" style="align-items:flex-start">${avatar(p.name)}<div style="min-width:0"><div class="nm" title="${esc(p.name)}">${esc(p.name)}</div>${p.aliases && p.aliases.length ? `<div class="al">${esc(p.aliases.slice(0, 2).join(" · "))}</div>` : ""}
-      <div class="xsmall muted" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px" title="${esc(p.intro || "")}">${esc(p.intro || p.role || "")}</div></div></div></td>
-    <td>${tierBadge(p.tier)}</td>
-    <td>${score == null ? '<span class="faint small">—</span>' : `<div class="row" style="gap:6px"><div class="bar thin" style="flex:1;margin:0"><i style="width:${Math.min(100, score)}%"></i></div><span class="small strong" style="width:24px;text-align:right">${score}</span></div>`}</td>
-    <td>${urls.slice(0, 3).map((u) => `<a class="chip outline" style="margin:1px 2px 1px 0;max-width:180px" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${icon("external")}<span class="ellipsis">${esc(domainOf(u))}</span></a>`).join("")}
-      ${docs.length ? `<span class="xsmall muted" title="${esc(docs.join("\n"))}">${plural(docs.length, "file")}</span>` : ""}${!ev.length ? '<span class="faint small">—</span>' : ""}</td>
-    <td>${routeSummary(p.best_route, p.name)}</td>
-    <td><div class="stack" style="gap:4px">${pStatusChip(p.status, false)}${p.draft_status ? dStatusChip(p.draft_status) : ""}</div></td>
-    <td class="nowrap" style="text-align:right"><button class="btn xs" data-act="plan-person" data-pid="${p.id}" ${planning || !(S.health || {}).key_present ? "disabled" : ""}>${planning ? '<span class="spinner"></span>Planning…' : icon("route") + "Plan & draft"}</button>
-      <button class="btn xs ghost" data-act="open-person" data-pid="${p.id}" aria-label="Open ${esc(p.name)}">${icon("chevron")}</button></td></tr>`;
 }
 
 function listProgressHtml() {
@@ -1192,32 +676,21 @@ async function generateList(btn) {
   await ensureTrace(eid);
   S.generating = { eid, brief, started: Date.now(), afterId: (S.trace[eid] || {}).lastId || 0 };
   startPoll(eid, true);
-  if (S.tab === "lists") await renderTab();
+  paintFindBusy();
   const tick = setInterval(() => { const el = $("[data-list-progress]"); if (el && S.generating) el.innerHTML = listProgressHtml(); }, 1000);
   try {
     const r = await api(`/api/events/${eid}/lists/generate`, { method: "POST", body: { brief, count, mode: listMode() } });
     const n = (r.added || []).length;
     toast(n ? `Added <b>${n}</b> people to “${esc(r.list_name)}” (${fmtCost(r.cost_usd || 0)}).` : `“${esc(r.list_name || "List")}”: no new people with evidence were found${r.cost_usd != null ? ` (${fmtCost(r.cost_usd)})` : ""}. ${esc(r.warning || "Try a broader brief or Deep research.")}`, n ? "ok" : "info", 7000);
-    if (n) store.set("listBrief", "");
+    if (n) { store.set("listBrief", ""); if (S.sheetKey === "sheet:find") closeSheet(); }
   } catch (e) { toastErr(e); }
   finally {
     clearInterval(tick);
     S.generating = null;
     stopPollIfIdle(eid);
+    paintFindBusy();
     if (S.evId === eid) await refreshEventView();
   }
-}
-
-function exportListCSV(i) {
-  const l = S.lists[i];
-  const rows = [["name", "aliases", "tier", "fit_score", "status", "role", "owner", "origin", "intro", "evidence", "best_route", "draft_status", "contacts"]];
-  for (const p of l.people) {
-    const r = p.best_route;
-    rows.push([p.name, (p.aliases || []).join("; "), p.tier || "", p.priority_score ?? "", p.status, p.role || "", p.owner || "", p.origin || "", p.intro || "",
-      (p.evidence || []).join(" "), r ? `${ROUTE_TYPES[r.route_type] || r.route_type}${r.via ? " via " + r.via : ""} (${r.warmth})` : "", p.draft_status || "",
-      (p.contacts || []).map((c) => `${c.channel}:${c.value}`).join("; ")]);
-  }
-  downloadText(`${(S.ev.name || "event").replace(/[^\w\u4e00-\u9fff]+/g, "_")}__${l.name.replace(/[^\w\u4e00-\u9fff]+/g, "_")}.csv`, toCSV(rows));
 }
 
 async function planPerson(pid, btn) {
@@ -1245,140 +718,14 @@ async function planPerson(pid, btn) {
   }
 }
 
-/* ---------------------------------------------------------------- guests */
-
-function needsAction(p) {
-  if (p.relationship === "team_member") return false;
-  if (["needs_changes", "ready_for_review", "in_review", "blocked"].includes(p.draft_status)) return true;
-  if (["contacted_no_reply", "pending", "likely"].includes(p.status)) return true;
-  return (p.tier === "A" || p.tier === "B") && ["not_started", "unknown"].includes(p.status) && !p.draft_status;
-}
-
-async function tabGuests(body) {
-  const people = await api(`/api/events/${S.evId}/people`);
-  S.people = people;
-  const f = S.guestsFilter;
-  const slots = [...new Set(people.map((p) => p.slot).filter(Boolean))].sort();
-  const hasOrgs = people.some((p) => p.entity === "organization");
-  const opt = (v, l, cur) => `<option value="${esc(v)}" ${cur === v ? "selected" : ""}>${esc(l)}</option>`;
-  body.innerHTML = `<div class="card">
-    <div class="filters">
-      <div class="search">${icon("search")}<input class="input" placeholder="Search name, alias, role…  ( / )" value="${esc(f.q)}" data-gf="q" data-search aria-label="Search guests"></div>
-      ${hasOrgs ? `<div class="seg-ctl" role="group" aria-label="People or organisations">${[["person", "People"], ["organization", "Organisations"], ["", "All"]].map(([v, l]) => `<button data-act="gf-entity" data-v="${v}" aria-pressed="${f.entity === v}">${l}</button>`).join("")}</div>` : ""}
-      <select class="select" data-gf="tier" aria-label="Tier">${opt("", "All tiers", f.tier)}${["A", "B", "C"].map((t) => opt(t, "Tier " + t, f.tier)).join("")}${opt("none", "Not tiered", f.tier)}</select>
-      <select class="select" data-gf="status" aria-label="Status">${opt("", "All statuses", f.status)}${Object.entries(PSTATUS).map(([k, v]) => opt(k, v[0], f.status)).join("")}</select>
-      ${slots.length ? `<select class="select" data-gf="slot" aria-label="Slot" style="max-width:200px">${opt("", "All slots", f.slot)}${slots.map((s) => opt(s, s, f.slot)).join("")}</select>` : ""}
-      <select class="select" data-gf="origin" aria-label="Origin">${opt("", "Roster + scouted", f.origin)}${opt("roster", "From your files", f.origin)}${opt("scout", "Scouted", f.origin)}</select>
-      <button class="toggle" data-act="gf-needs" aria-pressed="${!!f.needs}" title="Drafts to review, Tier A/B not contacted yet, or waiting on a reply">${icon("zap")}Needs action</button>
-      <span class="spacer"></span><span class="small muted" data-gcount></span>
-      <div class="seg-ctl" role="group" aria-label="View">${[["table", "table", "Table"], ["board", "columns", "Board"]].map(([v, ic, l]) => `<button data-act="g-view" data-v="${v}" aria-pressed="${guestView() === v}">${icon(ic)}${l}</button>`).join("")}</div>
-    </div>
-    <div data-gtable></div></div>`;
-  renderGuestRows();
-}
-
-function filteredPeople() {
-  const f = S.guestsFilter, q = f.q.trim().toLowerCase();
-  return (S.people || []).filter((p) => {
-    if (f.entity && (p.entity || "person") !== f.entity) return false;
-    if (f.tier && (f.tier === "none" ? p.tier : p.tier !== f.tier)) return false;
-    if (f.status && p.status !== f.status) return false;
-    if (f.slot && p.slot !== f.slot) return false;
-    if (f.origin && (p.origin || "roster") !== f.origin) return false;
-    if (f.needs && !needsAction(p)) return false;
-    if (q) {
-      const hay = [p.name, ...(p.aliases || []), p.role, p.slot, p.owner, p.intro, p.category].join(" ").toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-    return true;
-  });
-}
-
-const guestView = () => (store.get("guestView", "table") === "board" ? "board" : "table");
-function renderGuestRows() {
-  const el = $("[data-gtable]");
-  if (!el) return;
-  const rows = filteredPeople();
-  const total = (S.people || []).length;
-  $("[data-gcount]").textContent = rows.length === total ? plural(total, "person", "people") : `${rows.length} of ${total}`;
-  if (!total) { el.innerHTML = emptyState("users", "No people yet", "Run the agents: the Roster Analyst extracts everyone your files mention (with Chinese/English aliases), then the Strategist ranks them into tiers.", `<button class="btn primary" data-act="open-run">${icon("play")}Run agents</button>`); return; }
-  if (!rows.length) { el.innerHTML = emptyState("search", "No matches", "Try clearing a filter.", `<button class="btn" data-act="gf-clear">Clear filters</button>`); return; }
-  if (guestView() === "board") {
-    el.innerHTML = `<div class="kanban">${STAGES.map(([k, l]) => {
-      const list = rows.filter((p) => stageOf(p.status) === k);
-      return `<div class="kcol"><div class="kcol-h"><i class="st-${k}"></i><span class="eyebrow">${l}</span><span class="spacer"></span><span class="count-badge">${list.length}</span></div>
-        <div class="kcards">${list.map((p) => `<button class="pcard" data-act="open-person" data-pid="${p.id}" title="${esc(p.name)}">
-          <div class="top">${avatar(p.name, "sm")}<div style="min-width:0;flex:1"><div class="nm">${esc(p.name)}</div><div class="rl" title="${esc(p.role || "")}">${esc(p.role || p.slot || "Role to be decided")}</div></div></div>
-          <div class="mid">${routeSummary(p.best_route, p.name)}</div>
-          <div class="bot">${tierBadge(p.tier)}${p.draft_status ? dStatusChip(p.draft_status) : p.origin === "scout" ? chip("scouted", "pink") : '<span class="xsmall faint">no draft</span>'}</div></button>`).join("") || `<div class="kempty">Nobody here</div>`}</div></div>`;
-    }).join("")}</div>`;
-    return;
-  }
-  el.innerHTML = `<div class="table-wrap"><table class="tbl fixed rows"><thead><tr><th style="width:24%">Name</th><th style="width:52px">Tier</th><th style="width:14%">Role / slot</th><th style="width:124px">Status</th><th class="col-owner" style="width:118px">Owner</th><th style="width:112px">Channels</th><th>Best route</th><th style="width:124px">Draft</th></tr></thead><tbody>
-    ${rows.map((p) => {
-      const tags = `${p.origin === "scout" ? chip("scouted", "pink") : ""}${p.entity === "organization" ? chip("org", "slate", "sq") : ""}${p.relationship === "team_member" ? chip("team", "brass", "sq") : ""}`;
-      const sub = (p.aliases || []).join(" · ");
-      return `<tr class="clickable ${S.drawerPid === p.id ? "selected" : ""}" data-act="open-person" data-pid="${p.id}" tabindex="0">
-      <td><div class="person">${avatar(p.name)}<div style="min-width:0"><div class="row" style="gap:6px;min-width:0"><span class="nm" title="${esc(p.name)}">${esc(p.name)}</span>${tags}${p.in_other_events ? `<span title="Also appears in another event" style="color:var(--brass);display:inline-flex">${icon("link").replace("<svg", '<svg style="width:13px;height:13px"')}</span>` : ""}</div>${sub ? `<div class="al" title="${esc(sub)}">${esc(sub)}</div>` : ""}</div></div></td>
-      <td>${tierBadge(p.tier)}</td>
-      <td title="${esc([p.role, p.slot].filter(Boolean).join(" · "))}"><span class="small">${esc(p.role || p.slot || "—")}</span></td>
-      <td>${pStatusChip(p.status, false)}</td>
-      <td class="col-owner">${p.owner ? `<span class="person" title="${esc(p.owner)}">${avatar(p.owner, "xs")}<span class="small ellipsis">${esc(p.owner)}</span></span>` : '<span class="faint small">—</span>'}</td>
-      <td><div class="row" style="gap:5px">${(p.contacts || []).slice(0, 3).map(chBadge).join("")}${(p.contacts || []).length > 3 ? `<span class="xsmall muted">+${p.contacts.length - 3}</span>` : ""}${!(p.contacts || []).length ? '<span class="faint small">none</span>' : ""}</div></td>
-      <td>${routeSummary(p.best_route, p.name)}</td>
-      <td>${dStatusChip(p.draft_status)}</td></tr>`;
-    }).join("")}</tbody></table></div>`;
-}
-
-/* ---------------------------------------------------------------- person drawer */
-
 const PATH_KIND = {
   existing_thread: ["Existing thread", ""], owner: ["Relationship owner", ""], team_intro: ["Team member intro", ""],
   intermediary: ["Intermediary", ""], organisation: ["Through organisation", ""], past_event: ["Past event", ""],
   linkedin_1st: ["LinkedIn 1st-degree", ""], linkedin_colleague: ["LinkedIn colleague", ""],
 };
+
 const WARM_TONE = { hot: "orange", warm: "amber", cold: "slate" };
 
-function syncDrawer() {
-  const p = S.route.query.get("p");
-  const onEvent = S.route.parts[0] === "event";
-  if (p && onEvent) { if (S.drawerPid !== +p) openDrawer(+p); }
-  else if (S.drawerPid) closeDrawerDom();
-}
-
-function openDrawer(pid) {
-  S.drawerPid = pid;
-  S.drawer = null;
-  S.paths = null;
-  $("#drawer-root").innerHTML = `<div class="backdrop" data-act="close-drawer"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Person details">
-    <button class="btn ghost sm close" data-act="close-drawer" aria-label="Close (Esc)">${icon("x")}</button><div data-drawer>${skel()}</div></aside>`;
-  $$("tr[data-pid]").forEach((tr) => tr.classList.toggle("selected", +tr.dataset.pid === pid));
-  loadDrawer(pid);
-}
-function closeDrawerDom() {
-  S.drawerPid = null;
-  $("#drawer-root").innerHTML = "";
-  $$("tr.selected").forEach((tr) => tr.classList.remove("selected"));
-}
-function closeDrawer() { setQuery("p", null); }
-
-async function loadDrawer(pid) {
-  try {
-    const [p, paths] = await Promise.all([api(`/api/people/${pid}`), api(`/api/people/${pid}/paths`).catch(() => [])]);
-    if (S.drawerPid !== pid) return;
-    S.drawer = p; S.paths = paths;
-    renderDrawer();
-  } catch (e) {
-    const el = $("[data-drawer]");
-    if (el) el.innerHTML = `<div class="drawer-body">${emptyState("alert", "Couldn't load this person", esc(e.message))}</div>`;
-  }
-}
-
-function renderDrawerPlanState() {
-  const el = $("[data-plan-state]");
-  if (!el || !S.drawer) return;
-  el.innerHTML = planStateHtml(S.drawer);
-}
 function planStateHtml(p) {
   if (S.planning.has(p.id)) {
     return `<div class="working"><span class="spinner"></span><div><b>Planning & drafting…</b>
@@ -1429,89 +776,6 @@ function connGraph(paths, p) {
   </svg>`;
 }
 
-function renderDrawer() {
-  const p = S.drawer, el = $("[data-drawer]");
-  if (!p || !el) return;
-  const prevBody = $(".drawer-body", el);
-  const keepScroll = prevBody && S.drawerRendered === p.id ? prevBody.scrollTop : 0;
-  S.drawerRendered = p.id;
-  queueMicrotask(() => { const b = $(".drawer-body", el); if (b) b.scrollTop = keepScroll; });
-  const paths = S.paths || [];
-  const routes = p.routes || [];
-  const reply = (S.replyResult || {})[p.id];
-  const statusOpts = Object.entries(PSTATUS).map(([k, v]) => `<option value="${k}" ${p.status === k ? "selected" : ""}>${v[0]}</option>`).join("");
-  const evid = (p.evidence || []).filter(Boolean);
-  const docId = (path) => ((S.ev && S.ev.documents) || []).find((d) => d.path === path)?.id;
-  const srcLink = (s) => !s ? "" : isURL(s) ? `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">${esc(domainOf(s))} ${icon("external").replace("<svg", '<svg style="width:11px;height:11px;vertical-align:-1px"')}</a>`
-    : docId(s) ? `<a href="${evHash(p.event_id, "documents", docId(s))}">${esc(s)}</a>` : esc(s);
-
-  const connMap = `<div class="dsec"><h4>${icon("users")}Connection map<span class="spacer"></span><span class="xsmall faint" style="font-family:var(--sans);font-weight:400">team → intermediary → invitee</span></h4>
-    ${paths.length ? `${connGraph(paths, p)}<div class="plist">${paths.map((x, i) => {
-      const [en] = PATH_KIND[x.kind] || [x.kind];
-      return `<div class="pi ${i === 0 ? "best" : ""}"><span class="n">${i + 1}</span><div style="min-width:0"><div class="row wrap" style="gap:6px"><b>${esc(en)}</b>${chip(`<span class="dot"></span>${esc(x.warmth)}`, WARM_TONE[x.warmth] || "gray")}${x.channel ? `<span class="ch">${esc(shortCh(x.channel))}</span>` : ""}${i === 0 ? chip("Strongest", "brass") : ""}</div>${x.evidence ? `<div class="xsmall muted" style="margin-top:2px">${esc(x.evidence)}</div>` : ""}</div></div>`;
-    }).join("")}</div>`
-      : `<div class="callout plain">${icon("info")}<div class="small">No connection paths in your records yet. Add an owner, notes that name an intermediary, or import a team member's LinkedIn connections on the <a class="link" href="#/team">Team</a> page — the Route Planner will also research official channels.</div></div>`}</div>`;
-
-  const routesHtml = `<div class="dsec"><h4>${icon("route")}Recommended routes</h4>
-    ${routes.length ? `<div class="routes">${routes.map((r, i) => {
-      const label = r.route_type === "intermediary_intro" ? `Warm intro via ${r.via || "intermediary"}` : ROUTE_TYPES[r.route_type] || r.route_type;
-      return `<div class="route ${esc(r.warmth)} ${i === 0 ? "first" : ""}"><span class="rank">${r.rank || i + 1}</span><div style="min-width:0">
-        <div class="path">${esc(label)}${r.via && r.route_type !== "intermediary_intro" ? `<span class="arrow">via</span>${esc(r.via)}` : ""}${chip(`<span class="dot"></span>${esc(r.warmth)}`, WARM_TONE[r.warmth] || "gray")}</div>
-        ${r.channel || r.target ? `<div class="row small mt8" style="gap:6px;flex-wrap:wrap"><span class="ch">${esc(shortCh(r.channel) || r.channel || "")}</span>${r.target ? `<code style="word-break:break-all">${esc(r.target)}</code><button class="btn xs ghost" data-act="copy" data-v="${esc(r.target)}" title="Copy">Copy</button>` : '<span class="muted xsmall">target still to be found</span>'}</div>` : ""}
-        ${r.next_action ? `<div class="next">${icon("zap")}<b>${esc(r.next_action)}</b></div>` : ""}
-        ${r.rationale ? `<div class="why">${esc(r.rationale)}</div>` : ""}
-        ${r.evidence ? `<div class="xsmall muted mt8">Evidence: ${esc(r.evidence)}</div>` : ""}
-        ${r.source_url ? `<div class="xsmall mt8"><a href="${esc(r.source_url)}" target="_blank" rel="noopener noreferrer">${icon("globe").replace("<svg", '<svg style="width:11px;height:11px;vertical-align:-1px"')} found on web — verify (${esc(domainOf(r.source_url))})</a></div>` : ""}
-      </div></div>`;
-    }).join("")}</div>` : `<div class="small muted">No routes yet. Press <b>Plan & draft</b>: the Route Planner ranks every path (existing thread, warm intro, official management, partner org, public contact) and the Drafter writes the first message.</div>`}</div>`;
-
-  const contacts = `<div class="dsec"><h4>${icon("mail")}Contact points<span class="count-badge">${(p.contacts || []).length}</span></h4>
-    ${(p.contacts || []).length ? `<div class="card">${p.contacts.map((c) => `<div class="contact"><span class="ch">${esc(shortCh(c.channel))}</span>
-      <div class="val">${linkify(c.value)}<small>${c.label ? esc(c.label) + " · " : ""}${srcLink(c.source)}</small></div>
-      ${c.verified ? chip(icon("check") + "From your files", "green") : chip("Public — verify", "amber")}</div>`).join("")}</div>` : `<div class="small muted">No contact points recorded.</div>`}</div>`;
-
-  const drafts = (p.drafts || []).filter((d) => d.status !== "superseded");
-  const draftsHtml = `<div class="dsec"><h4>${icon("edit")}Drafts<span class="count-badge">${drafts.length}</span></h4>
-    ${drafts.length ? `<div class="card">${drafts.map((d) => `<a class="li" href="${evHash(p.event_id, "drafts", d.id)}"><div class="t">${esc(DKIND[d.kind] || d.kind)} ${dStatusChip(d.status)}</div>
-      <div class="s">${esc(LANGS[d.language] || d.language || "")} · ${esc(d.channel || "")} · v${d.version || 1} · ${esc(d.subject || "").slice(0, 70)}</div></a>`).join("")}</div>` : `<div class="small muted">No drafts yet.</div>`}</div>`;
-
-  const replyHtml = `<div class="dsec"><h4>${icon("msg")}Log a reply</h4>
-    <div class="card card-body" style="padding:12px">
-      <textarea class="textarea" rows="3" placeholder="Paste the reply you received (email, WeChat, DM)… The Reply Interpreter updates status, contacts and the next follow-up." data-reply-text></textarea>
-      <div class="row mt8"><select class="select sm" style="width:140px" data-reply-ch aria-label="Channel">${["email", "wechat", "instagram", "linkedin", "phone", "xiaohongshu", "weibo", "other"].map((c) => `<option value="${c}">${esc(CHANNELS[c] || c)}</option>`).join("")}</select>
-        <input type="date" class="input sm" style="width:150px" value="${todayISO()}" data-reply-date aria-label="Date received"><span class="spacer"></span>
-        <button class="btn sm primary" data-act="log-reply" ${(S.health || {}).key_present ? "" : "disabled"}>${icon("sparkle")}Interpret reply</button></div>
-      ${reply ? replyResultHtml(reply) : ""}</div></div>`;
-
-  const tl = p.timeline || [];
-  const timeline = `<div class="dsec"><h4>${icon("clock")}Timeline</h4>
-    <div class="row mb12"><input class="input sm" placeholder="Add a note (e.g. ‘Met at Lunar New Year gala’)…" data-note aria-label="Add a note"><button class="btn sm" data-act="add-note">Add</button></div>
-    ${tl.length ? `<div class="vtl">${tl.map((t) => `<div class="it k-${esc(t.kind)}"><div class="when">${esc(fmtDate(t.date))}<span>·</span>${avatar(t.actor || "?", "xs")}<span>${esc(t.actor || "")}</span>${chip(esc(t.kind), "gray", "sq")}</div><div class="note">${esc(t.note)}</div></div>`).join("")}</div>` : '<div class="small muted">No history yet.</div>'}</div>`;
-
-  const others = (p.other_events || []);
-  const othersHtml = others.length ? `<div class="dsec"><h4>${icon("link")}Also in other events</h4>
-    <div class="card">${others.map((o) => `<a class="li" href="${personHash(o.event_id, o.person_id)}"><div class="t">${esc(o.event_name)} ${pStatusChip(o.status, false)}</div><div class="s">${esc(o.role || "")}${o.owner ? " · owner " + esc(o.owner) : ""}</div></a>`).join("")}</div></div>` : "";
-
-  el.innerHTML = `<div class="drawer-head">
-      <div class="dh">${avatar(p.name, "xl")}<div style="min-width:0;flex:1"><h2>${esc(p.name)}</h2>
-        <div class="role">${esc([p.role, p.slot && p.slot !== p.role ? p.slot : ""].filter(Boolean).join(" · ") || "Role to be decided")}</div>
-        <div class="aliases">${pStatusChip(p.status, false)}${p.tier ? chip(`Tier ${esc(p.tier)}`, p.tier === "A" ? "blue" : p.tier === "B" ? "brass" : "gray") : ""}${p.priority_score != null ? chip(`Fit ${Math.round(p.priority_score)}`, "gray") : ""}${p.origin === "scout" ? chip("scouted", "pink") : ""}${p.entity === "organization" ? chip("organisation", "slate") : ""}${(p.aliases || []).map((a) => `<span class="chip outline">${esc(a)}</span>`).join("")}</div>
-        ${p.category || p.location ? `<div class="xsmall muted mt8">${esc([p.category, p.location].filter(Boolean).join(" · "))}</div>` : ""}</div></div>
-      <div class="props">
-        <div class="field"><label>Status</label><select class="select sm" data-act-change="p-status">${statusOpts}</select></div>
-        <div class="field"><label>Tier</label><select class="select sm" data-act-change="p-tier">${["A", "B", "C"].map((t) => `<option ${p.tier === t ? "selected" : ""}>${t}</option>`).join("")}${!p.tier ? '<option selected value="">–</option>' : ""}</select></div>
-        <div class="field"><label>Owner (DRI)</label><div class="row"><input class="input sm" value="${esc(p.owner || "")}" placeholder="Who owns this relationship?" data-owner><button class="btn sm" data-act="save-owner">Save</button></div></div>
-      </div>
-      <div class="row mt12" data-plan-state>${planStateHtml(p)}</div>
-    </div>
-    <div class="drawer-body">
-      ${connMap}${routesHtml}${contacts}
-      ${p.intro || p.rationale ? `<div class="dsec"><h4>${icon("flag")}Why this person</h4><div class="card card-body small" style="padding:12px 14px">${p.intro ? `<p>${esc(p.intro)}</p>` : ""}${p.rationale ? `<p class="muted mt8">${esc(p.rationale)}</p>` : ""}
-        ${evid.length ? `<div class="row wrap mt8" style="gap:4px">${evid.map((e) => isURL(e) ? `<a class="chip outline" href="${esc(e)}" target="_blank" rel="noopener noreferrer">${icon("external")}${esc(domainOf(e))}</a>` : `<span class="chip outline">${srcLink(e)}</span>`).join("")}</div>` : ""}</div></div>` : ""}
-      ${draftsHtml}${replyHtml}${othersHtml}${timeline}
-    </div>`;
-}
-
 function replyResultHtml(r) {
   const a = r.analysis || {};
   const [ol, ot] = OUTCOME[a.outcome] || [a.outcome, "gray"];
@@ -1534,7 +798,6 @@ async function patchPerson(body, msg) {
     refreshBehindDrawer();
   } catch (e) { toastErr(e); }
 }
-const refreshBehindDrawer = debounce(() => { if (["guests", "lists", "followups", "overview"].includes(S.tab)) refreshEventView(); }, 300);
 
 async function logReply(btn) {
   const text = $("[data-reply-text]").value.trim();
@@ -1551,106 +814,10 @@ async function logReply(btn) {
   } catch (e) { toastErr(e); setBusy(btn, false); }
 }
 
-/* ---------------------------------------------------------------- drafts */
-
-async function tabDrafts(body, sub) {
-  const drafts = await api(`/api/events/${S.evId}/drafts`);
-  S.drafts = drafts;
-  if (!drafts.length) {
-    body.innerHTML = `<div class="card">${emptyState("edit", "No drafts yet", "Drafts appear after the agents run (top N people) or when you press <b>Plan & draft</b> on a person. Every draft is checked by an independent Reviewer agent before you see it.", `<button class="btn primary" data-act="open-run">${icon("play")}Run agents</button><a class="btn" href="${evHash(S.evId, "lists")}">${icon("list")}Go to lists</a>`)}</div>`;
-    return;
-  }
-  let did = sub ? +sub : null;
-  if (!did || !drafts.find((d) => d.id === did)) {
-    const first = DRAFT_ORDER.map((s) => drafts.find((d) => d.status === s)).find(Boolean) || drafts[0];
-    did = first.id;
-    history.replaceState(null, "", evHash(S.evId, "drafts", did, S.route.query.get("p") ? "p=" + S.route.query.get("p") : ""));
-    S.mainKey = `event/${S.evId}/drafts/${did}?`;
-  }
-  body.innerHTML = `<div class="mail">
-    <div class="card list-pane" aria-label="Review queue">${draftListHtml(drafts, did)}</div>
-    <div data-draft-detail style="display:contents"><div>${skel(1)}</div></div></div>`;
-  await loadDraftDetail(did);
-}
-
-async function loadDraftDetail(did) {
-  const d = await api(`/api/drafts/${did}`);
-  S.draft = d;
-  S.draftDirty = false;
-  renderDraftDetail();
-}
-
-function renderDraftDetail() {
-  const d = S.draft, el = $("[data-draft-detail]");
-  if (!d || !el) return;
-  const rv = (d.review && d.review.final) || null;
-  const hist = (d.review && d.review.history) || [];
-  const [vl, vt, vi] = rv ? VERDICT[rv.verdict] || [rv.verdict, "gray", "info"] : ["Not reviewed", "gray", "info"];
-  const busy = S.draftBusy;
-  const blocked = d.status === "blocked";
-  const issues = (rv && rv.issues) || [];
-  const isSent = d.status === "sent", isDisc = d.status === "discarded";
-  const serif = store.get("letterSerif", false);
-  el.innerHTML = `<div class="stack" style="gap:14px;min-width:0">
-    ${d.status === "approved" ? `<div class="callout ok">${icon("check")}<div><b>Approved.</b> Exported to <a class="link" href="${evHash(S.evId, "drive", "", "f=" + encodeURIComponent("outbox/"))}">Drive/outbox</a> as an .eml file — send it from your own mail client (or copy into WeChat), then press <b>Mark as sent</b>. InviteDesk never sends messages itself.</div></div>` : ""}
-    ${blocked ? `<div class="callout danger">${icon("x")}<div><b>The Reviewer blocked this draft.</b> Fix the issues it lists, save, then re-run the review. Approval is disabled until it passes.</div></div>` : ""}
-    <div class="letter">
-      <div class="letter-head">
-        <div class="row" style="gap:10px;margin-bottom:8px">${avatar(d.name, "sm")}<a class="strong" href="${personHash(S.evId, d.person_id, "drafts")}">${esc(d.name)}</a>${dStatusChip(d.status)}<span class="spacer"></span>
-          <div class="badges">${chip(esc(DKIND[d.kind] || d.kind), "brass", "sq")}${chip(esc(LANGS[d.language] || d.language || "?"), "blue", "sq")}${chip(esc(CHANNELS[d.channel] || d.channel || "channel?"), "gray", "sq")}</div></div>
-        <div class="hrow"><span>To</span><input id="dr-to" class="input" value="${esc(d.recipient || "")}" data-draft-field="recipient" placeholder="address / handle" aria-label="Recipient"></div>
-        <div class="hrow"><span>Subject</span><input id="dr-subj" class="input subject-input" value="${esc(d.subject || "")}" data-draft-field="subject" aria-label="Subject"></div>
-      </div>
-      <div class="paper"><textarea id="dr-body" class="textarea body-input ${serif ? "serifed" : ""}" data-draft-field="body" aria-label="Message body">${esc(d.body || "")}</textarea></div>
-      <div class="paper-foot"><span class="xsmall muted">v${d.version || 1} · updated ${esc(fmtDateTime(d.updated_at))}</span><span class="xsmall" style="color:var(--amber-fg)" data-dirty-note></span><span class="spacer"></span>
-        <div class="seg-ctl" role="group" aria-label="Letter typeface"><button data-act="draft-serif" data-v="0" aria-pressed="${!serif}">Sans</button><button data-act="draft-serif" data-v="1" aria-pressed="${serif}">${icon("type")}Letter</button></div>
-        <button class="btn sm" data-act="copy" data-v="${esc(d.body || "")}" data-copy-body>${icon("file")}Copy</button><button class="btn sm" data-act="draft-save" disabled data-save-btn>${icon("check")}Save edits</button></div>
-      <div class="actionbar">
-        <button class="btn success" data-act="draft-status" data-s="approved" ${blocked || isSent || busy || d.status === "approved" ? "disabled" : ""} title="${blocked ? "Blocked by the reviewer — fix and re-run review first" : "Approve: exports an .eml to Drive/outbox"}">${icon("check")}Approve</button>
-        <button class="btn" data-act="draft-status" data-s="needs_changes" ${isSent || busy ? "disabled" : ""}>${icon("edit")}Request changes</button>
-        <button class="btn" data-act="draft-status" data-s="sent" ${d.status !== "approved" || busy ? "disabled" : ""} title="${d.status !== "approved" ? "Approve first, then send it yourself" : "I sent it from my own account"}">${icon("send")}Mark as sent</button>
-        <button class="btn" data-act="draft-review" ${busy || isSent || !(S.health || {}).key_present ? "disabled" : ""}>${busy === "review" ? '<span class="spinner"></span>Reviewing… 20–40 s' : icon("refresh") + "Re-run review"}</button>
-        <span class="spacer"></span>
-        <button class="btn danger" data-act="draft-status" data-s="discarded" ${isDisc || busy ? "disabled" : ""}>${icon("trash")}Discard</button>
-      </div>
-    </div></div>
-    <div class="mail-side">
-      <div class="card"><div class="card-head"><h3>${icon("shield")}Reviewer</h3><span class="xsmall muted">independent agent</span></div><div class="card-body">
-        <div class="verdict tone-${vt}">${icon(vi)}${esc(vl)}<span class="spacer"></span><span class="small" style="font-weight:500;font-family:var(--sans)">${plural(issues.length, "issue")}</span></div>
-        ${issues.length ? `<div class="mt8">${issues.map((i) => `<div class="issue"><span class="sev ${esc(i.severity)}">${esc(i.severity)}</span><div><div>${chip(esc(i.type), "gray", "sq")} ${esc(i.text)}</div>${i.fix ? `<div class="fix"><b>Fix:</b> ${esc(i.fix)}</div>` : ""}</div></div>`).join("")}</div>` : `<p class="small muted mt12">${rv ? "No issues against the Fact Sheet, guest policy and evidence." : "This draft has not been reviewed yet."}</p>`}
-        ${hist.length > 1 ? `<div class="subhead">Review history</div><div class="row wrap small">${hist.map((h, i) => `${i ? '<span class="faint">→</span>' : ""}<span>v${h.version}: ${esc((VERDICT[h.verdict] || [h.verdict])[0])} (${(h.issues || []).length})</span>`).join(" ")}</div>` : ""}
-      </div></div>
-      <div class="card"><div class="card-head"><h3>${icon("flag")}Personal claims</h3><span class="count-badge">${(d.claims || []).length}</span></div><div class="card-body">
-        ${(d.claims || []).length ? `<ul class="clean">${d.claims.map((c) => `<li class="issue" style="grid-template-columns:1fr"><div>${esc(c.claim)}<div class="xsmall muted mt8">${isURL(c.evidence) ? `<a class="link" href="${esc(c.evidence)}" target="_blank" rel="noopener noreferrer">${esc(domainOf(c.evidence))}</a>` : "Source: " + esc(c.evidence)}</div></div></li>`).join("")}</ul>` : '<p class="small muted">No personal claims — the message sticks to Fact Sheet facts.</p>'}
-      </div></div>
-      <div class="card"><div class="card-head"><h3>${icon("msg")}Comments</h3><span class="count-badge">${(d.comments || []).length}</span></div><div class="card-body">
-        ${(d.comments || []).map((c) => `<div class="comment"><div class="row">${avatar(c.author, "sm")}<span class="who">${esc(c.author)}</span><span class="xsmall muted">${esc(fmtDateTime(c.created_at))}</span></div><div class="mt8">${esc(c.text)}</div></div>`).join("") || '<p class="small muted mb8">Leave notes for teammates, e.g. “use Prof. Huang’s title”.</p>'}
-        <div class="row mt8"><input class="input sm" style="width:96px" value="${esc(store.get("author", ""))}" placeholder="Name" data-c-author aria-label="Your name"><input class="input sm" placeholder="Write a comment…" data-c-text aria-label="Comment"><button class="btn sm" data-act="draft-comment">Post</button></div>
-      </div></div>
-    </div>`;
-}
-
-function draftListHtml(drafts, did) {
-  const groups = DRAFT_ORDER.map((s) => [s, drafts.filter((d) => d.status === s)]).filter(([, l]) => l.length);
-  const other = drafts.filter((d) => !DRAFT_ORDER.includes(d.status));
-  if (other.length) groups.push(["other", other]);
-  return groups.map(([s, l]) => `<div class="group-h"><span class="eyebrow">${esc((DSTATUS[s] || [s])[0])}</span><span class="count-badge">${l.length}</span></div>
-    ${l.map((d) => `<a class="li ${d.id === did ? "active" : ""}" href="${evHash(S.evId, "drafts", d.id)}"><div class="mli">${avatar(d.name)}<div style="min-width:0">
-      <div class="l1"><span class="nm">${esc(d.name)}</span>${tierBadge(d.tier)}</div>
-      <div class="subj" title="${esc(d.subject || "")}">${esc(d.subject || "(no subject)")}</div>
-      <div class="l3">${chip(esc(DKIND[d.kind] || d.kind), "gray", "sq")}<span class="xsmall muted ellipsis">${esc(LANGS[d.language] || d.language || "")} · ${esc(CHANNELS[d.channel] || d.channel || "")}</span></div></div></div></a>`).join("")}`).join("");
-}
-
 function draftEdits() {
   const d = S.draft, out = {};
   $$("[data-draft-field]").forEach((i) => { if (i.value !== (d[i.dataset.draftField] || "")) out[i.dataset.draftField] = i.value; });
   return out;
-}
-function onDraftInput() {
-  const dirty = Object.keys(draftEdits()).length > 0;
-  S.draftDirty = dirty;
-  const b = $("[data-save-btn]"); if (b) b.disabled = !dirty;
-  const n = $("[data-dirty-note]"); if (n) n.textContent = dirty ? "Unsaved edits" : "";
 }
 
 async function draftAction(kind, el) {
@@ -1695,75 +862,6 @@ async function draftAction(kind, el) {
   renderDraftDetail();
   $("#main").scrollTop = keepScroll;
 }
-async function refreshDraftsList() {
-  try { await loadEvent(S.evId); } catch { /* ignore */ }
-  const drafts = await api(`/api/events/${S.evId}/drafts`).catch(() => S.drafts);
-  S.drafts = drafts;
-  const pane = $(".list-pane");
-  if (pane) pane.innerHTML = draftListHtml(drafts, S.draft.id);
-}
-
-/* ---------------------------------------------------------------- consistency */
-
-async function tabConsistency(body) {
-  const issues = await api(`/api/events/${S.evId}/issues`);
-  S.issues = issues;
-  S.issueFilter = S.issueFilter || { status: "open", kind: "" };
-  renderIssues(body);
-}
-function renderIssues(body = $("#tab-body")) {
-  const all = S.issues || [], f = S.issueFilter;
-  const open = all.filter((i) => i.status === "open");
-  const cnt = (arr, k, v) => arr.filter((i) => i[k] === v).length;
-  if (!all.length) {
-    body.innerHTML = `<div class="card">${emptyState("shield", S.ev.fact_sheet ? "No issues found" : "Not audited yet", S.ev.fact_sheet ? "Every document agrees with the Fact Sheet: dates, links, prices and claims check out." : "The Consistency Auditor compares every document against the Fact Sheet after the agents run.", S.ev.fact_sheet ? "" : `<button class="btn primary" data-act="open-run">${icon("play")}Run agents</button>`)}</div>`;
-    return;
-  }
-  const list = all.filter((i) => (f.status === "all" || i.status === f.status) && (!f.kind || i.kind === f.kind));
-  const byDoc = {};
-  list.forEach((i) => (byDoc[i.document] = byDoc[i.document] || []).push(i));
-  const docId = (path) => (S.ev.documents || []).find((d) => d.path === path)?.id;
-  body.innerHTML = `<div class="kpis" style="grid-template-columns:repeat(5,minmax(0,1fr))">
-      <div class="kpi ${cnt(open, "severity", "high") ? "alert" : ""}"><div class="k"><span class="sev high"></span>High</div><div class="v">${cnt(open, "severity", "high")}</div><div class="s">open · fix before sending</div></div>
-      <div class="kpi"><div class="k"><span class="sev medium"></span>Medium</div><div class="v">${cnt(open, "severity", "medium")}</div><div class="s">open</div></div>
-      <div class="kpi"><div class="k"><span class="sev low"></span>Low</div><div class="v">${cnt(open, "severity", "low")}</div><div class="s">open</div></div>
-      <div class="kpi" style="grid-column:span 2"><div class="k">By kind · click to filter</div><div class="row wrap mt8" style="gap:6px">
-        ${Object.entries(ISSUE_KIND).map(([k, [l, tone]]) => `<button class="chip lg tone-${tone}" style="border:0;cursor:pointer;${f.kind === k ? "box-shadow:0 0 0 2px var(--accent)" : ""}" data-act="if-kind" data-v="${k}" aria-pressed="${f.kind === k}">${esc(l)} <b>${cnt(open, "kind", k)}</b></button>`).join("")}</div></div>
-    </div>
-    <div class="row mb16 wrap"><div class="seg-ctl" role="group" aria-label="Filter by status">${[["open", "Open"], ["resolved", "Resolved"], ["ignored", "Ignored"], ["all", "All"]].map(([v, l]) => `<button data-act="if-status" data-v="${v}" aria-pressed="${f.status === v}">${l} <span class="faint">${v === "all" ? all.length : cnt(all, "status", v)}</span></button>`).join("")}</div>
-      ${f.kind ? `<button class="chip tone-purple" style="border:0;cursor:pointer" data-act="if-kind" data-v="">${esc(ISSUE_KIND[f.kind][0])} ${icon("x")}</button>` : ""}
-      <span class="spacer"></span><span class="small muted">The Consistency Auditor checks every document against the Fact Sheet (no AI cost).</span></div>
-    ${Object.keys(byDoc).length ? Object.entries(byDoc).map(([doc, items]) => `<div class="card doc-group mb16"><div class="card-head"><h3>${icon("file")}${docId(doc) ? `<a href="${evHash(S.evId, "documents", docId(doc))}" style="color:inherit">${esc(doc)}</a>` : esc(doc)}</h3><span class="count-badge">${items.length}</span></div>
-      ${items.map((i) => `<div class="issue-row ${i.status !== "open" ? "dim" : ""}"><div><span class="sev ${esc(i.severity)}">${esc(i.severity)}</span></div>
-        <div style="min-width:0"><div class="row wrap" style="gap:6px">${chip(esc((ISSUE_KIND[i.kind] || [i.kind])[0]), (ISSUE_KIND[i.kind] || [0, "gray"])[1], "sq")}<b class="small">${esc(i.field)}</b>${i.status !== "open" ? chip(esc(i.status), "gray") : ""}</div>
-          <div class="fe"><span class="muted xsmall">found</span><span class="found">${esc(i.found)}</span>${i.expected ? `<span class="faint">→</span><span class="muted xsmall">expected</span><span class="exp">${esc(i.expected)}</span>` : ""}</div>
-          ${i.quote && i.quote !== i.found ? `<div class="quote mt8">“${esc(i.quote)}”</div>` : ""}
-          ${i.suggestion ? `<div class="xsmall muted mt8">${esc(i.suggestion)}</div>` : ""}</div>
-        <div class="btn-row">${i.status === "open" ? `<button class="btn xs" data-act="issue-set" data-id="${i.id}" data-s="resolved">${icon("check")}Resolve</button><button class="btn xs ghost" data-act="issue-set" data-id="${i.id}" data-s="ignored">Ignore</button>` : `<button class="btn xs ghost" data-act="issue-set" data-id="${i.id}" data-s="open">Reopen</button>`}</div></div>`).join("")}</div>`).join("")
-    : `<div class="card">${emptyState("check", "Nothing here", "No issues match this filter.", "", true)}</div>`}`;
-}
-
-/* ---------------------------------------------------------------- follow-ups */
-
-async function tabFollowups(body) {
-  const fu = await api(`/api/events/${S.evId}/followups`);
-  const t = todayISO();
-  const open = fu.filter((f) => f.status === "open");
-  const groups = [
-    ["Overdue", open.filter((f) => f.due < t), "overdue"],
-    ["Due today", open.filter((f) => f.due === t), "today"],
-    ["Upcoming", open.filter((f) => f.due > t), ""],
-    ["Done", fu.filter((f) => f.status !== "open"), "done"],
-  ].filter(([, l]) => l.length);
-  if (!fu.length) { body.innerHTML = `<div class="card">${emptyState("clock", "No follow-ups scheduled", "The Follow-up Planner schedules nudges from the outreach history (7 days after a first message, then switch route) and logistics notes for confirmed guests.")}</div>`; return; }
-  body.innerHTML = groups.map(([label, list, cls]) => `<div class="card mb16"><div class="card-head"><h3>${esc(label)}</h3><span class="count-badge ${cls === "overdue" ? "hot" : ""}">${list.length}</span></div>
-    ${list.map((f) => `<div class="fu ${cls}"><div class="due">${esc(fmtDate(f.due, { year: false }))}<small>${esc(cls === "done" ? "done" : relDue(f.due))}</small></div>
-      <div class="person" style="align-items:flex-start">${avatar(f.name, "sm")}<div style="min-width:0"><div class="ellipsis"><a class="who" href="#" data-act="open-person" data-pid="${f.person_id}">${esc(f.name)}</a> <span class="small muted" title="${esc(f.role || "")}">${esc(f.role || "")}${f.owner ? " · owner " + esc(f.owner) : ""}</span></div>
-        <div class="small ellipsis" title="${esc(f.action)}">${esc(f.action)}</div><div class="xsmall muted ellipsis">${esc(f.reason || "")}</div></div></div>
-      ${f.status === "open" ? `<button class="btn sm" data-act="fu-done" data-id="${f.id}">${icon("check")}Done</button>` : chip("done", "green")}</div>`).join("")}</div>`).join("");
-}
-
-/* ---------------------------------------------------------------- reimbursement */
 
 function flagTone(f) {
   const s = f.toLowerCase();
@@ -1773,28 +871,9 @@ function flagTone(f) {
   if (s.includes("over $")) return "orange";
   return "gray";
 }
-async function tabReimbursement(body) {
-  const x = await api(`/api/events/${S.evId}/expenses`);
-  if (!x.rows.length) { body.innerHTML = `<div class="card">${emptyState("receipt", "No expenses found", "The Finance Clerk reads the budget / reimbursement sheet in your folder (columns like Item, Cost, POC, Receipt, Status) after the agents run.")}</div>`; return; }
-  const cny = x.rows.filter((r) => r.currency === "CNY");
-  const noReceipt = x.rows.filter((r) => (r.flags || []).some((f) => /no receipt/i.test(f))).length;
-  body.innerHTML = `<div class="kpis">
-      <div class="kpi accent"><div class="k">${icon("dollar")}Total (USD)</div><div class="v">${fmtUSD(x.total_usd)}</div><div class="s">${plural(x.rows.length, "item")}</div></div>
-      <div class="kpi ${x.needs_action ? "alert" : ""}"><div class="k">${icon("alert")}Needs action</div><div class="v">${x.needs_action}</div><div class="s">flagged items</div></div>
-      <div class="kpi"><div class="k">${icon("receipt")}Missing receipts</div><div class="v">${noReceipt}</div><div class="s">upload before submitting</div></div>
-      <div class="kpi"><div class="k">${icon("globe")}CNY items</div><div class="v">${cny.length}</div><div class="s">converted at 7.1 CNY/USD for tracking</div></div>
-    </div>
-    <div class="card"><div class="card-head"><h3>${icon("receipt")}Reimbursement check</h3><span class="small muted">Finance Clerk · deterministic, no AI</span></div>
-    <div class="table-wrap"><table class="tbl"><thead><tr><th>Item</th><th>POC</th><th class="num">Amount</th><th>Cur.</th><th class="num">USD</th><th>Receipt</th><th>Finance status</th><th>Flags</th></tr></thead><tbody>
-      ${x.rows.map((r) => `<tr><td style="min-width:180px;max-width:300px" class="strong">${esc(r.item)}</td><td class="small nowrap">${esc(r.poc || "")}</td><td class="num">${num(r.amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}</td><td>${chip(esc(r.currency), r.currency === "CNY" ? "orange" : "gray", "sq")}</td><td class="num strong">${fmtUSD(r.amount_usd)}</td>
-        <td>${/^(yes|y)$/i.test(r.receipt || "") ? chip(icon("check") + "Yes", "green") : chip(esc(r.receipt || "No"), "red")}</td><td class="small">${esc(r.finance_status || "—")}</td>
-        <td><div class="row wrap" style="gap:4px;max-width:360px">${(r.flags || []).map((f) => `<span class="chip sq wrap tone-${flagTone(f)}" title="${esc(f)}">${esc(/^CNY amount/i.test(f) ? "CNY → USD at 7.1 · finance to confirm rate" : f)}</span>`).join("") || chip(icon("check") + "OK", "green")}</div></td></tr>`).join("")}
-    </tbody><tfoot><tr><td colspan="4">Total</td><td class="num">${fmtUSD(x.total_usd)}</td><td colspan="3" class="small muted" style="font-weight:500">${x.needs_action} item(s) need action before finance can reimburse</td></tr></tfoot></table></div></div>`;
-}
-
-/* ---------------------------------------------------------------- drive */
 
 function b64utf8(b) { try { const bin = atob(b.replace(/\s+/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))); } catch { return b; } }
+
 function qpDecode(t) {
   const bytes = []; t = t.replace(/=\r?\n/g, "");
   for (let i = 0; i < t.length; i++) {
@@ -1803,9 +882,11 @@ function qpDecode(t) {
   }
   return new TextDecoder().decode(Uint8Array.from(bytes));
 }
+
 function decodeWords(v) {
   return v.replace(/=\?([\w-]+)\?([BbQq])\?([^?]*)\?=\s*/g, (m, cs, enc, txt) => (enc.toUpperCase() === "B" ? b64utf8(txt) : qpDecode(txt.replace(/_/g, " "))));
 }
+
 function parseEml(raw) {
   const i = raw.search(/\r?\n\r?\n/);
   const head = i < 0 ? raw : raw.slice(0, i), body = i < 0 ? "" : raw.slice(i).replace(/^\s+/, "");
@@ -1815,7 +896,6 @@ function parseEml(raw) {
   const text = cte === "base64" ? b64utf8(body) : cte === "quoted-printable" ? qpDecode(body) : body;
   return { h, text };
 }
-
 
 async function tabDrive(body) {
   const files = await api(`/api/events/${S.evId}/drive`);
@@ -1851,32 +931,6 @@ async function tabDrive(body) {
   } catch (e) { pv.innerHTML = emptyState("alert", "Preview failed", esc(e.message), "", true); }
 }
 
-/* ---------------------------------------------------------------- documents */
-
-async function tabDocuments(body, sub) {
-  const docs = S.ev.documents || [];
-  if (!docs.length) { body.innerHTML = `<div class="card">${emptyState("file", "No documents", "Re-import the event folder from the Overview tab.")}</div>`; return; }
-  const sel = sub ? +sub : null;
-  const kindTone = { invitation: "purple", sponsorship: "pink", roster: "blue", finance: "orange", promotion: "teal", planning: "green", sheet: "blue", other: "gray" };
-  body.innerHTML = `<div class="two-pane" style="grid-template-columns:360px minmax(0,1fr)"><div class="card list-pane">
-    <div class="group-h">${plural(docs.length, "document")} · ${fmtInt(docs.reduce((a, d) => a + num(d.chars), 0))} characters</div>
-    ${docs.map((d) => `<a class="li ${d.id === sel ? "active" : ""}" href="${evHash(S.evId, "documents", d.id)}"><div class="t"><span class="ellipsis" style="flex:1">${esc(d.path)}</span>${(d.flags || []).length ? `<span title="Instruction-like text found">${chip(icon("shield") + "injection", "red")}</span>` : ""}</div>
-      <div class="s row" style="gap:6px">${chip(esc(d.kind), kindTone[d.kind] || "gray", "sq")}<span>${fmtInt(d.chars)} chars</span></div></a>`).join("")}</div>
-    <div data-doc-view>${sel ? `<div class="card">${skel()}</div>` : `<div class="card">${emptyState("file", "Pick a document", "These are the files the agents read. Instruction-like text (e.g. “ignore previous instructions”) is flagged and always treated as data.")}</div>`}</div></div>`;
-  if (!sel) return;
-  const d = await api(`/api/documents/${sel}`);
-  let html = esc(d.text || "");
-  for (const f of d.flags || []) {
-    const core = esc(f.trim()).slice(0, 80);
-    if (core.length > 12 && html.includes(core)) html = html.split(core).join(`<mark>${core}</mark>`);
-  }
-  $("[data-doc-view]").innerHTML = `<div class="card"><div class="card-head"><h3>${icon("file")}<span class="ellipsis">${esc(d.path)}</span></h3>${chip(esc(d.kind), kindTone[d.kind] || "gray", "sq")}</div><div class="card-body">
-    ${(d.flags || []).length ? `<div class="callout danger mb12">${icon("shield")}<div class="small"><b>Instruction-like text found — treated as data, never obeyed.</b> Remove it before sharing this file.${d.flags.map((f) => `<div class="quote mt8">${esc(f)}</div>`).join("")}</div></div>` : ""}
-    <pre class="doc-text">${html}</pre></div></div>`;
-}
-
-/* ---------------------------------------------------------------- trace polling */
-
 async function ensureTrace(eid) {
   const t = (S.trace[eid] = S.trace[eid] || { entries: [], lastId: 0, loaded: false });
   for (let guard = 0; guard < 50; guard++) {
@@ -1893,7 +947,9 @@ function startPoll(eid, transient = false) {
   stopPoll();
   S.poll = { eid, run: !transient, timer: setInterval(() => pollTick(eid), 1500), busy: false };
 }
+
 function stopPoll() { if (S.poll) { clearInterval(S.poll.timer); S.poll = null; } }
+
 function stopPollIfIdle(eid) {
   if (!S.poll || S.poll.eid !== eid) return;
   const anyPlanning = S.planning.size > 0, gen = S.generating && S.generating.eid === eid;
@@ -1909,7 +965,7 @@ async function pollTick(eid) {
     if (rows.length) {
       t.entries.push(...rows);
       t.lastId = rows[rows.length - 1].id;
-      if (S.evId === eid && S.tab === "run") updateBoardLive(rows);
+      if (S.evId === eid && S.sheetKey === "sheet:agent") updateBoardLive(rows);
       if (S.evId === eid && rows.some((r) => r.kind === "done" && /^(Brief Analyst|Roster Analyst|Entity Resolver|Program Strategist|Talent Scout|Consistency Auditor)/.test(r.agent))) refreshHeader();
       const ended = rows.find((r) => r.kind === "end" && /coordinator/i.test(r.agent));
       if (ended) await onRunEnded(eid, ended);
@@ -1925,12 +981,11 @@ async function onRunEnded(eid, entry) {
   toast(`${ok ? "Agents finished." : "Run stopped."} ${esc(entry.message)}`, ok ? "ok" : "info", 8000);
   await loadEvents();
   if (S.evId === eid) {
-    if (S.tab === "run") { S.runs = null; }
+    S.runs = null; loadProjects().then(renderSidebar);
+    if (S.sheetKey === "sheet:agent") { try { S.runs = await api(`/api/events/${eid}/runs`); } catch { /* keep */ } paintRun(true); }
     await refreshEventView();
   }
 }
-
-/* ---------------------------------------------------------------- agent board */
 
 const NODES = {
   coord: ["Coordinator", ""], brief: ["Brief Analyst", ""], roster: ["Roster Analyst", ""], entity: ["Entity Resolver", ""],
@@ -1939,7 +994,9 @@ const NODES = {
   audit: ["Consistency Auditor", ""], finance: ["Finance Clerk", ""], followup: ["Follow-up Planner", ""], drive: ["Drive export", ""],
   reply: ["Reply Interpreter", ""], cos: ["Chief of Staff", ""], budget: ["Budget Guard", ""],
 };
+
 const ON_DEMAND = ["reply", "cos", "budget"];
+
 const LAYOUT = {
   coord: [20, 20, 136, 62], brief: [176, 20, 136, 62], roster: [332, 20, 136, 62], entity: [488, 20, 136, 62], strategy: [644, 20, 136, 62], scout: [800, 20, 136, 62],
   verifier: [800, 104, 136, 44],
@@ -1947,6 +1004,7 @@ const LAYOUT = {
   audit: [700, 176, 130, 40], finance: [700, 224, 130, 40], followup: [700, 272, 130, 40], drive: [846, 214, 94, 62],
   reply: [168, 336, 150, 40], cos: [330, 336, 150, 40], budget: [492, 336, 150, 40],
 };
+
 const EDGES = [
   ["M156,51 H174", "brief"], ["M312,51 H330", "roster"], ["M468,51 H486", "entity"], ["M624,51 H642", "strategy"], ["M780,51 H798", "scout"],
   ["M868,82 V102", "verifier"], ["M868,148 V164 H350 V176", "conn"],
@@ -1954,7 +1012,8 @@ const EDGES = [
   ["M680,244 H689 V196 H698", "audit"], ["M680,244 H698", "finance"], ["M680,244 H689 V292 H698", "followup"],
   ["M830,196 H838 V245 H844", "drive"], ["M830,244 H844", "drive"], ["M830,292 H838 V245 H844", "drive"],
 ];
-const NODE_LINK = { reply: "guests", cos: "#/today" };
+
+const NODE_LINK = { reply: "people", cos: "#/projects?sheet=brief" };
 
 function computeBoard(entries, run) {
   const N = {};
@@ -2076,27 +1135,6 @@ function partialUsage(entries) {
   return { by_agent: by, totals };
 }
 
-async function tabRun(body) {
-  const eid = S.evId;
-  const [runs] = await Promise.all([api(`/api/events/${eid}/runs`), ensureTrace(eid)]);
-  S.runs = runs;
-  if (S.ev.running) startPoll(eid);
-  if (S.runSel == null || (S.runSel !== "all" && !runs.find((r) => r.id === S.runSel))) S.runSel = runs.length ? runs[0].id : "all";
-  body.innerHTML = `<div class="card" data-run-top><div class="card-head"><h3>${icon("activity")}Agent board</h3>
-        <div class="row"><label class="small muted" for="run-sel">Run</label><select id="run-sel" class="select sm" style="width:auto;max-width:320px" data-act-change="run-sel">
-          ${runs.map((r) => `<option value="${r.id}" ${S.runSel === r.id ? "selected" : ""}>#${r.id} · ${esc(fmtDateTime(r.started_at))} · ${esc(runLabel(r.status))}${r.note ? " · " + esc(r.note.slice(0, 40)) : ""}</option>`).join("")}
-          <option value="all" ${S.runSel === "all" ? "selected" : ""}>All activity (incl. import)</option></select></div></div>
-        <div class="board-wrap" data-board></div>
-        <div class="board-legend"><span><i class="sw" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></i>working</span><span><i class="sw" style="background:var(--green-dot)"></i>done</span><span><i class="sw" style="background:var(--amber-dot)"></i>stopped / warning</span><span><i class="sw" style="background:var(--red-dot)"></i>error</span><span><i class="sw" style="background:#94A3B8"></i>idle / not in this run</span><span class="spacer"></span><span data-guards></span></div>
-      </div>
-    <div class="grid mt16" style="grid-template-columns:minmax(0,1.3fr) minmax(380px,1fr);align-items:start">
-      <div class="card"><div class="card-head"><h3>${icon("list")}Live log</h3><span class="small muted" data-logcount></span></div><div class="log" data-log></div></div>
-      <div class="stack"><div class="card" data-meter></div><div class="card" data-agent-usage></div>
-        ${S.ev.running ? "" : `<div class="card"><div class="card-head"><h3>${icon("play")}Start a run</h3></div><div class="card-body">${runPanel(S.ev, true)}<div class="hint mt8">Pick stages on the <a href="${evHash(eid, "overview")}">Overview</a> tab.</div></div></div>`}</div>
-    </div>`;
-  paintRun(true);
-}
-
 function updateBoardLive() { paintRun(false); }
 
 function paintRun(initial) {
@@ -2153,27 +1191,16 @@ function paintRun(initial) {
       : emptyState("cpu", "No usage yet", live ? "Numbers appear as agents finish." : "This run has no recorded model usage.", "", true)}`;
 }
 
-/* ================================================================== directory */
-
-async function viewDirectory() {
-  const q = S.dirQ || "";
-  $("#view").innerHTML = `<div class="page"><div class="page-head"><div><div class="page-title">Directory</div>
-      <div class="page-sub">Everyone across all your events, merged by name and aliases — the organisation's memory of who you know and who owns each relationship.</div></div>
-      <a class="btn" href="/api/directory/export.csv" download="integrated_directory.csv">${icon("download")}Export CSV</a></div>
-    <div class="card"><div class="filters"><div class="search" style="width:340px">${icon("search")}<input class="input" placeholder="Search names, aliases (Chinese or English), roles…  ( / )" value="${esc(q)}" data-dir-q data-search aria-label="Search directory"></div><span class="spacer"></span><span class="small muted" data-dir-count></span></div>
-    <div class="table-wrap" data-dir-table>${skel()}</div></div></div>`;
-  await loadDirectory();
-}
 async function loadDirectory() {
   const el = $("[data-dir-table]");
   if (!el) return;
   try {
     const rows = await api(`/api/directory?q=${encodeURIComponent(S.dirQ || "")}`);
     $("[data-dir-count]").textContent = plural(rows.length, "person", "people");
-    if (!rows.length) { el.innerHTML = S.dirQ ? emptyState("search", "No matches", "Try a Chinese or English name, or part of a role.", "", true) : emptyState("book", "Directory is empty", "People appear here once an event's roster has been extracted."); return; }
+    if (!rows.length) { el.innerHTML = S.dirQ ? emptyState("search", "No matches", "Try a Chinese or English name, or part of a role.", "", true) : emptyState("book", "No people yet", "People appear here once the agents have read an event's files.", `<a class="btn" href="#/projects">${icon("grid")}Go to Projects</a>`); return; }
     el.innerHTML = `<table class="tbl fixed"><thead><tr><th style="width:31%">Name</th><th style="width:33%">Appears in</th><th>Owners</th><th style="width:15%">Contacts</th><th style="width:110px">Last touch</th></tr></thead><tbody>
-      ${rows.map((g) => `<tr class="clickable" data-act="nav" data-href="#/directory/${g.id}">
-        <td style="min-width:170px"><div class="person">${avatar(g.name)}<div style="min-width:0"><div class="row" style="gap:6px"><span class="nm">${esc(g.name)}</span>${g.internal ? chip("internal", "brass", "sq") : ""}${g.appearances.length > 1 ? chip(`${g.appearances.length} events`, "blue") : ""}</div>
+      ${rows.map((g) => `<tr class="clickable" data-act="open-profile" data-gid="${g.id}" tabindex="0">
+        <td style="min-width:170px"><div class="person">${avatar(g.name, "", g.photo_url || "")}<div style="min-width:0"><div class="row" style="gap:6px"><span class="nm">${esc(g.name)}</span>${g.internal ? chip("internal", "brass", "sq") : ""}${g.appearances.length > 1 ? chip(`${g.appearances.length} events`, "blue") : ""}</div>
           <div class="al" style="max-width:320px">${esc([(g.aliases || []).join(" · "), g.category].filter(Boolean).join(" — "))}</div></div></div></td>
         <td><div class="appear">${g.appearances.map((a) => `<span class="chip outline" title="${esc(a.event_name)} · ${esc(a.role || "")}">${a.tier ? `<b>${esc(a.tier)}</b>` : ""} ${esc(a.event_name)} · ${esc((PSTATUS[a.status] || [a.status])[0])}</span>`).join("")}</div></td>
         <td class="small">${esc(g.owners.join(", ")) || '<span class="faint">—</span>'}</td>
@@ -2182,84 +1209,21 @@ async function loadDirectory() {
   } catch (e) { el.innerHTML = emptyState("alert", "Couldn't load the directory", esc(e.message), "", true); }
 }
 
-async function viewProfile(gid) {
-  $("#view").innerHTML = `<div class="page">${skel()}</div>`;
-  let g;
-  try { g = await api(`/api/directory/${gid}`); } catch (e) {
-    $("#view").innerHTML = `<div class="page">${emptyState("alert", "Profile not found", esc(e.message), `<a class="btn" href="#/directory">Back to Directory</a>`)}</div>`; return;
-  }
-  const apps = g.appearances || [];
-  $("#view").innerHTML = `<div class="page" style="max-width:1200px">
-    <div class="crumbs"><a href="#/directory">Directory</a>${icon("chevron").replace("<svg", '<svg style="width:12px;height:12px"')}<span>${esc(g.name)}</span></div>
-    <div class="page-head"><div class="row" style="gap:14px">${avatar(g.name, "xl")}<div style="min-width:0">
-      <div class="page-title">${esc(g.name)} ${g.internal ? chip("internal team member", "brass") : ""}</div>
-      <div class="aliases">${(g.aliases || []).map((a) => `<span class="chip outline">${esc(a)}</span>`).join("")}</div>
-      ${g.intro ? `<div class="page-sub">${esc(g.intro)}</div>` : ""}</div></div></div>
-    <div class="split"><div class="stack">
-      <div class="card"><div class="card-head"><h3>${icon("calendar")}Appearances by event</h3><span class="count-badge">${apps.length}</span></div>
-        ${apps.map((a) => `<a class="li" href="${personHash(a.event_id, a.id)}"><div class="t">${tierBadge(a.tier)}${esc(a.event_name)} ${pStatusChip(a.status, false)}</div>
-          <div class="s">${esc(a.role || "role tbd")}${a.owner ? " · owner <b>" + esc(a.owner) + "</b>" : ""}${a.org ? " · " + esc(a.org) : ""} — open in event ${icon("chevron").replace("<svg", '<svg style="width:11px;height:11px;vertical-align:-1px"')}</div></a>`).join("")}</div>
-      <div class="card"><div class="card-head"><h3>${icon("clock")}Merged timeline</h3></div><div class="card-body">
-        ${(g.timeline || []).length ? `<div class="vtl">${g.timeline.map((t) => `<div class="it k-${esc(t.kind)}"><div class="when">${esc(fmtDate(t.date))} · ${esc(t.actor || "")} ${chip(esc(t.event_name || ""), "purple", "sq")}</div><div class="note">${esc(t.note)}</div></div>`).join("")}</div>` : '<p class="small muted">No history yet.</p>'}</div></div>
-    </div><div class="stack">
-      <div class="card"><div class="card-head"><h3>${icon("user")}Relationship owners</h3></div><div class="card-body">${g.owners.length ? g.owners.map((o) => `<span class="chip outline lg" style="margin:2px">${esc(o)}</span>`).join("") : '<p class="small muted">Nobody owns this relationship yet.</p>'}</div></div>
-      <div class="card"><div class="card-head"><h3>${icon("mail")}Contact points</h3></div>${(g.contacts || []).length ? g.contacts.map((c) => `<div class="contact"><span class="ch">${esc(shortCh(c.channel))}</span><div class="val">${linkify(c.value)}</div></div>`).join("") : `<div class="card-body small muted">None recorded.</div>`}</div>
-    </div></div></div>`;
-}
-
-/* ================================================================== team */
-
-async function viewTeam() {
-  $("#view").innerHTML = `<div class="page">${skel()}</div>`;
-  const [team, conns] = await Promise.all([api("/api/team"), api("/api/team/connections").catch(() => [])]);
-  const byEvent = (owns) => { const m = {}; owns.forEach((o) => (m[o.event] = m[o.event] || []).push(o)); return m; };
-  const evIdByName = (n) => (S.events.find((e) => e.name === n) || {}).id;
-  $("#view").innerHTML = `<div class="page">
-    <div class="page-head"><div><div class="page-title">Team</div>
-      <div class="page-sub">Internal contacts and the relationships each person owns — the handover view when officers change.</div></div></div>
-    <div class="split" style="grid-template-columns:minmax(0,1fr) 380px">
-      <div>${team.length ? `<div class="team-grid">${team.map((m) => {
-        const g = byEvent(m.owns || []);
-        return `<div class="card"><div class="card-body"><div class="row" style="gap:12px;align-items:flex-start">${avatar(m.name, "lg")}<div style="min-width:0;flex:1">
-          <div class="serif" style="font-size:18px;font-weight:600">${esc(m.name)}</div>
-          <div class="xsmall muted">${(m.roles || []).map(esc).join("<br>")}</div>
-          ${(m.emails || []).length ? `<div class="small mt8">${m.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join(" · ")}</div>` : ""}</div>
-          <span class="count-badge accent" title="Relationships owned">${(m.owns || []).length}</span></div>
-          ${(m.owns || []).length ? Object.entries(g).map(([ev, list]) => `<div class="subhead">${esc(ev)}</div>${list.map((o) => `<div class="own">${avatar(o.name, "xs")}${evIdByName(ev) ? `<a href="${personHash(evIdByName(ev), o.person_id)}">${esc(o.name)}</a>` : `<span>${esc(o.name)}</span>`}<span class="xsmall muted ellipsis" style="flex:1">${esc(o.role || "")}</span>${pStatusChip(o.status, false)}</div>`).join("")}`).join("")
-            : '<p class="small muted mt12">Owns no relationships yet.</p>'}
-        </div></div>`;
-      }).join("")}</div>` : `<div class="card">${emptyState("users", "No team members yet", "Team members come from the Fact Sheet (organising team) and roster entries marked as team. Run the agents on an event first.")}</div>`}</div>
-      <div class="stack"><div class="card"><div class="card-head"><h3>${icon("link")}Import LinkedIn connections</h3></div><div class="card-body">
-        <p class="small muted">Lets the Connection Finder spot 1st-degree connections and colleagues at an invitee's company — warm intro paths you'd otherwise miss.</p>
-        <div class="callout plain mt12">${icon("info")}<div class="xsmall">LinkedIn → Settings → Data privacy → Get a copy of your data → <b>Connections</b>. You'll get <code>Connections.csv</code> by email. It stays on this computer.</div></div>
-        <div class="field mt12"><label for="li-owner">Team member</label><input id="li-owner" class="input" list="team-names" placeholder="Whose connections are these?" data-li-owner>
-          <datalist id="team-names">${team.map((m) => `<option value="${esc(m.name)}">`).join("")}</datalist></div>
-        <div class="field mt12"><label for="li-file">Connections.csv</label><input id="li-file" type="file" accept=".csv,text/csv" class="input" style="padding-top:5px" data-li-file></div>
-        <button class="btn primary block mt12" data-act="li-import">${icon("upload")}Import connections</button>
-        ${conns.length ? `<div class="subhead">Imported networks</div><table class="tbl"><thead><tr><th>Owner</th><th class="num">Connections</th><th class="num">Companies</th></tr></thead><tbody>
-          ${conns.map((c) => `<tr><td class="small strong">${esc(c.owner)}</td><td class="num">${fmtInt(c.connections)}</td><td class="num">${fmtInt(c.companies)}</td></tr>`).join("")}</tbody></table>` : `<p class="hint mt12">No networks imported yet.</p>`}
-      </div></div></div>
-    </div></div>`;
-}
-
 async function importLinkedIn(btn) {
   const owner = $("[data-li-owner]").value.trim();
   const f = $("[data-li-file]").files[0];
   if (!owner) { toast("Enter whose connections these are.", "error"); return; }
-  if (!f) { toast("Choose the Connections.csv file.", "error"); return; }
+  if (!f) { toast("Choose the CSV file.", "error"); return; }
   const fd = new FormData(); fd.append("owner", owner); fd.append("file", f);
   setBusy(btn, true, "Importing…");
   try {
     const r = await api("/api/team/connections", { method: "POST", form: fd });
-    toast(`Imported ${fmtInt(r.imported)} connections for ${esc(owner)}. Re-plan people to use them.`, "ok", 6000);
-    S.mainKey = null; route();
+    toast(`Imported ${fmtInt(r.imported)} contacts for ${esc(owner)}. Re-plan people to use them.`, "ok", 6000);
+    if (S.sheetKey === "sheet:settings") openSettingsSheet();
   } catch (e) { toastErr(e); setBusy(btn, false); }
 }
 
-/* ================================================================== usage */
-
-async function viewUsage() {
-  $("#view").innerHTML = `<div class="page">${skel()}</div>`;
+async function usageHtml() {
   const { runs } = await api("/api/usage");
   const agg = {}, tot = { input_tokens: 0, cached_tokens: 0, output_tokens: 0, cost_usd: 0, requests: 0 };
   for (const r of runs) {
@@ -2274,9 +1238,7 @@ async function viewUsage() {
   const agents = Object.entries(agg).sort((a, b) => b[1].cost_usd - a[1].cost_usd);
   const maxCost = Math.max(...agents.map(([, u]) => u.cost_usd), 1e-9);
   const cachePct = tot.input_tokens ? Math.round((tot.cached_tokens / tot.input_tokens) * 100) : 0;
-  $("#view").innerHTML = `<div class="page">
-    <div class="page-head"><div><div class="page-title">Usage & cost</div>
-      <div class="page-sub">Every agent call is metered. Runs stop cleanly at their budget; a shared handbook prefix keeps the prompt cache warm.</div></div></div>
+  return `<p class="small muted mb12">Every agent call is metered. Runs stop cleanly at their budget; a shared handbook prefix keeps the prompt cache warm.</p>
     <div class="kpis">
       <div class="kpi accent"><div class="k">${icon("dollar")}Total spent</div><div class="v">${fmtCost(tot.cost_usd)}</div><div class="s">${plural(runs.length, "run")}</div></div>
       <div class="kpi"><div class="k">Input tokens</div><div class="v">${fmtTok(tot.input_tokens)}</div><div class="s">${fmtInt(tot.requests)} requests</div></div>
@@ -2298,23 +1260,1244 @@ async function viewUsage() {
     <div class="card mt16"><div class="card-head"><h3>${icon("list")}Runs</h3><span class="small muted">click a row for the per-agent breakdown</span></div>
       <div class="table-wrap"><table class="tbl"><thead><tr><th>Run</th><th>Event</th><th>Started</th><th>Status</th><th>Note</th><th class="num">Budget</th><th class="num">Cost</th><th class="num">In</th><th class="num">Cached</th><th class="num">Out</th></tr></thead><tbody>
       ${runs.map((r) => { const t = (r.usage && r.usage.totals) || {}; const by = Object.entries((r.usage && r.usage.by_agent) || {});
-        return `<tr class="clickable" data-act="toggle-run" data-id="${r.id}"><td class="strong">#${r.id}</td><td class="small">${r.event_id != null ? `<a href="${evHash(r.event_id, "run")}">${esc(r.event_name || "Event #" + r.event_id)}</a>` : `<span class="muted">${esc(r.event_name || "All events")}</span>`}</td><td class="small nowrap">${esc(fmtDateTime(r.started_at))}</td>
+        return `<tr class="clickable" data-act="toggle-run" data-id="${r.id}"><td class="strong">#${r.id}</td><td class="small">${r.event_id != null ? `<a href="${evHash(r.event_id, "plan", "", "sheet=agent")}">${esc(r.event_name || "Event #" + r.event_id)}</a>` : `<span class="muted">${esc(r.event_name || "All events")}</span>`}</td><td class="small nowrap">${esc(fmtDateTime(r.started_at))}</td>
           <td>${runChip(r.status)}</td><td class="small muted" style="max-width:220px">${esc(r.note || "full pipeline")}</td>
           <td class="num">${r.budget_usd != null ? fmtCost(r.budget_usd) : "—"}</td><td class="num strong">${fmtCost(t.cost_usd)}</td><td class="num">${fmtTok(t.input_tokens)}</td><td class="num">${fmtTok(t.cached_tokens)}</td><td class="num">${fmtTok(t.output_tokens)}</td></tr>
           <tr hidden data-run-detail="${r.id}"><td colspan="10" style="background:var(--surface-2)">${by.length ? `<table class="tbl" style="background:var(--surface);border-radius:8px"><thead><tr><th>Agent</th><th class="num">Calls</th><th class="num">Requests</th><th class="num">Tool calls</th><th class="num">In</th><th class="num">Cached</th><th class="num">Out</th><th class="num">Cost</th></tr></thead><tbody>
             ${by.sort((a, b) => num(b[1].cost_usd) - num(a[1].cost_usd)).map(([a, u]) => `<tr><td class="small">${esc(a)}</td><td class="num">${fmtInt(u.runs)}</td><td class="num">${fmtInt(u.requests)}</td><td class="num">${fmtInt(u.tool_calls)}</td><td class="num">${fmtTok(u.input_tokens)}</td><td class="num">${fmtTok(u.cached_tokens)}</td><td class="num">${fmtTok(u.output_tokens)}</td><td class="num strong">${fmtCost(u.cost_usd)}</td></tr>`).join("")}</tbody></table>` : '<span class="small muted">No usage recorded for this run.</span>'}</td></tr>`; }).join("")}
-      </tbody></table></div></div>`}
-  </div>`;
+      </tbody></table></div></div>`}`;
 }
 
-/* ================================================================== actions (event delegation) */
 
-function openRunModal() {
-  openModal({
-    title: "Run agents",
-    sub: "The Coordinator hands work from agent to agent. Nothing is sent to anyone — every draft waits for your approval.",
-    body: runPanel(S.ev),
+/* ================================================================== state & routing (v4: projects · people · 4 event tabs) */
+
+const S = {
+  health: null,
+  events: [],
+  projects: null,
+  today: null,
+  route: { parts: [], query: new URLSearchParams() },
+  mainKey: null,
+  ev: null, evId: null, tab: null, sub: null,
+  evPeople: [], evFollowups: [], evProj: null,
+  trace: {},
+  poll: null,
+  planning: new Set(),
+  generating: null,
+  draftDirty: false,
+  runSel: null,
+  sheetKey: null,
+  pf: Object.assign({ q: "", tier: "", list: "", source: "", orgs: false, team: false }, store.get("peopleFilter", {})),
+  peopleMore: {},
+  showDeclined: false,
+  openRows: new Set(),
+};
+const TABS = [["plan", "Plan"], ["people", "People"], ["messages", "Messages"], ["files", "Files"]];
+
+function parseHash() {
+  const h = location.hash.replace(/^#\/?/, "");
+  const [path, qs] = h.split("?");
+  return { parts: path.split("/").filter(Boolean).map(decodeURIComponent), query: new URLSearchParams(qs || "") };
+}
+function go(hash) { if (location.hash !== hash) location.hash = hash; else route(); }
+function hashWith(parts, query) { const qs = query.toString(); return "#/" + parts.map(encodeURIComponent).join("/") + (qs ? "?" + qs : ""); }
+function setQuery(key, val, replace = false) {
+  const { parts, query } = parseHash();
+  if (val == null || val === "") query.delete(key); else query.set(key, val);
+  const h = hashWith(parts, query);
+  if (replace) { history.replaceState(null, "", h); route(); } else location.hash = h;
+}
+const evHash = (eid, tab = "plan", sub = "", q = "") => `#/event/${eid}/${tab}${sub ? "/" + encodeURIComponent(sub) : ""}${q ? "?" + q : ""}`;
+const personHash = (eid, pid, tab = "people") => evHash(eid, tab, "", "p=" + pid);
+
+/** Old routes keep working: they are redirected to where the capability now lives. */
+function legacyRedirect(parts, q) {
+  const [h, a, b, c] = parts;
+  if (!h || h === "today") return "#/projects" + (q.toString() ? "?" + q.toString() : "");
+  if (h === "directory") return a ? `#/people?g=${a}` : "#/people";
+  if (h === "team") return "#/people?view=team";
+  if (h === "usage") return "#/projects?sheet=settings";
+  if (h === "event" && a) {
+    if (!b) return `#/event/${a}/plan`;
+    const map = { overview: "plan", consistency: "plan", reimbursement: "plan", lists: "people", guests: "people", drafts: "messages", followups: "messages", drive: "files", documents: "files", run: "plan" };
+    if (map[b]) {
+      const qs = new URLSearchParams(q);
+      let sub = "";
+      if (b === "drafts" && c) sub = "/" + c;
+      if (b === "drive") qs.set("seg", "produced");
+      if (b === "documents") { qs.set("seg", "received"); if (c) qs.set("doc", c); }
+      if (b === "run") qs.set("sheet", "agent");
+      if (b === "consistency") qs.set("sheet", "review");
+      const s = qs.toString();
+      return `#/event/${a}/${map[b]}${sub}${s ? "?" + s : ""}`;
+    }
+  }
+  return null;
+}
+
+const SHEET_PARAMS = ["p", "g", "sheet", "doc"];
+async function route() {
+  const r = parseHash();
+  const red = legacyRedirect(r.parts, r.query);
+  if (red && red !== location.hash) { history.replaceState(null, "", red); return route(); }
+  S.route = r;
+  const [head, a, b, c] = r.parts;
+  const q2 = new URLSearchParams(r.query); SHEET_PARAMS.forEach((k) => q2.delete(k));
+  const key = r.parts.join("/") + "?" + q2.toString();
+  if (S.draftDirty && key !== S.mainKey && !(await confirmLeaveDraft())) { history.replaceState(null, "", "#/" + S.mainKey.replace(/\?$/, "")); return; }
+  const changed = key !== S.mainKey;
+  S.mainKey = key;
+  renderSidebar();
+  if (changed) {
+    $("#main").scrollTop = 0;
+    try {
+      if (head === "projects") await viewProjects();
+      else if (head === "welcome") viewWelcome();
+      else if (head === "people") await viewGlobalPeople();
+      else if (head === "event" && a) await viewEvent(+a, b || "plan", c);
+      else go("#/projects");
+    } catch (e) {
+      $("#view").innerHTML = `<div class="page">${emptyState("alert", "Something went wrong", esc(e.message || e), `<button class="btn" data-act="reload">${icon("refresh")}Retry</button>`)}</div>`;
+      if (e.status !== 404) console.warn(e);
+    }
+  }
+  syncSheets();
+}
+
+async function confirmLeaveDraft() {
+  const ok = await confirmBox("Discard unsaved edits?", "You edited this message but didn't save. Leave without saving?", "Discard edits", true);
+  if (ok) S.draftDirty = false;
+  return ok;
+}
+
+/* ================================================================== sheets (depth on demand) */
+
+function openSheetShell(key, inner, cls = "") {
+  S.sheetKey = key;
+  $("#drawer-root").innerHTML = `<div class="backdrop" data-act="close-sheet"></div><aside class="drawer sheet ${cls}" role="dialog" aria-modal="true">
+    <button class="btn ghost sm close" data-act="close-sheet" aria-label="Close (Esc)">${icon("x")}</button><div data-drawer>${inner}</div></aside>`;
+  setTimeout(() => { const f = $("#drawer-root .drawer [data-autofocus]") || $("#drawer-root .drawer .close"); if (f) f.focus(); }, 30);
+}
+function closeSheetDom() {
+  S.sheetKey = null; S.drawerPid = null;
+  $("#drawer-root").innerHTML = "";
+  $$("tr.selected, .pcard2.selected").forEach((x) => x.classList.remove("selected"));
+}
+function closeSheet() {
+  const { parts, query } = parseHash();
+  let had = false;
+  SHEET_PARAMS.forEach((k) => { if (query.has(k)) { query.delete(k); had = true; } });
+  if (had) location.hash = hashWith(parts, query); else closeSheetDom();
+}
+function sheetBody(title, sub, body, eyebrow = "") {
+  return `<div class="drawer-head">${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ""}<h2 class="sheet-title">${title}</h2>${sub ? `<div class="small muted mt8">${sub}</div>` : ""}</div><div class="drawer-body">${body}</div>`;
+}
+
+function syncSheets() {
+  const q = S.route.query, [head] = S.route.parts;
+  let want = null;
+  if (q.get("p") && head === "event") want = "p:" + q.get("p");
+  else if (q.get("g") && head === "people") want = "g:" + q.get("g");
+  else if (q.get("doc") && head === "event") want = "doc:" + q.get("doc");
+  else if (q.get("sheet")) want = "sheet:" + q.get("sheet");
+  if (want === S.sheetKey) return;
+  if (!want) { if (S.sheetKey) closeSheetDom(); return; }
+  const [kind, val] = want.split(/:(.*)/s);
+  if (kind === "p") openPersonSheet(+val);
+  else if (kind === "g") openProfileSheet(+val);
+  else if (kind === "doc") openDocSheet(+val);
+  else if (val === "agent" && head === "event") openAgentSheet();
+  else if (val === "run" && head === "event") openRunSheet();
+  else if (val === "review" && head === "event") openReviewSheet();
+  else if (val === "find" && head === "event") openFindSheet();
+  else if (val === "brief") openBriefSheet();
+  else if (val === "settings") openSettingsSheet();
+  else closeSheetDom();
+}
+
+/* ================================================================== sidebar & banner */
+
+async function loadEvents() {
+  try { S.events = await api("/api/events"); } catch (e) { toastErr(e); }
+  renderSidebar();
+}
+const shortEventName = (n) => { const s = String(n || ""); const i = s.indexOf(" — "); return i > 0 && s.length > 28 ? s.slice(i + 3) : s; };
+function defaultTabFor(eid) {
+  const p = S.projects && S.projects.events.find((e) => e.id === eid);
+  if (!p) return "plan";
+  return p.decisions > 0 || (p.next && p.next.kind === "run") ? "plan" : "people";
+}
+
+function renderSidebar() {
+  const [head, a] = S.route.parts;
+  const evs = S.events.map((e) => {
+    const act = head === "event" && +a === e.id;
+    return `<a class="nav-sub ${act ? "active" : ""}" href="${evHash(e.id, defaultTabFor(e.id))}" title="${esc(e.name)}" style="--h:${hueOf(e.name)}" ${act ? 'aria-current="page"' : ""}>
+      <span class="edot"></span><span class="ellipsis">${esc(shortEventName(e.name))}</span>${e.running ? '<span class="live-dot" title="Agents running"></span>' : ""}</a>`;
+  }).join("");
+  $("#sidebar").innerHTML = `
+    <div class="brand"><span class="brand-mark">${SEAL}</span><span><div class="brand-name">InviteDesk</div><div class="brand-sub">Outreach desk</div></span></div>
+    <nav class="nav">
+      <a class="nav-item ${head === "projects" || head === "welcome" || head === "event" ? "active" : ""}" href="#/projects">${icon("grid")}<span>Projects</span></a>
+      <div class="nav-subs">${evs}</div>
+      <a class="nav-item ${head === "people" ? "active" : ""}" href="#/people">${icon("users")}<span>People</span></a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="sidebar-foot">
+      <button class="btn ghost block nav-new" data-act="new-event">${icon("plus")}New event</button>
+      <button class="nav-item" data-act="open-sheet" data-sheet="settings">${icon("cpu")}<span>Settings</span>${S.health && !S.health.key_present ? '<span class="count hot" title="No API key">!</span>' : ""}</button>
+    </div>`;
+}
+
+function renderBanner() {
+  const h = S.health;
+  $("#banner").innerHTML = h && !h.key_present
+    ? `<div class="banner">${icon("alert")}<span><b>No API key found.</b> Browsing works; agents need <code>PORTKEY_API_KEY</code> in <code>.env</code>.</span></div>`
+    : "";
+}
+
+
+/* ================================================================== projects home */
+
+async function loadProjects() {
+  try { S.projects = await api("/api/projects"); } catch (e) { S.projects = S.projects || { events: [], waiting: 0 }; }
+  return S.projects;
+}
+
+function daysLine(e) {
+  if (!e.date) return "Date to be confirmed";
+  const d = e.days_to_go;
+  const rel = d == null ? "" : d === 0 ? " · today" : d > 0 ? ` · ${plural(d, "day")} to go` : ` · ${plural(-d, "day")} ago`;
+  return `${fmtDate(e.date)}${rel}`;
+}
+
+function projCard(e) {
+  const tab = e.decisions > 0 || (e.next && e.next.kind === "run") ? "plan" : "people";
+  const n = e.next || { kind: "ok", text: "On track — nothing is waiting on you" };
+  const pct = e.needed > 0 ? Math.min(100, Math.round((e.confirmed / e.needed) * 100)) : 0;
+  const progress = e.needed > 0
+    ? `<div class="pc-progress"><div class="bar"><i style="width:${pct}%"></i></div><div class="small"><b class="serif">${e.confirmed}</b> confirmed <span class="muted">· of ${e.needed} needed</span></div></div>`
+    : `<div class="pc-progress"><div class="small muted">${e.found > 0 ? plural(e.found, "candidate") + " found" : plural(e.people, "person", "people")}</div></div>`;
+  const badges = [];
+  if (e.to_review > 0) badges.push(`${e.to_review} to review`);
+  if (e.decisions > 0) badges.push({ t: `${e.decisions} to confirm`, href: evHash(e.id, "plan", "", "sheet=review") });
+  if (n.kind === "run") badges.push("Not started");
+  else if (!badges.length && !e.overdue) badges.push("On track");
+  const lead = (n.kind === "person" || n.kind === "draft") && n.name ? avatar(n.name, "sm")
+    : `<span class="av sm ic">${icon({ decision: "alert", find: "search", run: "play", ok: "check" }[n.kind] || "zap")}</span>`;
+  return `<article class="card proj-card" data-eid="${e.id}" style="--h:${hueOf(e.name)}">
+    <div class="eyebrow ellipsis">${esc(e.org || "Event")}${e.demo ? ` <span class="demo-tag">Demo</span>` : ""}</div>
+    <h3 class="pc-title"><a href="${evHash(e.id, tab)}">${esc(e.name)}</a></h3>
+    <div class="small muted">${esc(daysLine(e))}</div>
+    ${progress}
+    <button class="pc-next" data-act="go-next" data-eid="${e.id}" data-kind="${esc(n.kind)}" data-pid="${n.person_id || ""}" data-did="${n.draft_id || ""}">
+      ${lead}<span class="pc-next-t"><span class="eyebrow">Next</span><span class="ellipsis" title="${esc(n.text)}">${esc(n.text)}</span></span>${icon("chevron")}</button>
+    <div class="pc-badges">${badges.slice(0, 2).map((b) => typeof b === "string" ? `<span class="qbadge">${esc(b)}</span>` : `<a class="qbadge amber" data-rv-badge="${e.id}" href="${b.href}"><span class="adot"></span>${esc(b.t)}</a>`).join("")}</div>
+  </article>`;
+}
+
+async function viewProjects() {
+  if (!S.events.length) { await loadEvents(); if (!S.events.length) { viewWelcome(); return; } }
+  $("#view").innerHTML = `<div class="page">${skel(2)}</div>`;
+  const pj = await loadProjects();
+  renderSidebar();
+  const evs = pj.events || [];
+  const attn = evs.filter((e) => e.overdue > 0 || e.to_review > 0 || e.decisions > 0).length;
+  $("#view").innerHTML = `<div class="page">
+    <div class="page-head"><div><h1 class="page-title">Your events</h1>
+      <div class="page-sub">${plural(evs.length, "event")} · ${attn ? `${attn} need${attn === 1 ? "s" : ""} your attention` : "nothing needs you right now"}</div></div>
+      <div class="btn-row"><button class="btn ghost" data-act="open-sheet" data-sheet="brief">${icon("sparkle")}Brief me</button>
+        <button class="btn primary" data-act="new-event">${icon("plus")}New event</button></div></div>
+    <div class="proj-grid">${evs.map(projCard).join("")}
+      <button class="proj-new" data-act="new-event">${icon("plus")}<span>New event</span><small>Import a folder, try a sample, or start from a public event</small></button>
+    </div></div>`;
+  syncReviewBadges(evs);
+}
+
+async function syncReviewBadges(evs) {
+  await Promise.all(evs.filter((e) => e.next && e.next.kind !== "run").map(async (e) => {
+    try {
+      const [ev, issues] = await Promise.all([api(`/api/events/${e.id}`), api(`/api/events/${e.id}/issues`)]);
+      const n = reviewModel(ev, issues).count;
+      const card = $(`.proj-card[data-eid="${e.id}"] .pc-badges`); if (!card) return;
+      let b = $(`[data-rv-badge="${e.id}"]`, card);
+      if (!n) { if (b) b.remove(); return; }
+      if (!b) {
+        $$(".qbadge:not(a)", card).forEach((x) => { if (/On track/.test(x.textContent)) x.remove(); });
+        if ($$(".qbadge", card).length >= 2) return;
+        card.insertAdjacentHTML("beforeend", `<a class="qbadge amber" data-rv-badge="${e.id}" href="${evHash(e.id, "plan", "", "sheet=review")}"><span class="adot"></span></a>`);
+        b = $(`[data-rv-badge="${e.id}"]`, card);
+      }
+      b.innerHTML = `<span class="adot"></span>${n} to confirm`;
+    } catch { /* keep the server count */ }
+  }));
+}
+function goNext(el) {
+  const eid = +el.dataset.eid, k = el.dataset.kind;
+  if (k === "person" && el.dataset.pid) go(personHash(eid, +el.dataset.pid));
+  else if (k === "draft" && el.dataset.did) go(evHash(eid, "messages", el.dataset.did));
+  else if (k === "find") go(evHash(eid, "people", "", "sheet=find"));
+  else if (k === "run") go(evHash(eid, "plan", "", "sheet=run"));
+  else if (k === "decision") go(evHash(eid, "plan", "", "sheet=review"));
+  else go(evHash(eid, "plan"));
+}
+
+/* ---------------------------------------------------------------- brief me (Chief of Staff) as a sheet */
+
+async function openBriefSheet() {
+  openSheetShell("sheet:brief", sheetBody("Brief me", "", `<div data-brief-slot>${dailyBriefCard()}</div>`, "Chief of Staff"), "wide");
+  if (!S.today) { try { S.today = await api("/api/today"); const slot = $("[data-brief-slot]"); if (slot) slot.innerHTML = dailyBriefCard(); } catch { /* names are optional */ } }
+}
+
+
+/* ================================================================== event page */
+
+async function loadEvent(eid) {
+  const [ev, ppl, fus, drafts, issues] = await Promise.all([
+    api(`/api/events/${eid}`),
+    api(`/api/events/${eid}/people`).catch(() => []),
+    api(`/api/events/${eid}/followups`).catch(() => []),
+    api(`/api/events/${eid}/drafts`).catch(() => []),
+    api(`/api/events/${eid}/issues`).catch(() => []),
+  ]);
+  S.ev = ev; S.evId = eid;
+  S.evPeople = ppl; S.evFollowups = fus; S.evDrafts = drafts; S.evIssues = issues; S.issues = issues;
+  S.review = reviewModel(ev, issues);
+  const t = todayISO();
+  S.evBadges = {
+    review: drafts.filter((d) => ["needs_changes", "ready_for_review", "in_review"].includes(d.status)).length,
+    due: fus.filter((f) => f.status === "open" && f.due <= t).length,
+  };
+  const row = S.events.find((e) => e.id === eid);
+  if (row && row.running !== ev.running) { row.running = ev.running; renderSidebar(); }
+  if (ev.running) startPoll(eid);
+  return ev;
+}
+
+function statusPill(ev) {
+  const cost = fmtCost(ev.spent_usd);
+  if (ev.running) return [`<span class="live-dot"></span>Running…`, "run"];
+  const lr = ev.last_run;
+  if (!lr && !ev.fact_sheet) return ["Agents not run yet", "idle"];
+  const st = lr ? lr.status : ev.status;
+  if (st === "budget_stop") return [`Stopped at budget cap · ${cost}`, "warn"];
+  if (st === "error") return [`Error · ${cost}`, "err"];
+  if (st === "running") return [`Run interrupted · ${cost}`, "warn"];
+  return [`Agents done · ${cost}`, "ok"];
+}
+const neverRun = (ev) => !ev.last_run && !ev.fact_sheet;
+
+function eventHeader(ev, tab) {
+  const fs = ev.fact_sheet || {};
+  const title = fv(fs.event_name) || ev.name;
+  const zh = fv(fs.event_name_zh);
+  const date = fv(fs.date);
+  const venue = (fv(fs.venue) || fv(fs.city_region) || "").split(";")[0].split(",").slice(0, 2).join(",").trim();
+  const meta = [date ? (isISODate(date) ? asDate(date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }) : date) : "Date to be confirmed", venue, fv(fs.org_name_en) || ev.org].filter(Boolean);
+  const [pill, pk] = statusPill(ev);
+  const noKey = S.health && !S.health.key_present;
+  let primary = "";
+  if (tab === "plan" && neverRun(ev)) primary = `<button class="btn primary" data-act="open-sheet" data-sheet="run" ${noKey ? "disabled" : ""}>${icon("play")}Update with agents</button>`;
+  else if (tab === "people") primary = `<button class="btn primary" data-act="open-sheet" data-sheet="find" ${noKey ? "disabled" : ""}>${icon("search")}Find people</button>`;
+  const ghost = tab === "plan" && neverRun(ev) ? "" : `<button class="btn ghost" data-act="open-sheet" data-sheet="run" ${noKey || ev.running ? "disabled" : ""}>${icon("refresh")}Update with agents</button>`;
+  const b = S.evBadges || {};
+  const msgBadge = (b.review || 0) + (b.due || 0);
+  return `<div class="ev-hero v4"><div class="ev-hero-in">
+      <div class="crumbs"><a href="#/projects">Projects</a>${icon("chevron").replace("<svg", '<svg style="width:12px;height:12px"')}</div>
+      <div class="evh-row"><div class="evh-l"><h1 class="evh-name" title="${esc(title)}">${esc(title)}${zh ? `<span class="zh2">${esc(zh)}</span>` : ""}</h1>
+          <div class="evh-meta">${meta.map(esc).join(" · ")}</div></div>
+        <div class="evh-r"><button class="spill ${pk}" data-act="open-sheet" data-sheet="agent" title="Open the agent run">${pill}</button>${(S.review || {}).count ? `<button class="spill warn review" data-act="open-sheet" data-sheet="review" title="Facts and file checks waiting for you">${S.review.count} to confirm</button>` : ""}${ghost}${primary}</div></div>
+    </div></div>
+    <div class="ev-sticky"><div class="segtabs" role="tablist">
+      ${TABS.map(([id, label]) => `<a class="segtab ${tab === id ? "active" : ""}" role="tab" aria-selected="${tab === id}" href="${evHash(ev.id, id)}">${label}${id === "messages" && msgBadge ? `<span class="count-badge">${msgBadge}</span>` : ""}</a>`).join("")}
+    </div></div>`;
+}
+
+async function viewEvent(eid, tab, sub) {
+  if (!TABS.find((t) => t[0] === tab)) tab = "plan";
+  const notFound = () => { $("#view").innerHTML = `<div class="page">${emptyState("alert", "Event not found", "It may have been removed from this workspace.", `<a class="btn" href="#/projects">Back to Projects</a>`)}</div>`; };
+  if (S.events.length && !S.events.some((e) => e.id === eid)) { await loadEvents(); if (!S.events.some((e) => e.id === eid)) { notFound(); return; } }
+  if (S.evId !== eid || !S.ev) $("#view").innerHTML = `<div class="page">${skel(2)}</div>`;
+  try { await loadEvent(eid); } catch (e) {
+    if (e.status === 404) { $("#view").innerHTML = `<div class="page">${emptyState("alert", "Event not found", "It may have been removed from this workspace.", `<a class="btn" href="#/projects">Back to Projects</a>`)}</div>`; return; }
+    throw e;
+  }
+  S.tab = tab; S.sub = sub;
+  $("#view").innerHTML = eventHeader(S.ev, tab) + `<div class="page" id="tab-body">${skel(2)}</div>`;
+  await renderTab();
+}
+
+async function renderTab() {
+  const body = $("#tab-body");
+  if (!body) return;
+  const fn = { plan: tabPlan, people: tabPeople, messages: tabMessages, files: tabFiles }[S.tab];
+  try { await fn(body, S.sub); }
+  catch (e) { body.innerHTML = `<div class="card">${emptyState("alert", "Couldn't load this tab", esc(e.message), `<button class="btn" data-act="reload-tab">${icon("refresh")}Retry</button>`)}</div>`; console.warn(e); }
+}
+
+async function refreshHeader() {
+  if (!S.evId || !$(".ev-hero")) return;
+  try {
+    await loadEvent(S.evId);
+    const tmp = document.createElement("div");
+    tmp.innerHTML = eventHeader(S.ev, S.tab);
+    const head = $(".ev-hero"), sticky = $(".ev-sticky");
+    if (head && sticky) { head.replaceWith(tmp.children[0]); sticky.replaceWith(tmp.children[0]); }
+  } catch { /* keep the old header */ }
+}
+async function refreshEventView() {
+  if (!S.evId || !$("#tab-body")) return;
+  await refreshHeader();
+  await renderTab();
+  repaintOpenSheets();
+}
+
+/* ---------------------------------------------------------------- plan tab */
+
+/* ---------------------------------------------------------------- review model (facts + document checks, shown in place) */
+
+function reviewModel(ev, issues) {
+  const fs = (ev && ev.fact_sheet) || {};
+  const conflicts = (fs.conflicts || []).map((c, i) => ({ ...c, i })).filter((c) => !c.resolved);
+  const cfAll = new Set((fs.conflicts || []).map((c) => (c.field || "").toLowerCase()));
+  const isFactIssue = (i) => i.kind === "conflict" && cfAll.has((i.field || "").toLowerCase());
+  const open = (issues || []).filter((i) => i.status === "open");
+  const high = open.filter((i) => i.severity === "high" && !isFactIssue(i));
+  // a disagreement you already settled on the fact stays visible as a minor note on the file that still says otherwise
+  const other = open.filter((i) => i.severity !== "high" || (isFactIssue(i) && !conflicts.some((c) => (c.field || "").toLowerCase() === (i.field || "").toLowerCase())));
+  const budget = !!(fs.budget_assumed && fv(fs.budget));
+  return { conflicts, high, other, budget, count: conflicts.length + high.length + (budget ? 1 : 0) };
+}
+const isAsk = (c) => /ASK/i.test(c.recommended || "") || !c.recommended;
+function conflictBox(c) {
+  const vals = (c.values || []).map((v) => `<div class="cval"><div class="q"><span class="doc">${esc(v.document)}</span><span class="quote">“${esc(v.quote)}”</span></div>
+      <button class="btn xs" data-act="conflict-use" data-v="${esc(v.value || v.quote)}">Use this</button></div>`).join("");
+  return `<div class="cf-box" data-cf-box>${vals}${c.reason ? `<div class="xsmall muted mt8">${esc(c.reason)}</div>` : ""}
+    <div class="row mt12"><input class="input sm" value="${isAsk(c) ? "" : esc(c.recommended)}" placeholder="Type the correct value" data-conf-input="${c.i}" aria-label="Correct value for ${esc(c.field)}">
+      <button class="btn sm" data-act="conflict-resolve" data-i="${c.i}">${icon("check")}Confirm</button></div></div>`;
+}
+function decisionConflictRow(c) {
+  return `<details class="drow"><summary><span class="adot" aria-hidden="true"></span>
+      <span class="drow-t"><b>${esc(c.field)}</b><span class="drow-s">${isAsk(c) ? "Your files disagree — pick the right value" : `Showing ${esc(c.recommended)} · ${plural((c.values || []).length, "version")} in your files`}</span></span>
+      <span class="qbtn">Decide</span></summary><div class="drow-body">${conflictBox(c)}</div></details>`;
+}
+function issueSentence(i) {
+  if (i.kind === "injection") return `<b>Instruction-like text</b> in ${esc(i.document)} — treated as data, never obeyed`;
+  return `<b>${esc(i.field)}</b>: “${esc((i.found || "").slice(0, 70))}”${i.expected ? ` → ${esc(i.expected)}` : ""}`;
+}
+function decisionIssueRow(i) {
+  return `<div class="drow flat"><span class="adot ${i.kind === "injection" ? "red" : ""}" aria-hidden="true"></span>
+    <span class="drow-t">${issueSentence(i)}${i.suggestion ? `<span class="drow-s">${esc(i.suggestion)}</span>` : ""}</span>
+    <span class="drow-a"><button class="btn xs" data-act="issue-set" data-id="${i.id}" data-s="resolved">Resolve</button><button class="btn xs ghost" data-act="issue-set" data-id="${i.id}" data-s="ignored">Ignore</button></span></div>`;
+}
+function otherChecksHtml(list) {
+  const byDoc = {};
+  list.forEach((i) => (byDoc[i.document] = byDoc[i.document] || []).push(i));
+  return Object.entries(byDoc).map(([doc, items]) => `<div class="subhead">${esc(doc)}</div>${items.map((i) => `<div class="drow flat compact"><span class="sev ${esc(i.severity)}">${esc(i.severity)}</span>
+      <span class="drow-t">${esc(i.field)}: <span class="muted">“${esc((i.found || "").slice(0, 80))}”${i.expected ? ` → ${esc(i.expected)}` : ""}</span></span>
+      <span class="drow-a"><button class="btn xs" data-act="issue-set" data-id="${i.id}" data-s="resolved">Resolve</button><button class="btn xs ghost" data-act="issue-set" data-id="${i.id}" data-s="ignored">Ignore</button></span></div>`).join("")}`).join("");
+}
+const docIdOf = (path) => (((S.ev && S.ev.documents) || []).find((d) => d.path === path) || {}).id;
+function reviewSheetBody() {
+  const R = S.review || reviewModel(S.ev, S.evIssues);
+  const fs = (S.ev && S.ev.fact_sheet) || {};
+  if (!R.count) return `${emptyState("check", "All clear", "Nothing is waiting for your confirmation.", `<button class="btn" data-act="close-sheet">Back to the plan</button>`)}
+    ${R.other.length ? `<details class="disc"><summary>Show ${plural(R.other.length, "minor check")}</summary>${otherChecksHtml(R.other)}</details>` : ""}`;
+  const byDoc = {};
+  R.high.forEach((i) => (byDoc[i.document] = byDoc[i.document] || []).push(i));
+  const facts = [...R.conflicts.map(decisionConflictRow),
+    ...(R.budget ? [`<details class="drow"><summary><span class="adot" aria-hidden="true"></span><span class="drow-t"><b>Budget</b> · ${esc(fv(fs.budget))}<span class="drow-s">Assumed — no document states a budget</span></span><span class="qbtn">Details</span></summary>
+      <div class="drow-body small">${esc(fs.budget_basis || "No basis recorded.")}<div class="muted mt8">To confirm or change it, add the budget to your planning document and re-import the folder (Files › Re-import).</div></div></details>`] : [])];
+  return `${facts.length ? `<div class="rv-group"><div class="mono-label">Facts · ${facts.length}</div>${facts.join("")}</div>` : ""}
+    ${R.high.length ? `<div class="rv-group"><div class="mono-label">Documents · ${R.high.length}</div>${Object.entries(byDoc).map(([doc, items]) => {
+      const id = docIdOf(doc);
+      return `<div class="rv-doc"><div class="rv-doc-h">${icon("file")}<span class="ellipsis">${esc(doc)}</span>${id ? `<a class="qlink" href="${evHash(S.evId, "files", "", "seg=received&doc=" + id)}">Open</a>` : ""}</div>${items.map(decisionIssueRow).join("")}</div>`;
+    }).join("")}</div>` : ""}
+    ${R.other.length ? `<details class="disc"><summary>Show ${plural(R.other.length, "minor check")}</summary>${otherChecksHtml(R.other)}</details>` : ""}`;
+}
+function openReviewSheet() {
+  if (!S.ev) return;
+  const R = S.review || reviewModel(S.ev, S.evIssues);
+  openSheetShell("sheet:review", sheetBody("Review", R.count ? `${plural(R.count, "item")} to confirm — facts where your files disagree, and checks on the files themselves. Each also shows in place on Plan and Files.` : "",
+    `<div data-review>${reviewSheetBody()}</div>`, esc(shortEventName(S.ev.name))));
+}
+function repaintOpenSheets() {
+  if (S.sheetKey === "sheet:review") { const r = $("[data-review]"); if (r) r.innerHTML = reviewSheetBody(); }
+  else if (S.sheetKey && S.sheetKey.startsWith("doc:")) openDocSheet(+S.sheetKey.slice(4));
+}
+
+/* facts shown in place: amber dot + recommended value + "N versions" popover */
+const FACT_MATCH = [["Date", /\bdate\b|weekday|\bday\b/i], ["Time", /\btime\b|start|doors|schedule/i], ["Venue", /venue|location|address|room|hall/i],
+  ["Website", /website|url|event page|\blink\b/i], ["Contact", /contact|e-?mail/i], ["Budget", /budget/i], ["Organiser", /organi[sz]er|organi[sz]ation name|host/i], ["Guest policy", /guest policy|dress|age limit|rsvp/i]];
+function factKeyFor(c) { const m = FACT_MATCH.find(([, re]) => re.test(c.field || "")); return m ? m[0] : null; }
+function factConflictHtml(c) {
+  const n = (c.values || []).length || 2;
+  return `<span class="fact-cf"><span class="adot" title="Your files disagree"></span><span class="fv">${isAsk(c) ? '<span class="muted">Needs your choice</span>' : esc(c.recommended)}</span>
+    <span class="pop-wrap"><button class="vbtn" data-act="pop-toggle" data-pop="cf${c.i}" aria-label="${n} versions of ${esc(c.field)}">${n} versions</button>
+      <div class="popover wide-pop" data-popover="cf${c.i}" hidden><div class="mono-label">${esc(c.field)}</div>${conflictBox(c)}</div></span></span>`;
+}
+function assumedTag(fs) {
+  return `<span class="pop-wrap"><button class="vbtn amber" data-act="pop-toggle" data-pop="assumed" title="${esc(fs.budget_basis || "No document states a budget")}">assumed</button>
+    <div class="popover wide-pop" data-popover="assumed" hidden><div class="mono-label">Why this is assumed</div><p class="small">${esc(fs.budget_basis || "No document states a budget — the Brief Analyst estimated it.")}</p>
+      <p class="xsmall muted mt8">To confirm or change it, add the budget to your planning document and re-import the folder (Files › Re-import).</p></div></span>`;
+}
+
+function expensesTableHtml(x) {
+  if (!x.rows.length) return `<p class="small muted">No expense sheet was found in the files.</p>`;
+  return `<div class="table-wrap"><table class="tbl compact"><thead><tr><th>Item</th><th>POC</th><th class="num">USD</th><th>Receipt</th><th>Status</th><th>Flags</th></tr></thead><tbody>
+    ${x.rows.map((r) => `<tr><td class="small strong">${esc(r.item)}${r.currency === "CNY" ? ` <span class="muted">(${num(r.amount).toLocaleString("en-US")} CNY)</span>` : ""}</td><td class="small nowrap">${esc(r.poc || "")}</td><td class="num">${fmtUSD(r.amount_usd)}</td>
+      <td>${/^(yes|y)$/i.test(r.receipt || "") ? chip("Yes", "green") : chip(esc(r.receipt || "No"), "red")}</td><td class="small">${esc(r.finance_status || "—")}</td>
+      <td><div class="row wrap" style="gap:4px">${(r.flags || []).map((f) => `<span class="chip sq wrap tone-${flagTone(f)}" title="${esc(f)}">${esc(/^CNY amount/i.test(f) ? "CNY → USD at 7.1 · confirm rate" : f)}</span>`).join("") || chip("OK", "green")}</div></td></tr>`).join("")}
+  </tbody><tfoot><tr><td colspan="2">Total</td><td class="num">${fmtUSD(x.total_usd)}</td><td colspan="3"></td></tr></tfoot></table></div>`;
+}
+
+async function tabPlan(body) {
+  const ev = S.ev, fs = ev.fact_sheet, st = ev.strategy || {};
+  if (!fs) {
+    body.innerHTML = `<div class="card">${emptyState("sparkle", "No plan yet", `The agents read your ${plural((ev.documents || []).length, "file")} and write the plan: key facts, the program, and who you still need.`, `<a class="btn ghost" href="${evHash(ev.id, "files")}">${icon("file")}See your files</a>`)}</div>`;
+    return;
+  }
+  const ex = await api(`/api/events/${ev.id}/expenses`).catch(() => ({ rows: [], total_usd: 0, needs_action: 0 }));
+  const R = S.review || reviewModel(ev, S.evIssues);
+  const budgetV = fv(fs.budget);
+  const weekday = fs.weekday || weekdayOf(fv(fs.date));
+  const kf = [
+    ["Date", fv(fs.date) ? `${esc(fv(fs.date))}${weekday ? ` <span class="muted">· ${esc(weekday)}</span>` : ""}` : ""],
+    ["Time", esc(fv(fs.main_time) || fv(fs.vip_time))],
+    ["Venue", esc(fv(fs.venue))],
+    ["Organiser", esc(fv(fs.org_name_en))],
+    ["Website", linkify(fv(fs.website) || fv(fs.event_page))],
+    ["Contact", linkify(fv(fs.contact_email))],
+    ["Budget", budgetV ? `${esc(budgetV)}${fs.budget_assumed ? " " + assumedTag(fs) : ""}` : ""],
+    ["Guest policy", fs.guest_policy ? `<span class="clamp2" title="${esc(fs.guest_policy)}">${esc(fs.guest_policy)}</span>` : ""],
+  ];
+  // put each disagreement where it belongs: on the matching fact, or as its own fact row
+  const used = new Set();
+  for (const c of R.conflicts) {
+    const k = factKeyFor(c);
+    const row = k && !used.has(k) && kf.find((r) => r[0] === k);
+    if (row) { row[1] = factConflictHtml(c); row[2] = true; used.add(k); }
+    else kf.push([c.field.charAt(0).toUpperCase() + c.field.slice(1), factConflictHtml(c), true]);
+  }
+  const rows = kf.filter(([, v]) => v);
+  const prog = fs.program || [];
+  const facts = `<section class="card facts-card"><div class="card-head"><h3>${icon("file")}Event facts</h3>${R.conflicts.length ? `<span class="xsmall muted"><span class="adot"></span> ${plural(R.conflicts.length, "fact")} with more than one version</span>` : ""}</div><div class="card-body">
+    <dl class="kf">${rows.map(([k, v, cf]) => `<div class="${cf ? "has-cf" : ""}"><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>
+    <details class="disc"><summary>All facts &amp; sources</summary>
+      <dl class="facts">${factRow("Event", fs.event_name)}${factRow("Chinese name", fs.event_name_zh)}${factRow("Organiser", fs.org_name_en)}${factRow("Organiser (Chinese)", fs.org_name_zh)}
+        ${factRow("Date", fs.date)}${factRow("VIP reception", fs.vip_time)}${factRow("Main program", fs.main_time)}${factRow("Venue", fs.venue)}${factRow("City / region", fs.city_region)}
+        ${fs.budget && budgetV ? factRow("Budget", fs.budget) : ""}${factRow("Website", fs.website, { link: true })}${factRow("Event page", fs.event_page, { link: true })}${factRow("Contact", fs.contact_email, { link: true })}${factRow("Instagram", fs.instagram)}
+        ${fs.audience ? `<dt>Audience</dt><dd>${esc(fs.audience)}</dd>` : ""}</dl>
+      ${fs.org_description ? `<div class="subhead">About the organiser</div><p class="small">${esc(fs.org_description)}</p>` : ""}
+      ${prog.length ? `<div class="subhead">Program timeline</div><div class="timeline-prog">${prog.map((s) => `<div class="seg"><span class="time">${esc(s.time || "—")}</span><span>${esc(s.segment)}</span></div>`).join("")}</div>` : ""}
+      ${(fs.ticket_tiers || []).length ? `<div class="subhead">Tickets</div><div class="tiers">${fs.ticket_tiers.map((t) => `<div class="tier-card"><div class="n">${esc(t.name)}</div><div class="p">${esc(t.price)}</div><div class="i">${esc(t.includes || "")}</div></div>`).join("")}</div>` : ""}
+      ${(fs.sponsorship_tiers || []).length ? `<div class="subhead">Sponsorship</div><div class="tiers">${fs.sponsorship_tiers.map((t) => `<div class="tier-card"><div class="n">${esc(t.name)}</div><div class="p">${esc(t.price)}</div><div class="i">${esc(t.includes || "")}</div></div>`).join("")}</div>` : ""}
+      ${(fs.key_messages || []).length ? `<div class="subhead">Key messages</div><ul class="bullets small">${fs.key_messages.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
+      ${(fs.team || []).length ? `<div class="subhead">Organising team</div><ul class="bullets small">${fs.team.map((t) => `<li>${esc(t.name)} — ${esc(t.role)}</li>`).join("")}</ul>` : ""}
+      ${(fs.open_questions || []).length ? `<div class="subhead">Open questions</div><ul class="bullets small">${fs.open_questions.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
+      ${(fs.conflicts || []).some((c) => c.resolved) ? `<div class="subhead">Confirmed by you</div><ul class="bullets small">${(fs.conflicts || []).filter((c) => c.resolved).map((c) => `<li>${esc(c.field)} → <b>${esc(c.recommended)}</b></li>`).join("")}</ul>` : ""}
+    </details></div></section>`;
+
+  const slots = st.slots || [];
+  const rub = st.rubric || [];
+  const slotHtml = (s) => {
+    const filled = (s.filled_by || []).length, need = Math.max(s.needed || 0, filled, 1);
+    const segs = Array.from({ length: Math.min(need, 12) }, (_, i) => `<i class="${i < filled ? "on" : s.gap > 0 && i < filled + s.gap ? "gap" : ""}"></i>`).join("");
+    return `<div class="slot"><div class="top"><span class="ellipsis" title="${esc(s.name)}">${esc(s.name)}</span>${s.gap > 0 ? `<button class="qlink" data-act="find-slot" data-slot="${esc(s.name)}">Find people</button>` : `<span class="small" style="color:var(--green-fg)">filled</span>`}</div>
+      <div class="segbar" title="${filled} of ${s.needed} named">${segs}</div>${s.gap > 0 ? `<div class="xsmall muted">${s.gap} open${filled ? ` · ${esc(s.filled_by.join(", "))}` : ""}</div>` : ""}</div>`;
+  };
+  const ord = [...slots].sort((a, b) => (b.gap > 0) - (a.gap > 0));
+  const program = `<section class="card"><div class="card-head"><h3>${icon("grid")}Program</h3><span class="small muted">${slots.reduce((a, s) => a + (s.gap > 0 ? s.gap : 0), 0)} places open</span></div><div class="card-body">
+    ${slots.length ? ord.slice(0, 6).map(slotHtml).join("") + (ord.length > 6 ? `<details class="disc"><summary>Show ${ord.length - 6} more slots</summary>${ord.slice(6).map(slotHtml).join("")}</details>` : "") : `<p class="small muted">Slots appear after the Program Strategist runs.</p>`}
+    ${rub.length ? `<details class="disc"><summary>How priorities are set</summary>
+      ${rub.map((r) => `<div class="hbar" style="grid-template-columns:140px minmax(0,1fr) 44px" title="${esc(r.description)}"><span class="small ellipsis">${esc(r.name)}</span><div class="track" style="height:9px"><i class="cost" style="width:${Math.round(num(r.weight) * 100)}%"></i></div><span class="v small">${Math.round(num(r.weight) * 100)}%</span></div>`).join("")}
+      ${(st.scouting_briefs || []).length ? `<div class="subhead">Scouting briefs</div><ul class="bullets small">${st.scouting_briefs.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}</details>` : ""}
+  </div></section>`;
+
+  const budget = `<section class="card facts-card"><div class="card-head"><h3>${icon("dollar")}Budget</h3></div><div class="card-body">
+    <dl class="kf one"><div><dt>Budget</dt><dd>${budgetV ? esc(budgetV) : '<span class="muted">Not stated</span>'}${fs.budget_assumed && budgetV ? ' <span class="chip tone-amber" title="' + esc(fs.budget_basis || "Estimated by the Brief Analyst") + '">Assumed</span>' : ""}</dd></div>
+      <div><dt>Expenses tracked</dt><dd>${fmtUSD(ex.total_usd)} <span class="muted">· ${plural(ex.rows.length, "item")}</span></dd></div>
+      <div><dt>Need action</dt><dd>${ex.needs_action ? `<span style="color:var(--amber-fg)">${ex.needs_action}</span>` : '<span class="muted">none</span>'}</dd></div></dl>
+    ${ex.rows.length ? `<details class="disc"><summary>Show reimbursements</summary>${expensesTableHtml(ex)}</details>` : ""}</div></section>`;
+
+  body.innerHTML = `<div class="plan-grid">${facts}<div class="stack">${program}${budget}</div></div>`;
+}
+
+/* ---------------------------------------------------------------- run options + agent sheets */
+
+function runOptionsHtml() {
+  const stages = [["brief", "Brief Analyst", "Fact Sheet + conflicts"], ["roster", "Roster Analyst", "people, aliases, contacts"], ["strategy", "Program Strategist", "slots, rubric, tiers"],
+    ["scout", "Talent Scouts", "new candidates, cited URLs"], ["outreach", "Routes → drafts → review", "for the top N people"]];
+  const saved = store.get("runOpts", { budget: 0.5, top: 12, stages: stages.map((s) => s[0]) });
+  return `<div class="grid cols-2" style="gap:12px">
+      <div class="field"><label for="rp-budget">Budget cap (USD)</label><input id="rp-budget" class="input" type="number" min="0.05" max="5" step="0.05" value="${saved.budget}" data-budget></div>
+      <div class="field"><label for="rp-top">Draft for the top N people</label><input id="rp-top" class="input" type="number" min="1" max="40" step="1" value="${saved.top}" data-top></div></div>
+    <div class="label mt16 mb8">Stages</div><div class="stages">${stages.map(([id, n, d]) => `<label class="check"><input type="checkbox" value="${id}" data-stage ${saved.stages.includes(id) ? "checked" : ""}><span>${n}<small>${d}</small></span></label>`).join("")}</div>
+    <p class="hint mt12">The consistency audit, reimbursement check, follow-ups and the Drive export always run (no AI cost).</p>`;
+}
+function openRunSheet() {
+  const ev = S.ev; if (!ev) return;
+  const noKey = S.health && !S.health.key_present;
+  const body = ev.running
+    ? `<div class="working">${'<span class="spinner"></span>'}<div><b>The agents are working on this event.</b><div class="small muted">You can keep using InviteDesk meanwhile.</div></div></div>
+       <div class="mt16"><button class="btn primary" data-act="open-sheet" data-sheet="agent">${icon("activity")}Watch the agents</button></div>`
+    : `<div data-runpanel><p class="lead-p">The agents re-read your files, update the plan and the guest list, research the best way in for your top people and draft reviewed messages. <b>Nothing is sent.</b></p>
+       ${noKey ? `<div class="callout warn mt12">${icon("alert")}<div>Agents need <code>PORTKEY_API_KEY</code> in <code>.env</code>.</div></div>` : ""}
+       <details class="disc"><summary>Options</summary>${runOptionsHtml()}</details>
+       <div class="mt24"><button class="btn primary lg" data-act="run-agents" ${noKey ? "disabled" : ""}>${icon("play")}Run agents</button></div></div>`;
+  openSheetShell("sheet:run", sheetBody("Update with agents", "A full run usually costs $0.05–0.60 and takes a few minutes.", body, esc(shortEventName(ev.name))));
+}
+
+async function openAgentSheet() {
+  const ev = S.ev; if (!ev) return;
+  openSheetShell("sheet:agent", sheetBody("Agent run", "", `<div data-agent-body>${skel(2)}</div>`, "Behind the scenes"), "wide");
+  const eid = ev.id;
+  const [runs] = await Promise.all([api(`/api/events/${eid}/runs`), ensureTrace(eid)]);
+  if (S.sheetKey !== "sheet:agent") return;
+  S.runs = runs;
+  if (S.ev.running) startPoll(eid);
+  if (S.runSel == null || (S.runSel !== "all" && !runs.find((r) => r.id === S.runSel))) S.runSel = runs.length ? runs[0].id : "all";
+  const el = $("[data-agent-body]");
+  el.innerHTML = `<div class="row wrap mb16"><label class="small muted" for="run-sel">Run</label><select id="run-sel" class="select sm" style="width:auto;max-width:360px" data-act-change="run-sel">
+        ${runs.map((r) => `<option value="${r.id}" ${S.runSel === r.id ? "selected" : ""}>#${r.id} · ${esc(fmtDateTime(r.started_at))} · ${esc(runLabel(r.status))}${r.note ? " · " + esc(r.note.slice(0, 40)) : ""}</option>`).join("")}
+        <option value="all" ${S.runSel === "all" ? "selected" : ""}>All activity (incl. import)</option></select>
+      <span class="spacer"></span>${ev.running ? "" : `<button class="btn ghost sm" data-act="open-sheet" data-sheet="run">${icon("refresh")}Update with agents</button>`}</div>
+    <div class="card"><div class="board-wrap" data-board></div>
+      <div class="board-legend"><span><i class="sw" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></i>working</span><span><i class="sw" style="background:var(--green-dot)"></i>done</span><span><i class="sw" style="background:var(--amber-dot)"></i>stopped / warning</span><span><i class="sw" style="background:var(--red-dot)"></i>error</span><span><i class="sw" style="background:#94A3B8"></i>idle</span><span class="spacer"></span><span data-guards></span></div></div>
+    <div class="grid mt16" style="grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);align-items:start">
+      <div class="card"><div class="card-head"><h3>${icon("list")}Live log</h3><span class="small muted" data-logcount></span></div><div class="log" data-log></div></div>
+      <div class="stack"><div class="card" data-meter></div><div class="card" data-agent-usage></div></div></div>`;
+  paintRun(true);
+}
+
+
+/* ================================================================== people tab */
+
+function routeSentence(p, r) {
+  r = r || p.best_route;
+  const name = p.name;
+  if (!r) return `Plan the best way to reach ${shortName(name)}`;
+  const via = ((r.via || "").split(";")[0] || "").split(/[,(（]/)[0].trim(), ch = r.channel || "";
+  switch (r.route_type) {
+    case "intermediary_intro": return via ? `Ask ${via} to introduce ${shortName(name)}` : `Find someone to introduce ${shortName(name)}`;
+    case "existing_thread": return `Follow up on the existing ${ch || "thread"}`;
+    case "official_management": return `Contact ${shortName(name)}'s management`;
+    case "partner_org": return via ? `Reach them through ${via}` : "Reach them through a partner organisation";
+    case "public_contact": return "Use their official contact channel";
+    case "direct_dm": return `Message them directly on ${ch || "social media"}`;
+    default: return `Reach them via ${ch || r.route_type}`;
+  }
+}
+function cardLine(p) {
+  if (["needs_changes", "ready_for_review", "in_review"].includes(p.draft_status)) return ["Message ready to review", "warm"];
+  if (p.draft_status === "blocked") return ["Message on hold — the reviewer blocked it", "hot"];
+  if (p.status === "confirmed") return [p.draft_status === "approved" ? "Approved message — send it yourself" : "All set", "ok"];
+  if (p.status === "declined") return ["Declined", "cold"];
+  return [routeSentence(p), (p.best_route && p.best_route.warmth) || "cold"];
+}
+const PCOLS = [
+  ["find", "To find", (p) => p.origin === "scout" && ["not_started", "unknown", "backup"].includes(p.status)],
+  ["reach", "To reach", (p) => p.origin !== "scout" && ["not_started", "unknown", "backup"].includes(p.status)],
+  ["invited", "Invited", (p) => ["contacted_no_reply", "pending", "likely"].includes(p.status)],
+  ["confirmed", "Confirmed", (p) => p.status === "confirmed"],
+];
+const peopleView = () => (store.get("peopleView", "board") === "list" ? "list" : "board");
+function savePf() { store.set("peopleFilter", S.pf); }
+function activeFilterCount() { const f = S.pf; return [f.tier, f.list, f.source].filter(Boolean).length + (f.orgs ? 1 : 0) + (f.team ? 1 : 0); }
+function filteredPeople2() {
+  const f = S.pf, q = (f.q || "").trim().toLowerCase();
+  return (S.evPeople || []).filter((p) => {
+    if (!f.orgs && (p.entity || "person") === "organization") return false;
+    if (!f.team && p.relationship === "team_member") return false;
+    if (f.tier && (f.tier === "none" ? p.tier : p.tier !== f.tier)) return false;
+    if (f.list && (p.slot || "") !== f.list) return false;
+    if (f.source && (p.origin || "roster") !== f.source) return false;
+    if (q && ![p.name, ...(p.aliases || []), p.role, p.slot, p.owner, p.intro].join(" ").toLowerCase().includes(q)) return false;
+    return true;
   });
+}
+
+async function tabPeople(body) {
+  S.evPeople = await api(`/api/events/${S.evId}/people`);
+  const n = activeFilterCount();
+  body.innerHTML = `<div class="ptool">
+      <div class="search">${icon("search")}<input class="input" placeholder="Search people  ( / )" value="${esc(S.pf.q)}" data-pf="q" data-search aria-label="Search people"></div>
+      <div class="pop-wrap"><button class="btn ghost" data-act="pop-toggle" data-pop="filter" aria-haspopup="true">${icon("list")}Filter${n ? `<span class="count-badge accent">${n}</span>` : ""}</button>
+        <div class="popover" data-popover="filter" hidden>${filterPopoverHtml()}</div></div>
+      <span class="spacer"></span><span class="small muted" data-pcount></span>
+      <div class="seg-ctl" role="group" aria-label="View">${[["board", "columns", "Board"], ["list", "table", "List"]].map(([v, ic, l]) => `<button data-act="p-view" data-v="${v}" aria-pressed="${peopleView() === v}">${icon(ic)}${l}</button>`).join("")}</div>
+      <div class="pop-wrap"><button class="btn ghost icon-only" data-act="pop-toggle" data-pop="pmenu" aria-label="More">${icon("more")}</button>
+        <div class="popover right" data-popover="pmenu" hidden><button class="menu-item" data-act="people-csv">${icon("download")}Export this view as CSV</button><button class="menu-item" data-act="people-photos">${icon("camera")}Find public photos</button></div></div>
+    </div><div data-pview></div>`;
+  renderPeopleView();
+}
+function filterPopoverHtml() {
+  const f = S.pf, ppl = S.evPeople || [];
+  const lists = [...new Set(ppl.map((p) => p.slot).filter(Boolean))].sort();
+  const opt = (v, l, cur) => `<option value="${esc(v)}" ${cur === v ? "selected" : ""}>${esc(l)}</option>`;
+  return `<div class="field"><label>Tier</label><select class="select sm" data-pf="tier">${opt("", "Any tier", f.tier)}${["A", "B", "C"].map((t) => opt(t, "Tier " + t, f.tier)).join("")}${opt("none", "Not tiered", f.tier)}</select></div>
+    <div class="field mt12"><label>List / slot</label><select class="select sm" data-pf="list">${opt("", "All lists", f.list)}${lists.map((s) => opt(s, s, f.list)).join("")}</select></div>
+    <div class="field mt12"><label>Source</label><select class="select sm" data-pf="source">${opt("", "From files + scouted", f.source)}${opt("roster", "From your files", f.source)}${opt("scout", "Scouted by agents", f.source)}</select></div>
+    <label class="check mt12"><input type="checkbox" data-pf="orgs" ${f.orgs ? "checked" : ""}><span>Include organisations</span></label>
+    <label class="check mt8"><input type="checkbox" data-pf="team" ${f.team ? "checked" : ""}><span>Include your team</span></label>
+    <button class="btn ghost sm block mt12" data-act="pf-clear">Clear filters</button>`;
+}
+function personCard(p) {
+  const [line, warm] = cardLine(p);
+  return `<button class="pcard2 ${S.drawerPid === p.id ? "selected" : ""}" data-act="open-person" data-pid="${p.id}" title="${esc(p.name)}">
+    <div class="pc2-top">${avatar(p.name, "sm", p.photo_url)}<div class="pc2-n"><div class="nm">${esc(p.name)}</div><div class="rl">${esc(p.role || p.slot || "Role to be decided")}</div></div>${p.tier === "A" ? '<span class="amark" title="Tier A">A</span>' : ""}</div>
+    <div class="pc2-line"><span class="wdot ${warm}"></span><span class="ellipsis">${esc(line)}</span></div>${["confirmed", "declined"].includes(p.status) ? "" : routeLineHtml(p)}</button>`;
+}
+function renderPeopleView() {
+  const el = $("[data-pview]"); if (!el) return;
+  const rows = filteredPeople2();
+  const total = (S.evPeople || []).length;
+  const cnt = $("[data-pcount]"); if (cnt) cnt.textContent = plural(rows.length, "person", "people");
+  if (!total) { el.innerHTML = `<div class="card">${emptyState("users", "No people yet", "Run the agents to read your files, or find people with a short description.", `<button class="btn" data-act="open-sheet" data-sheet="find">${icon("search")}Find people</button>`)}</div>`; return; }
+  if (peopleView() === "list") {
+    el.innerHTML = rows.length ? `<div class="card"><div class="table-wrap"><table class="tbl fixed rows"><thead><tr><th style="width:30%">Name</th><th style="width:20%">Role</th><th style="width:130px">Status</th><th>Best way in</th><th style="width:130px">Owner</th></tr></thead><tbody>
+      ${rows.map((p) => `<tr class="clickable ${S.drawerPid === p.id ? "selected" : ""}" data-act="open-person" data-pid="${p.id}" tabindex="0">
+        <td><div class="person">${avatar(p.name, "", p.photo_url)}<div style="min-width:0"><div class="nm">${esc(p.name)}${p.tier === "A" ? ' <span class="amark">A</span>' : ""}</div>${(p.aliases || []).length ? `<div class="al">${esc(p.aliases.join(" · "))}</div>` : ""}</div></div></td>
+        <td title="${esc(p.role || "")}"><span class="small">${esc(p.role || p.slot || "—")}</span></td><td>${pStatusChip(p.status, false)}</td>
+        <td title="${esc(cardLine(p)[0])}"><span class="small"><span class="wdot ${cardLine(p)[1]}"></span> ${esc(cardLine(p)[0])}</span></td><td class="small">${esc(p.owner || "—")}</td></tr>`).join("")}</tbody></table></div></div>`
+      : `<div class="card">${emptyState("search", "No matches", "Nobody matches these filters.", `<button class="btn" data-act="pf-clear">Clear filters</button>`)}</div>`;
+    return;
+  }
+  const declined = rows.filter((p) => p.status === "declined");
+  el.innerHTML = `<div class="kanban v4">${PCOLS.map(([k, label, test]) => {
+    const list = rows.filter(test), max = S.peopleMore[k] ? list.length : 5;
+    return `<div class="kcol"><div class="kcol-h"><span class="eyebrow">${label}</span><span class="spacer"></span><span class="count-badge">${list.length}</span></div>
+      <div class="kcards">${list.slice(0, max).map(personCard).join("") || `<div class="kempty">${k === "find" ? "New candidates land here" : "Nobody here yet"}</div>`}
+      ${list.length > max ? `<button class="qlink center" data-act="p-more" data-col="${k}">Show ${list.length - max} more</button>` : ""}
+      ${k === "find" ? `<button class="qlink center" data-act="open-sheet" data-sheet="find">${icon("plus")}Find people</button>` : ""}</div></div>`;
+  }).join("")}</div>
+  ${declined.length ? `<div class="mt16"><button class="qlink" data-act="p-declined">${S.showDeclined ? "Hide" : "Show"} declined (${declined.length})</button>
+    ${S.showDeclined ? `<div class="declined-row mt12">${declined.map(personCard).join("")}</div>` : ""}</div>` : ""}`;
+}
+function exportPeopleCSV() {
+  const rows = [["name", "aliases", "tier", "status", "role", "list", "owner", "source", "best_way_in", "warmth", "contacts"]];
+  for (const p of filteredPeople2()) rows.push([p.name, (p.aliases || []).join("; "), p.tier || "", p.status, p.role || "", p.slot || "", p.owner || "", p.origin || "", routeSentence(p), (p.best_route || {}).warmth || "", (p.contacts || []).map((c) => `${c.channel}:${c.value}`).join("; ")]);
+  downloadText(`${(S.ev.name || "event").replace(/[^\w\u4e00-\u9fff]+/g, "_")}__people.csv`, toCSV(rows));
+}
+
+/* ---------------------------------------------------------------- find people sheet */
+
+function findChips() {
+  const slots = ((S.ev && S.ev.strategy) || {}).slots || [];
+  const open = slots.filter((s) => (s.gap || 0) > 0).slice(0, 3);
+  return [
+    ...open.map((s) => `People for “${s.name.replace(/\s*\([^)]*\)\s*$/, "")}”, ${Math.max(3, Math.min(8, (s.gap || 2) + 2))} names`),
+    "Keynote speakers who fit the event theme, 5 names",
+    "Sponsors with a track record at similar events",
+    "Alumni founders or investors for networking",
+  ].slice(0, 5);
+}
+function openFindSheet() {
+  const ev = S.ev; if (!ev) return;
+  const pre = S.findPrefill || store.get("listBrief", "");
+  S.findPrefill = null;
+  const gen = S.generating && S.generating.eid === S.evId;
+  const noKey = S.health && !S.health.key_present;
+  const body = `<div class="field"><label for="find-brief">Who do you need?</label>
+      <textarea id="find-brief" class="textarea" rows="3" data-list-brief data-autofocus placeholder="e.g. Panelists for the main panel, 6 names, ideally based nearby and bilingual" ${gen ? "disabled" : ""}>${esc(gen ? S.generating.brief : pre)}</textarea></div>
+    <div class="row wrap mt12" style="gap:6px">${findChips().map((x) => `<button class="chip outline" style="cursor:pointer;border:0" data-act="list-example" data-v="${esc(x)}" ${gen ? "disabled" : ""}>${esc(x)}</button>`).join("")}</div>
+    <div class="row wrap mt16"><label class="small muted" for="list-count">How many</label>
+      <select id="list-count" class="select sm" style="width:80px" data-list-count ${gen ? "disabled" : ""}>${[3, 5, 6, 8, 10, 12, 15].map((n) => `<option ${n === 8 ? "selected" : ""}>${n}</option>`).join("")}</select>
+      <div class="seg-ctl" role="group" aria-label="Research mode">${Object.entries(LIST_MODES).map(([k, m]) => `<button data-act="list-mode" data-v="${k}" aria-pressed="${listMode() === k}" title="${esc(m.help)}" ${gen ? "disabled" : ""}>${m.label}</button>`).join("")}</div></div>
+    <p class="hint mt8" data-list-mode-hint>${esc(LIST_MODES[listMode()].hint)} · nothing is sent to anyone</p>
+    <div class="mt16"><button class="btn primary lg" data-act="list-generate" ${gen || noKey ? "disabled" : ""}>${gen ? '<span class="spinner"></span>Researching…' : icon("search") + "Find people"}</button></div>
+    <div data-list-progress>${gen ? listProgressHtml() : ""}</div>`;
+  openSheetShell("sheet:find", sheetBody("Find people", "A Talent Scout researches the web and adds people with cited evidence to the “To find” column.", body, esc(shortEventName(ev.name))));
+}
+function paintFindBusy() {
+  const b = $('[data-act="list-generate"]'); if (b) { b.disabled = true; b.innerHTML = '<span class="spinner"></span>Researching…'; }
+  $$("[data-list-brief], [data-list-count], [data-act='list-example'], [data-act='list-mode']").forEach((x) => (x.disabled = true));
+  const p = $("[data-list-progress]"); if (p) p.innerHTML = listProgressHtml();
+}
+
+/* ---------------------------------------------------------------- person sheet */
+
+async function openPersonSheet(pid) {
+  S.drawerPid = pid;
+  openSheetShell("p:" + pid, `<div class="drawer-body">${skel(2)}</div>`, "profile");
+  $$("[data-pid]").forEach((x) => x.classList && x.classList.toggle("selected", +x.dataset.pid === pid));
+  await loadPersonSheet(pid);
+}
+async function loadPersonSheet(pid) {
+  try {
+    const [p, paths, best] = await Promise.all([api(`/api/people/${pid}`), api(`/api/people/${pid}/paths`).catch(() => []), api(`/api/people/${pid}/best`).catch(() => null)]);
+    if (S.drawerPid !== pid) return;
+    S.drawer = p; S.paths = paths; S.best = best;
+    renderPersonSheet();
+    if (!p.photo_url && !p.photo_checked) lookupPhoto(p);
+  } catch (e) {
+    const el = $("[data-drawer]"); if (el) el.innerHTML = `<div class="drawer-body">${emptyState("alert", "Couldn't load this person", esc(e.message))}</div>`;
+  }
+}
+const loadDrawer = loadPersonSheet;
+const renderDrawer = () => renderPersonSheet();
+const renderDrawerPlanState = () => renderPersonSheet();
+const refreshBehindDrawer = debounce(() => { if (["people", "messages", "plan"].includes(S.tab)) refreshEventView(); }, 300);
+
+function miniChain(names) {
+  const n = names.length;
+  return `<div class="chain big">${names.map((name, i) => `${i ? `<span class="carrow">${icon("chevron")}</span>` : ""}<span class="cnode ${i === 0 ? "team" : i === n - 1 ? "target" : "via"}">${avatar(name, "sm")}<span class="ellipsis">${esc(i === 0 && /^you$/i.test(name) ? "You" : shortName(name))}</span></span>`).join("")}</div>`;
+}
+function prow(key, label, count, inner) {
+  const open = S.openRows.has(key);
+  return `<details class="prow" data-row="${key}" ${open ? "open" : ""}><summary><span>${label}</span>${count != null ? `<span class="muted small">${count}</span>` : ""}${icon("chevron")}</summary><div class="prow-body">${inner}</div></details>`;
+}
+
+
+
+/* ================================================================== messages tab (inbox) */
+
+const REVIEW_ORDER = ["needs_changes", "blocked", "ready_for_review", "in_review"];
+function msgSections() {
+  const drafts = S.drafts || [], fus = S.evFollowups || [], t = todayISO();
+  const st = Object.fromEntries((S.evPeople || []).map((p) => [p.id, p.status]));
+  const review = drafts.filter((d) => REVIEW_ORDER.includes(d.status)).sort((a, b) => REVIEW_ORDER.indexOf(a.status) - REVIEW_ORDER.indexOf(b.status));
+  const due = fus.filter((f) => f.status === "open" && f.due <= t).sort((a, b) => (a.due < b.due ? -1 : 1));
+  const waiting = drafts.filter((d) => d.status === "sent" && !["confirmed", "declined"].includes(st[d.person_id]));
+  const done = drafts.filter((d) => ["approved", "discarded"].includes(d.status) || (d.status === "sent" && !waiting.includes(d)));
+  return { review, due, waiting, done };
+}
+function msgItem(d, did) {
+  return `<a class="li ${d.id === did ? "active" : ""}" href="${evHash(S.evId, "messages", d.id)}"><div class="mli">${avatar(d.name, "", photoOf(d.person_id))}<div style="min-width:0">
+    <div class="l1"><span class="nm">${esc(d.name)}</span>${dStatusChip(d.status)}</div>
+    <div class="subj" title="${esc(draftTitle(d))}">${esc(draftTitle(d))}</div></div></div></a>`;
+}
+function msgListHtml(did) {
+  const s = msgSections();
+  const sec = (label, n, inner) => `<div class="group-h"><span class="eyebrow">${label}</span><span class="count-badge">${n}</span></div>${inner}`;
+  return `${sec("To review", s.review.length, s.review.map((d) => msgItem(d, did)).join("") || '<div class="li-empty">Nothing to review.</div>')}
+    ${sec("Follow up", s.due.length, s.due.map((f) => `<div class="li fu-li ${f.due < todayISO() ? "overdue" : ""}"><div class="mli">${avatar(f.name, "", photoOf(f.person_id))}<div style="min-width:0">
+        <div class="l1"><a class="nm" href="${personHash(S.evId, f.person_id, "messages")}">${esc(f.name)}</a><span class="xsmall ${f.due < todayISO() ? "late" : "muted"}">${esc(relDue(f.due))}</span></div>
+        <div class="subj" title="${esc(f.action)}">${esc(f.action)}</div>
+        <div class="row mt8" style="gap:6px"><button class="btn xs" data-act="plan-person" data-pid="${f.person_id}">Draft follow-up</button><button class="btn xs ghost" data-act="fu-done" data-id="${f.id}">Done</button></div></div></div></div>`).join("") || '<div class="li-empty">No follow-ups due.</div>')}
+    ${sec("Waiting for reply", s.waiting.length, s.waiting.map((d) => msgItem(d, did)).join("") || '<div class="li-empty">Nothing outstanding.</div>')}
+    ${s.done.length ? `<details class="disc in-list"><summary>Done (${s.done.length})</summary>${s.done.map((d) => msgItem(d, did)).join("")}</details>` : ""}`;
+}
+
+async function tabMessages(body, sub) {
+  const [drafts, fus] = await Promise.all([api(`/api/events/${S.evId}/drafts`), api(`/api/events/${S.evId}/followups`).catch(() => [])]);
+  S.drafts = drafts; S.evDrafts = drafts; S.evFollowups = fus;
+  const s = msgSections();
+  let did = sub ? +sub : null;
+  if (!did || !drafts.find((d) => d.id === did)) {
+    const first = s.review[0] || s.waiting[0];
+    did = first ? first.id : null;
+    if (did) { history.replaceState(null, "", evHash(S.evId, "messages", did, S.route.query.toString())); S.mainKey = `event/${S.evId}/messages/${did}?` + (() => { const q = new URLSearchParams(S.route.query); SHEET_PARAMS.forEach((k) => q.delete(k)); return q.toString(); })(); }
+  }
+  if (!drafts.length && !s.due.length) {
+    body.innerHTML = `<div class="card">${emptyState("mail", "No messages yet", "Messages appear when the agents draft outreach for your people.", `<a class="btn" href="${evHash(S.evId, "people")}">${icon("users")}Go to People</a>`)}</div>`;
+    return;
+  }
+  body.innerHTML = `<div class="mail v4"><div class="card list-pane" aria-label="Inbox">${msgListHtml(did)}</div>
+    <div data-draft-detail>${did ? skel(1) : `<div class="card">${emptyState("inbox", "Inbox zero", "Nothing is waiting for your review.", `<a class="btn" href="${evHash(S.evId, "people")}">${icon("users")}Go to People</a>`)}</div>`}</div></div>`;
+  if (did) await loadDraftDetail(did);
+}
+async function loadDraftDetail(did) {
+  const d = await api(`/api/drafts/${did}`);
+  S.draft = d;
+  S.draftDirty = false;
+  renderDraftDetail();
+}
+
+function renderDraftDetail() {
+  const d = S.draft, el = $("[data-draft-detail]");
+  if (!d || !el) return;
+  const rv = (d.review && d.review.final) || null;
+  const hist = (d.review && d.review.history) || [];
+  const issues = (rv && rv.issues) || [];
+  const busy = S.draftBusy;
+  const blocked = d.status === "blocked", isSent = d.status === "sent", isDisc = d.status === "discarded";
+  const verdict = !rv ? "Not reviewed yet" : rv.verdict === "pass" ? "Reviewer: passed" : rv.verdict === "block" ? "Reviewer: blocked — fix it before approving" : `Reviewer: ${plural(issues.length, "suggestion")}`;
+  const vtone = !rv ? "gray" : rv.verdict === "pass" ? "green" : rv.verdict === "block" ? "red" : "amber";
+  const serif = store.get("letterSerif", false);
+  const canApprove = !(blocked || isSent || busy || d.status === "approved" || isDisc);
+  el.innerHTML = `<div class="letter">
+    <div class="letter-head">
+      <div class="row" style="gap:10px;margin-bottom:10px">${avatar(d.name, "sm", photoOf(d.person_id))}<button class="qlink strong" data-act="open-person" data-pid="${d.person_id}">${esc(d.name)}</button>${dStatusChip(d.status)}
+        <span class="xsmall muted ellipsis">${esc(DKIND[d.kind] || d.kind)} · ${esc(LANGS[d.language] || d.language || "")} · ${esc(CHANNELS[d.channel] || d.channel || "")}</span><span class="spacer"></span>
+        <div class="pop-wrap"><button class="btn ghost sm icon-only" data-act="pop-toggle" data-pop="dmenu" aria-label="More actions">${icon("more")}</button>
+          <div class="popover right" data-popover="dmenu" hidden>
+            <button class="menu-item" data-act="draft-edit">${icon("edit")}Edit</button>
+            <button class="menu-item" data-act="draft-status" data-s="needs_changes" ${isSent ? "disabled" : ""}>${icon("flag")}Request changes</button>
+            <button class="menu-item" data-act="draft-review" ${busy || isSent || !(S.health || {}).key_present ? "disabled" : ""}>${icon("refresh")}Re-run review</button>
+            <button class="menu-item" data-act="draft-status" data-s="sent" ${d.status !== "approved" ? "disabled" : ""}>${icon("send")}Mark as sent</button>
+            <button class="menu-item" data-act="copy" data-v="${esc(d.body || "")}" data-copy-body>${icon("file")}Copy text</button>
+            <button class="menu-item danger" data-act="draft-status" data-s="discarded" ${isDisc ? "disabled" : ""}>${icon("trash")}Discard</button></div></div>
+        <button class="btn primary" data-act="draft-status" data-s="approved" ${canApprove ? "" : "disabled"} title="${blocked ? "Blocked by the reviewer — fix and re-run review first" : "Approve: exports an .eml to Files › Produced › outbox"}">${busy === "review" ? '<span class="spinner"></span>Reviewing…' : icon("check") + (d.status === "approved" ? "Approved" : "Approve")}</button></div>
+      <div class="hrow"><span>To</span><input class="input" value="${esc(d.recipient || "")}" data-draft-field="recipient" placeholder="address / handle" aria-label="Recipient"></div>
+      ${!d.subject && !isEmailDraft(d) ? `<div class="hrow"><span>Channel</span><div class="small ch-line">${chIco(d.channel)}${esc(CHANNELS[d.channel] || d.channel)} <span class="muted">— no subject line; send it as a ${esc(chKind(d.channel) === "person" ? "talking script" : chKind(d.channel) === "phone" ? "call script" : "direct message")}</span></div></div>`
+        : `<div class="hrow"><span>Subject</span><input class="input subject-input" value="${esc(d.subject || "")}" data-draft-field="subject" aria-label="Subject"></div>`}
+    </div>
+    ${d.status === "approved" ? `<div class="callout ok slim">${icon("check")}<div class="small">Approved and exported as an .eml to <a class="link" href="${evHash(S.evId, "files", "", "seg=produced&f=" + encodeURIComponent("outbox/"))}">Files › outbox</a>. Send it from your own mail client, then choose <b>Mark as sent</b> in the … menu.</div></div>` : ""}
+    <div class="paper"><textarea class="textarea body-input ${serif ? "serifed" : ""}" data-draft-field="body" aria-label="Message body">${esc(d.body || "")}</textarea></div>
+    <div class="paper-foot"><span class="xsmall muted">v${d.version || 1} · ${esc(fmtDateTime(d.updated_at))}</span><span class="xsmall" style="color:var(--amber-fg)" data-dirty-note></span><span class="spacer"></span>
+      <button class="btn sm" data-act="draft-save" data-save-btn hidden>${icon("check")}Save edits</button>
+      <div class="seg-ctl" role="group" aria-label="Letter typeface"><button data-act="draft-serif" data-v="0" aria-pressed="${!serif}">Sans</button><button data-act="draft-serif" data-v="1" aria-pressed="${serif}">Letter</button></div></div>
+    <details class="disc rv"><summary><span class="wdot ${vtone === "green" ? "ok" : vtone === "red" ? "hot" : vtone === "amber" ? "warm" : "cold"}"></span>${esc(verdict)}</summary>
+      ${issues.map((i) => `<div class="issue"><span class="sev ${esc(i.severity)}">${esc(i.severity)}</span><div><div>${esc(i.text)}</div>${i.fix ? `<div class="fix"><b>Fix:</b> ${esc(i.fix)}</div>` : ""}</div></div>`).join("")}
+      ${hist.length > 1 ? `<div class="xsmall muted mt8">History: ${hist.map((h) => `v${h.version} ${esc((VERDICT[h.verdict] || [h.verdict])[0])}`).join(" → ")}</div>` : ""}
+      ${(d.claims || []).length ? `<div class="subhead">Personal claims</div>${d.claims.map((c) => `<div class="small mt8">${esc(c.claim)} <span class="muted">— ${isURL(c.evidence) ? `<a class="link" href="${esc(c.evidence)}" target="_blank" rel="noopener noreferrer">${esc(domainOf(c.evidence))}</a>` : esc(c.evidence)}</span></div>`).join("")}` : ""}
+    </details>
+    <details class="disc"><summary>Comments (${(d.comments || []).length})</summary>
+      ${(d.comments || []).map((c) => `<div class="comment"><div class="row">${avatar(c.author, "xs")}<span class="who">${esc(c.author)}</span><span class="xsmall muted">${esc(fmtDateTime(c.created_at))}</span></div><div class="mt8">${esc(c.text)}</div></div>`).join("")}
+      <div class="row mt8"><input class="input sm" style="width:96px" value="${esc(store.get("author", ""))}" placeholder="Name" data-c-author aria-label="Your name"><input class="input sm" placeholder="Write a comment…" data-c-text aria-label="Comment"><button class="btn sm" data-act="draft-comment">Post</button></div>
+    </details></div>`;
+}
+async function refreshDraftsList() {
+  try {
+    const [drafts, fus] = await Promise.all([api(`/api/events/${S.evId}/drafts`), api(`/api/events/${S.evId}/followups`).catch(() => S.evFollowups)]);
+    S.drafts = drafts; S.evDrafts = drafts; S.evFollowups = fus;
+  } catch { /* keep */ }
+  const pane = $(".list-pane");
+  if (pane && S.draft) pane.innerHTML = msgListHtml(S.draft.id);
+  refreshHeader();
+}
+
+/* ================================================================== files tab */
+
+const KIND_TONE = { invitation: "purple", sponsorship: "pink", roster: "blue", finance: "orange", promotion: "teal", planning: "green", sheet: "blue", other: "gray" };
+async function tabFiles(body) {
+  const seg = S.route.query.get("seg") === "produced" ? "produced" : "received";
+  const docs = S.ev.documents || [];
+  body.innerHTML = `<div class="row mb16 wrap"><div class="seg-ctl" role="group" aria-label="Files">
+      <button data-act="files-seg" data-v="received" aria-pressed="${seg === "received"}">Received <span class="faint">${docs.length}</span></button>
+      <button data-act="files-seg" data-v="produced" aria-pressed="${seg === "produced"}">Produced</button></div><span class="spacer"></span>
+      ${seg === "received" ? `<label class="btn ghost" tabindex="0">${icon("upload")}Re-import updated folder<input type="file" accept=".zip" class="sr-only" data-act-change="reimport"></label>` : ""}</div>
+    <div data-files></div>`;
+  const el = $("[data-files]");
+  if (seg === "produced") { await tabDrive(el); return; }
+  if (!docs.length) { el.innerHTML = `<div class="card">${emptyState("file", "No documents", "Re-import your event folder as a .zip.")}</div>`; return; }
+  el.innerHTML = `<div class="card"><div class="card-head"><h3>${icon("inbox")}What came in</h3><span class="small muted">${plural(docs.length, "document")} · ${fmtInt(docs.reduce((a, d) => a + num(d.chars), 0))} characters</span></div>
+    ${docs.map((d) => {
+      const iss = docIssues(d), inj = (d.flags || []).length || iss.some((i) => i.kind === "injection"), hi = iss.filter((i) => i.severity === "high").length;
+      const flag = inj ? `<span class="fflag red">${icon("shield")}instruction-like text${iss.length > 1 ? ` · ${iss.length}` : ""}</span>`
+        : iss.length ? `<span class="fflag ${hi ? "amber" : ""}"><span class="adot ${hi ? "" : "grey"}"></span>${plural(iss.length, "check")}</span>` : `<span class="xsmall muted">${fmtInt(d.chars)} chars</span>`;
+      return `<button class="file-row" data-act="open-doc" data-id="${d.id}">${icon("file")}<span class="nm ellipsis">${esc(d.path)}</span>${chip(esc(d.kind), KIND_TONE[d.kind] || "gray", "sq")}${flag}</button>`;
+    }).join("")}</div>
+    <p class="hint mt12">Open a file to see its checks. Instruction-like text (e.g. “ignore previous instructions”) is flagged and always treated as data by every agent.</p>`;
+}
+function docIssues(d) {
+  const base = (d.path || "").split("/").pop();
+  return (S.evIssues || []).filter((i) => i.status === "open" && i.document && (i.document === d.path || i.document.includes(d.path) || (base.length > 6 && i.document.includes(base))));
+}
+async function openDocSheet(id) {
+  openSheetShell("doc:" + id, `<div class="drawer-body">${skel(2)}</div>`, "wide");
+  try {
+    const d = await api(`/api/documents/${id}`);
+    if (S.sheetKey !== "doc:" + id) return;
+    let html = esc(d.text || "");
+    for (const f of d.flags || []) { const core = esc(f.trim()).slice(0, 80); if (core.length > 12 && html.includes(core)) html = html.split(core).join(`<mark>${core}</mark>`); }
+    $("[data-drawer]").innerHTML = sheetBody(esc(d.path), `${esc(d.kind)} · ${fmtInt(d.chars)} characters`,
+      `${(() => { const doc = ((S.ev && S.ev.documents) || []).find((x) => x.id === id) || d; const iss = docIssues(doc); return iss.length ? `<div class="rv-group"><div class="mono-label">Checks on this file · ${iss.length}</div>${iss.map((i) => i.severity === "high" ? decisionIssueRow(i) : otherChecksHtml([i]).replace(/<div class="subhead">.*?<\/div>/, "")).join("")}</div>` : `<div class="quiet-ok">${icon("check")}No open checks on this file.</div>`; })()}
+      ${(d.flags || []).length ? `<div class="callout danger mb12">${icon("shield")}<div class="small"><b>Instruction-like text found — treated as data, never obeyed.</b> Remove it before sharing this file.${d.flags.map((f) => `<div class="quote mt8">${esc(f)}</div>`).join("")}</div></div>` : ""}<pre class="doc-text">${html}</pre>`, "Received file");
+  } catch (e) { $("[data-drawer]").innerHTML = `<div class="drawer-body">${emptyState("alert", "Couldn't open the file", esc(e.message))}</div>`; }
+}
+async function reimportFile(input) {
+  const f = input.files[0];
+  if (!f) return;
+  if (!/\.zip$/i.test(f.name)) { toast("Please choose a .zip of the event folder.", "error"); return; }
+  const fd = new FormData();
+  fd.append("file", f); fd.append("name", S.ev.name || ""); fd.append("org", S.ev.org || ""); fd.append("event_id", S.evId);
+  toast("Uploading the updated folder…", "info", 2500);
+  try {
+    await api("/api/events/import", { method: "POST", form: fd });
+    toast("Documents refreshed. Choose “Update with agents” to pick up the changes.", "ok", 6000);
+    await refreshEventView();
+  } catch (e) { toastErr(e); }
+}
+
+
+/* ================================================================== v5 profile: channels, routes, rich person sheet */
+
+function chKind(t) {
+  const s = String(t || "").toLowerCase();
+  if (/wechat|\u5fae\u4fe1|weixin/.test(s)) return "wechat";
+  if (/linkedin/.test(s)) return "linkedin";
+  if (/instagram|\bdm\b|direct message|xiaohongshu|weibo/.test(s)) return "dm";
+  if (/phone|telephone|call|\u7535\u8bdd/.test(s)) return "phone";
+  if (/in person|in-person|dinner|meeting|face/.test(s)) return "person";
+  if (/manage|agency|agent|publicist|\bpr\b/.test(s)) return "management";
+  if (/mail|\u7535\u90ae|\u90ae\u4ef6|letter/.test(s)) return "email";
+  if (/web|page|site|form/.test(s)) return "web";
+  return s ? "other" : "";
+}
+const CHK = {
+  email: ["mail", "Email"], wechat: ["msg", "WeChat"], dm: ["camera", "DM"], phone: ["phone", "Phone"], person: ["users", "In person"],
+  management: ["briefcase", "Management"], linkedin: ["link", "LinkedIn"], web: ["globe", "Web"], other: ["link", "Other"],
+};
+const chIco = (t) => icon((CHK[chKind(t)] || CHK.other)[0]);
+const chName = (t) => (CHK[chKind(t)] || [0, t || ""])[1];
+function draftTitle(d) {
+  if (d.subject) return d.subject;
+  const first = String(d.body || "").split(/\n/).map((x) => x.trim()).find(Boolean) || "";
+  const lbl = CHANNELS[d.channel] || chName(d.channel) || "Message";
+  return `${lbl} · ${first.length > 72 ? first.slice(0, 72) + "…" : first}`;
+}
+const isEmailDraft = (d) => !d.channel || chKind(d.channel) === "email";
+function warmBars(w) {
+  const n = { hot: 3, warm: 2, cold: 1 }[w] || 0;
+  return `<span class="wbars ${esc(w || "none")}" title="${esc(w || "unknown")} route" aria-label="${esc(w || "unknown")} route"><i class="${n >= 1 ? "on" : ""}"></i><i class="${n >= 2 ? "on" : ""}"></i><i class="${n >= 3 ? "on" : ""}"></i></span>`;
+}
+const cleanVia = (v) => String(v || "").split(/[;(（]/)[0].split(/,\s/)[0].trim();
+function ownerFromVia(v) { const m = String(v || "").match(/\(([^)]*?)\s+owns/i); return m ? m[1].trim() : ""; }
+function routeNodes(p, r, paths) {
+  const owner = (p.owner || "").split(/[;,]/)[0].trim();
+  if (!r) return [{ n: owner || "You", k: owner ? "Owner" : "Your team" }, { n: p.name, k: "Invitee", t: 1 }];
+  const via = cleanVia(r.via);
+  if (["intermediary_intro", "partner_org"].includes(r.route_type) && via) {
+    const path = (paths || []).find((x) => (x.chain || []).some((c) => c && via && (c.includes(via) || via.includes(c))));
+    const first = path && path.chain && path.chain.length > 2 ? path.chain[0] : ownerFromVia(r.via) || owner || "You";
+    return [{ n: first, k: "Your team" }, { n: via, k: r.route_type === "partner_org" ? "Partner" : "Introducer" }, { n: p.name, k: "Invitee", t: 1 }];
+  }
+  const from = via && r.route_type === "existing_thread" ? via : owner || "You";
+  return [{ n: from, k: from === "You" ? "Your team" : "Owner" }, { n: p.name, k: "Invitee", t: 1 }];
+}
+function photoOf(pid) { const x = (S.evPeople || []).find((q) => q.id === pid); return (x && x.photo_url) || ""; }
+function photoByName(n) {
+  const k = String(n || "").toLowerCase(); if (!k || k === "you") return "";
+  const x = (S.evPeople || []).find((q) => q.photo_url && (q.name.toLowerCase() === k || shortName(q.name).toLowerCase() === k || (q.aliases || []).some((a) => a.toLowerCase() === k)));
+  return x ? x.photo_url : "";
+}
+async function lookupPhoto(p) {
+  try {
+    const r = await api(`/api/people/${p.id}/photo`);
+    p.photo_checked = true;
+    const row = (S.evPeople || []).find((q) => q.id === p.id);
+    if (row) Object.assign(row, { photo_url: r.url || null, photo_source: r.source || null, photo_checked: true });
+    if (!r || !r.url) return;
+    p.photo_url = r.url; p.photo_source = r.source;
+    if (S.drawer === p && S.sheetKey === "p:" + p.id) renderPersonSheet();
+    else if (S.sheetKey && S.sheetKey.startsWith("g:")) { const ring = $(".pf-ring"); if (ring) { const w = document.createElement("span"); w.innerHTML = avatar(p.name, "xl", r.url); $(".pf-ring .av").replaceWith(w.firstElementChild); } }
+    const card = $(`.pcard2[data-pid="${p.id}"] .av`); if (card) { const w = document.createElement("span"); w.innerHTML = avatar(p.name, "sm", r.url); card.replaceWith(w.firstElementChild); }
+  } catch { /* the initials stay */ }
+}
+function routeLineHtml(p) {
+  const r = p.best_route; if (!r) return "";
+  const via = cleanVia(r.via) || (p.owner || "").split(/[;,]/)[0].trim();
+  const txt = via ? `via ${shortName(via)} · ${chName(r.channel) || ROUTE_TYPES[r.route_type] || ""}` : `${ROUTE_TYPES[r.route_type] || r.route_type} · ${chName(r.channel)}`;
+  return `<div class="pc2-route">${chIco(r.channel)}<span class="ellipsis">${esc(txt)}</span></div>`;
+}
+function srcChip(s, eid) {
+  if (!s) return "";
+  if (isURL(s)) return `<a class="src" href="${esc(s)}" target="_blank" rel="noopener noreferrer">${icon("external")}${esc(domainOf(s))}</a>`;
+  const id = docIdOf(s);
+  return id ? `<a class="src" href="${evHash(eid, "files", "", "seg=received&doc=" + id)}">${icon("file")}${esc(s.split("/").pop())}</a>` : `<span class="src">${icon("file")}${esc(s)}</span>`;
+}
+function evidenceSources(text) {
+  const urls = String(text || "").match(/https?:\/\/[^\s)"'，。]+/g) || [];
+  const docs = String(text || "").match(/[\w\u4e00-\u9fff .&'’-]+\.(?:xlsx|docx|pptx|pdf|csv|md|txt)/gi) || [];
+  return [...new Set([...urls, ...docs.map((d) => d.trim())])].slice(0, 3);
+}
+function uniqSrc(list) { const seen = new Set(); return list.filter(Boolean).filter((x) => { const k = isURL(x) ? domainOf(x) : x.split("/").pop(); if (seen.has(k)) return false; seen.add(k); return true; }); }
+
+function profileHero(p, o) {
+  const fit = p.priority_score != null ? Math.max(0, Math.min(100, Math.round(num(p.priority_score)))) : null;
+  const statusOpts = Object.entries(PSTATUS).map(([k, v]) => `<option value="${k}" ${p.status === k ? "selected" : ""}>${v[0]}</option>`).join("");
+  const sub = [p.role || p.slot || "Role to be decided", p.category, p.location].filter(Boolean).map((x) => String(x).split(";")[0].trim());
+  const ctl = o.readonly ? `${pStatusChip(p.status, false)}${p.tier ? chip("Tier " + esc(p.tier), "teal", "sq") : ""}`
+    : `<label class="chip-sel"><span class="dot st-${esc(p.status)}"></span><select data-act-change="p-status" aria-label="Status">${statusOpts}</select></label>
+       <label class="chip-sel"><select data-act-change="p-tier" aria-label="Tier">${["A", "B", "C"].map((t) => `<option value="${t}" ${p.tier === t ? "selected" : ""}>Tier ${t}</option>`).join("")}${!p.tier ? '<option selected value="">No tier</option>' : ""}</select></label>`;
+  return `<div class="pf-hero"><div class="pf-hero-in">
+      <div class="pf-ring-wrap"><div class="pf-ring ${fit == null ? "nofit" : ""}" style="--fit:${fit || 0}">${avatar(p.name, "xl", p.photo_url)}${fit != null ? `<span class="pf-fit"><b>${fit}</b>FIT</span>` : ""}</div>
+        ${p.photo_url ? `<a class="pf-photo-src" href="${esc(p.photo_source || p.photo_url)}" target="_blank" rel="noopener noreferrer" title="Public photo — check it is the right person">Photo · Wikimedia Commons</a>` : ""}</div>
+      <div class="pf-id"><div class="mono-label">${esc(o.eyebrow || "")}</div>
+        <h2 class="pf-name">${esc(p.name)}</h2>
+        ${(p.aliases || []).length ? `<div class="pf-alias">${esc(p.aliases.slice(0, 2).join(" · "))}</div>` : ""}
+        <div class="pf-role" title="${esc(p.role || "")}">${esc(sub.join(" · "))}</div>
+        <div class="pf-ctl">${ctl}</div></div></div></div>`;
+}
+
+function routeViz(p, routes, paths, o) {
+  const top = routes[0];
+  const nodes = routeNodes(p, top, paths);
+  const sentence = (o.best && o.best.sentence) || routeSentence(p, top);
+  const drafts = (p.drafts || []).filter((d) => d.status !== "superseded");
+  const openDraft = drafts.find((d) => ["needs_changes", "ready_for_review", "in_review", "blocked", "approved"].includes(d.status));
+  const noKey = !(S.health || {}).key_present;
+  let cta = "";
+  if (!o.readonly) {
+    if (S.planning.has(p.id)) cta = `<div class="working"><span class="spinner"></span><div><b>Planning &amp; drafting…</b><div class="steps">Connection Finder → Route Planner → Drafter → Reviewer · 30–120 s</div></div></div>`;
+    else if (openDraft) cta = `<a class="btn primary" href="${evHash(p.event_id, "messages", openDraft.id)}">${icon("mail")}Open draft</a>`;
+    else if (top && top.route_type === "intermediary_intro") cta = `<button class="btn primary" data-act="plan-person" data-pid="${p.id}" ${noKey ? "disabled" : ""}>${icon("send")}Draft intro request</button>`;
+    else cta = `<button class="btn primary" data-act="plan-person" data-pid="${p.id}" ${noKey ? "disabled" : ""}>${icon("route")}Plan &amp; draft</button>`;
+  } else cta = `<a class="btn primary" href="${personHash(p.event_id, p.id)}">${icon("external")}Open in ${esc(shortEventName((p.event || {}).name || "event"))}</a>`;
+  const link = (i) => {
+    const last = i === nodes.length - 1;
+    const ico = last ? (top ? chIco(top.channel) : icon("route")) : icon("users");
+    const lbl = last ? (top ? chName(top.channel) : "") : "intro";
+    return `<div class="rlink ${esc(top ? top.warmth : "cold")}"><span class="rline"></span><span class="rch" title="${esc(last && top ? top.channel : "Introduction")}">${ico}<span>${esc(lbl)}</span></span></div>`;
+  };
+  const alts = routes.slice(1).map((r) => {
+    const src = uniqSrc([r.source_url, ...evidenceSources(r.evidence)]).slice(0, 2);
+    const label = r.route_type === "intermediary_intro" ? `Intro via ${cleanVia(r.via) || "intermediary"}` : `${ROUTE_TYPES[r.route_type] || r.route_type}${cleanVia(r.via) && r.route_type !== "public_contact" ? " · " + cleanVia(r.via) : ""}`;
+    return `<div class="ralt"><span class="rk">${r.rank || ""}</span>${warmBars(r.warmth)}<span class="rch-i" title="${esc(r.channel || "")}">${chIco(r.channel)}</span>
+      <div class="ralt-t"><div class="ellipsis" title="${esc(r.next_action || r.rationale || "")}">${esc(label)}</div>${src.length ? `<div class="srcs">${src.map((x) => srcChip(x, p.event_id)).join("")}</div>` : ""}</div>
+      ${r.target ? `<button class="btn xs ghost" data-act="copy" data-v="${esc(r.target)}" title="Copy ${esc(r.target)}">Copy</button>` : ""}</div>`;
+  }).join("");
+  const topSrc = top ? uniqSrc([top.source_url, ...evidenceSources(top.evidence)]).slice(0, 3) : [];
+  return `<section class="rviz">
+    <div class="rviz-h"><span class="mono-label">Best way in</span>${top ? `${warmBars(top.warmth)}<span class="mono-meta">${esc(top.warmth)} · ${esc(ROUTE_TYPES[top.route_type] || top.route_type)}</span>` : `<span class="mono-meta">no route planned yet</span>`}</div>
+    <div class="rnodes n${nodes.length}">${nodes.map((n, i) => `${i ? link(i) : ""}<div class="rnode ${n.t ? "target" : i === 0 ? "origin" : "via"}">${avatar(n.n === "You" ? "Y" : n.n, "md", n.t ? p.photo_url : photoByName(n.n))}<div class="rn-t"><div class="nm ellipsis" title="${esc(n.n)}">${esc(n.n === "You" ? "You" : shortName(n.n))}</div><div class="mono-meta">${esc(n.k)}</div></div></div>`).join("")}</div>
+    <p class="bw-sentence">${esc(sentence)}</p>
+    ${top && top.next_action ? `<p class="small muted rnext">${esc(top.next_action)}</p>` : ""}
+    <div class="row wrap rviz-cta" style="gap:10px">${cta}${top && top.target ? `<button class="btn ghost sm" data-act="copy" data-v="${esc(top.target)}" title="Copy ${esc(top.target)}">${icon("file")}Copy ${esc({ email: "address", phone: "number", wechat: "handle", dm: "handle", linkedin: "profile" }[chKind(top.channel)] || "contact")}</button>` : ""}${topSrc.length ? `<span class="srcs">${topSrc.map((x) => srcChip(x, p.event_id)).join("")}</span>` : ""}</div>
+    ${alts ? `<div class="ralts"><div class="mono-label">Other routes · ${routes.length - 1}</div>${alts}</div>` : ""}
+  </section>`;
+}
+
+function profileColumns(p, o) {
+  const evid = (p.evidence || []).filter(Boolean);
+  const bullets = String(p.rationale || "").split(/(?<=[.!?。])\s+/).map((x) => x.trim()).filter(Boolean).slice(0, 4);
+  const stats = [["Fit", p.priority_score != null ? Math.round(num(p.priority_score)) + " / 100" : "—"], ["Tier", p.tier || "—"], ["Source", p.origin === "scout" ? "Found by scout" : "Your files"],
+    ["Slot", (p.slot || p.role || "—").split(";")[0]]];
+  const mgmt = (p.contacts || []).filter((c) => ["management", "agency_email", "intermediary"].includes(c.channel));
+  const direct = (p.contacts || []).filter((c) => !mgmt.includes(c));
+  const crow = (c) => `<div class="crow">${chIco(c.channel === "website" ? "web" : c.channel === "instagram" ? "dm" : c.channel)}<div class="cv"><div class="v">${linkify(c.value)}</div><div class="mono-meta">${esc(CHANNELS[c.channel] || c.channel)}${c.label && c.label !== CHANNELS[c.channel] && !/public|verif/i.test(c.label) && c.label !== c.value ? " · " + esc(c.label) : ""} · ${c.verified ? "from your files" : "public — verify"}${c.source ? " · " : ""}${c.source ? (isURL(c.source) ? `<a href="${esc(c.source)}" target="_blank" rel="noopener noreferrer">${esc(domainOf(c.source))}</a>` : esc(c.source.split("/").pop())) : ""}</div></div>
+      <button class="btn xs ghost icon-only" data-act="copy" data-v="${esc(c.value)}" aria-label="Copy ${esc(c.value)}" title="Copy">${icon("file")}</button></div>`;
+  const others = p.other_events || [];
+  return `<div class="pf-cols">
+    <section class="pf-col"><div class="mono-label">Background</div>
+      ${p.intro ? `<p class="pf-intro">${esc(p.intro)}</p>` : ""}
+      <dl class="pf-stats">${stats.map(([k, v]) => `<div><dt class="mono-meta">${k}</dt><dd title="${esc(v)}">${esc(v)}</dd></div>`).join("")}</dl>
+      ${bullets.length ? `<div class="mono-label sm">Why they fit</div><ul class="pf-bul">${bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+      ${evid.length ? `<div class="srcs mt8">${evid.map((e) => srcChip(e, p.event_id)).join("")}</div>` : ""}
+      ${!p.intro && !bullets.length && !evid.length ? `<p class="small muted">No background yet — the agents add it when they read your files or scout the web.</p>` : ""}
+      ${others.length ? `<div class="mono-label sm">Also in other events</div><div class="row wrap" style="gap:6px">${others.map((x) => `<a class="ev-chip" href="${personHash(x.event_id, x.person_id)}" title="${esc(x.role || "")}"><span class="dot st-${esc(x.status)}"></span>${esc(shortEventName(x.event_name))}</a>`).join("")}</div>` : ""}
+    </section>
+    <section class="pf-col"><div class="mono-label">Contact · ${direct.length}</div>
+      ${direct.length ? direct.map(crow).join("") : `<p class="small muted">No contact points on file.</p>`}
+      <div class="mono-label sm">Management / agency</div>${mgmt.length ? mgmt.map(crow).join("") : `<p class="small muted">None on file.</p>`}
+      <div class="mono-label sm">Relationship owner</div>
+      ${o.readonly ? `<p class="small">${esc(p.owner || "Not set")}</p>` : `<div class="row" style="gap:6px"><input class="input sm" value="${esc(p.owner || "")}" placeholder="Who on the team owns this?" data-owner aria-label="Relationship owner"><button class="btn sm" data-act="save-owner">Save</button></div>`}
+    </section></div>`;
+}
+
+function profileLower(p, o) {
+  const drafts = (p.drafts || []).filter((d) => d.status !== "superseded");
+  const tl = p.timeline || [];
+  const all = S.histAll === p.id;
+  const reply = (S.replyResult || {})[p.id];
+  const noKey = !(S.health || {}).key_present;
+  return `<div class="pf-cols">
+    <section class="pf-col"><div class="mono-label">Messages · ${drafts.length}</div>
+      ${drafts.length ? drafts.map((d) => `<a class="pf-msg" href="${evHash(p.event_id, "messages", d.id)}">${chIco(d.channel || "email")}<span class="ellipsis">${esc(draftTitle(d))}</span>${dStatusChip(d.status)}</a>`).join("") : `<p class="small muted">No messages yet.</p>`}
+      ${o.readonly ? "" : `<div class="mono-label sm">Log a reply</div>
+      <textarea class="textarea" rows="2" placeholder="Paste the reply you received — status, contacts and the next follow-up update automatically." data-reply-text></textarea>
+      <div class="row mt8 wrap" style="gap:6px"><select class="select sm" style="width:118px" data-reply-ch aria-label="Channel">${["email", "wechat", "instagram", "linkedin", "phone", "xiaohongshu", "weibo", "other"].map((c) => `<option value="${c}">${esc(CHANNELS[c] || c)}</option>`).join("")}</select>
+        <input type="date" class="input sm" style="width:140px" value="${todayISO()}" data-reply-date aria-label="Date received"><button class="btn sm" data-act="log-reply" ${noKey ? "disabled" : ""}>${icon("sparkle")}Interpret</button></div>${reply ? replyResultHtml(reply) : ""}`}
+    </section>
+    <section class="pf-col"><div class="mono-label">History · ${tl.length}</div>
+      ${o.readonly ? "" : `<div class="row mb12" style="gap:6px"><input class="input sm" placeholder="Add a note…" data-note aria-label="Add a note"><button class="btn sm" data-act="add-note">Add</button></div>`}
+      ${tl.length ? `<div class="gtl">${(all ? tl : tl.slice(0, 6)).map((t) => `<div class="gi k-${esc(t.kind)}"><div class="mono-meta">${esc(fmtDate(t.date))}${t.actor ? " · " + esc(t.actor) : ""}${t.event_name ? " · " + esc(shortEventName(t.event_name)) : ""}</div><div class="note">${esc(t.note)}</div></div>`).join("")}</div>
+        ${tl.length > 6 ? `<button class="qlink mt8" data-act="hist-all" data-pid="${p.id}">${all ? "Show fewer" : `Show all ${tl.length}`}</button>` : ""}` : `<p class="small muted">No history yet.</p>`}
+    </section></div>`;
+}
+
+function renderPersonSheet() {
+  const p = S.drawer, el = $("[data-drawer]");
+  if (!p || !el) return;
+  const prevBody = $(".drawer-body", el);
+  const keep = prevBody && S.drawerRendered === p.id ? prevBody.scrollTop : 0;
+  S.drawerRendered = p.id;
+  const o = { eyebrow: shortEventName((p.event || {}).name || (S.ev || {}).name || ""), best: S.best };
+  el.innerHTML = `${profileHero(p, o)}<div class="drawer-body pf-body">${routeViz(p, p.routes || [], S.paths || [], o)}${profileColumns(p, o)}${profileLower(p, o)}</div>`;
+  queueMicrotask(() => { const b = $(".drawer-body", el); if (b) b.scrollTop = keep; });
+}
+
+async function openProfileSheet(gid) {
+  openSheetShell("g:" + gid, `<div class="drawer-body">${skel(2)}</div>`, "profile");
+  let g, p = null, paths = [], best = null, apps = [];
+  try {
+    g = await api(`/api/directory/${gid}`);
+    apps = g.appearances || [];
+    const a = (g.appearances || [])[0];
+    if (a) [p, paths, best] = await Promise.all([api(`/api/people/${a.id}`), api(`/api/people/${a.id}/paths`).catch(() => []), api(`/api/people/${a.id}/best`).catch(() => null)]);
+    if (p && !p.photo_url) { const withPhoto = (await Promise.all(apps.slice(1, 4).map((x) => api(`/api/people/${x.id}`).catch(() => null)))).find((x) => x && x.photo_url); if (withPhoto) { p.photo_url = withPhoto.photo_url; p.photo_source = withPhoto.photo_source; } }
+  } catch (e) { if (S.sheetKey === "g:" + gid) $("[data-drawer]").innerHTML = `<div class="drawer-body">${emptyState("alert", "Profile not found", esc(e.message), `<button class="btn" data-act="close-sheet">Close</button>`)}</div>`; return; }
+  if (S.sheetKey !== "g:" + gid) return;
+  if (!p) p = { id: 0, name: g.name, aliases: g.aliases, category: g.category, intro: g.intro, contacts: g.contacts, timeline: g.timeline, routes: [], drafts: [], other_events: [], owner: (g.owners || []).join(", ") };
+  else { p.aliases = g.aliases && g.aliases.length ? g.aliases : p.aliases; p.timeline = g.timeline && g.timeline.length ? g.timeline : p.timeline; p.other_events = []; }
+  const o = { readonly: true, eyebrow: g.internal ? "Internal team member" : `In ${plural(apps.length, "event")}`, best };
+  $("[data-drawer]").innerHTML = `${profileHero(p, o)}<div class="drawer-body pf-body">
+    <section class="pf-apps"><div class="mono-label">In your events · ${apps.length}</div>
+      ${apps.map((a) => `<a class="pf-app" href="${personHash(a.event_id, a.id)}"><span class="dot st-${esc(a.status)}"></span><span class="ellipsis"><b>${esc(shortEventName(a.event_name))}</b> <span class="muted">· ${esc(String(a.role || "role to be decided").split(";")[0])}</span></span>${pStatusChip(a.status, false)}${icon("chevron")}</a>`).join("")}</section>
+    ${p.id ? routeViz(p, p.routes || [], paths, o) : ""}${profileColumns(p, o)}${profileLower(p, o)}</div>`;
+  if (p.id && !p.photo_url && !p.photo_checked) lookupPhoto(p);
+}
+
+/* ================================================================== global people (directory + team) */
+
+async function viewGlobalPeople() {
+  const view = S.route.query.get("view") === "team" ? "team" : "everyone";
+  $("#view").innerHTML = `<div class="page">
+    <div class="page-head"><div><h1 class="page-title">People</h1>
+      <div class="page-sub">${view === "team" ? "Your team and the relationships each person owns — the handover view when officers change." : "Everyone across your events, merged by name and aliases (Chinese or English)."}</div></div>
+      <div class="btn-row"><div class="seg-ctl" role="group" aria-label="Who"><a class="segbtn" href="#/people" aria-pressed="${view === "everyone"}">Everyone</a><a class="segbtn" href="#/people?view=team" aria-pressed="${view === "team"}">Team</a></div>
+        <div class="pop-wrap"><button class="btn ghost icon-only" data-act="pop-toggle" data-pop="gmenu" aria-label="More">${icon("more")}</button>
+          <div class="popover right" data-popover="gmenu" hidden><a class="menu-item" href="/api/directory/export.csv" download="integrated_directory.csv">${icon("download")}Export everyone as CSV</a></div></div></div></div>
+    <div data-gp>${skel(2)}</div></div>`;
+  const el = $("[data-gp]");
+  if (view === "team") { el.innerHTML = await teamHtml(); return; }
+  el.innerHTML = `<div class="card"><div class="filters"><div class="search" style="width:360px">${icon("search")}<input class="input" placeholder="Search names, aliases, roles…  ( / )" value="${esc(S.dirQ || "")}" data-dir-q data-search aria-label="Search people"></div><span class="spacer"></span><span class="small muted" data-dir-count></span></div>
+    <div class="table-wrap" data-dir-table>${skel()}</div></div>`;
+  await loadDirectory();
+}
+
+async function teamHtml() {
+  const team = await api("/api/team");
+  const byEvent = (owns) => { const m = {}; owns.forEach((o) => (m[o.event] = m[o.event] || []).push(o)); return m; };
+  const evIdByName = (n) => (S.events.find((e) => e.name === n) || {}).id;
+  if (!team.length) return `<div class="card">${emptyState("users", "No team members yet", "Team members come from your files once the agents have run.", `<a class="btn" href="#/projects">${icon("grid")}Go to Projects</a>`)}</div>`;
+  return `<div class="team-grid">${team.map((m) => {
+    const g = byEvent(m.owns || []);
+    return `<div class="card"><div class="card-body"><div class="row" style="gap:12px;align-items:flex-start">${avatar(m.name, "lg")}<div style="min-width:0;flex:1">
+      <div class="serif" style="font-size:18px;font-weight:600">${esc(m.name)}</div>
+      <div class="xsmall muted clamp2" title="${esc((m.roles || []).join("\n"))}">${(m.roles || []).map(esc).join(" · ")}</div>
+      ${(m.emails || []).length ? `<div class="small mt8">${m.emails.map((e) => `<a class="link" href="mailto:${esc(e)}">${esc(e)}</a>`).join(" · ")}</div>` : ""}</div>
+      <span class="count-badge accent" title="Relationships owned">${(m.owns || []).length}</span></div>
+      ${(m.owns || []).length ? `<details class="disc"><summary>Relationships owned (${m.owns.length})</summary>${Object.entries(g).map(([ev, list]) => `<div class="subhead">${esc(ev)}</div>${list.map((o) => `<div class="own">${avatar(o.name, "xs")}${evIdByName(ev) ? `<a href="${personHash(evIdByName(ev), o.person_id)}">${esc(o.name)}</a>` : `<span>${esc(o.name)}</span>`}<span class="xsmall muted ellipsis" style="flex:1">${esc(o.role || "")}</span>${pStatusChip(o.status, false)}</div>`).join("")}`).join("")}</details>` : '<p class="small muted mt12">Owns no relationships yet.</p>'}
+    </div></div>`;
+  }).join("")}</div>`;
+}
+
+
+/* ================================================================== settings sheet */
+
+async function openSettingsSheet() {
+  openSheetShell("sheet:settings", sheetBody("Settings", "", `<div data-settings>${skel(2)}</div>`), "wide");
+  const [usage, conns, team] = await Promise.all([usageHtml().catch((e) => `<p class="small muted">${esc(e.message)}</p>`), api("/api/team/connections").catch(() => []), api("/api/team").catch(() => [])]);
+  if (S.sheetKey !== "sheet:settings") return;
+  const h = S.health || {};
+  $("[data-settings]").innerHTML = `
+    <section class="set-sec"><h3 class="sec-title">Model &amp; API key</h3>
+      <div class="row small"><span class="model-dot ${h.key_present ? "" : "off"}"></span><b>${esc(h.model || "—")}</b><span class="muted">· ${h.key_present ? "API key found" : "No API key — browsing works; agents need PORTKEY_API_KEY in .env"}</span></div></section>
+    <section class="set-sec"><h3 class="sec-title">Demo &amp; samples</h3>
+      <p class="small muted">Load fictional sample events with a complete recorded agent run — instant and free.</p>
+      <div class="btn-row mt12"><button class="btn ghost" data-act="load-demo" ${h.demo_snapshot ? "" : "disabled"}>${icon("sparkle")}Load demo</button><button class="btn ghost" data-act="new-event" data-mode="sample">${icon("folder")}Try a sample event</button></div></section>
+    <section class="set-sec"><h3 class="sec-title">Import team contacts (CSV)</h3>
+      <p class="small muted">A team member's LinkedIn <b>Connections.csv</b> lets the Connection Finder spot warm introductions. LinkedIn → Settings → Data privacy → Get a copy of your data → Connections. It stays on this computer.</p>
+      <div class="grid cols-2 mt12" style="gap:12px"><div class="field"><label for="li-owner">Team member</label><input id="li-owner" class="input" list="team-names" placeholder="Whose contacts are these?" data-li-owner>
+        <datalist id="team-names">${team.map((m) => `<option value="${esc(m.name)}">`).join("")}</datalist></div>
+        <div class="field"><label for="li-file">CSV file</label><input id="li-file" type="file" accept=".csv,text/csv" class="input" style="padding-top:5px" data-li-file></div></div>
+      <button class="btn ghost mt12" data-act="li-import">${icon("upload")}Import team contacts</button>
+      ${conns.length ? `<table class="tbl compact mt12"><thead><tr><th>Owner</th><th class="num">Contacts</th><th class="num">Companies</th></tr></thead><tbody>${conns.map((c) => `<tr><td class="small strong">${esc(c.owner)}</td><td class="num">${fmtInt(c.connections)}</td><td class="num">${fmtInt(c.companies)}</td></tr>`).join("")}</tbody></table>` : `<p class="hint mt8">No contacts imported yet.</p>`}</section>
+    <section class="set-sec"><h3 class="sec-title">Usage &amp; cost</h3>${usage}</section>`;
+}
+
+/* ================================================================== actions */
+
+function closePopovers(except) { $$(".popover").forEach((p) => { if (p !== except) p.hidden = true; }); }
+function onDraftInput() {
+  const d = S.draft; if (!d) return;
+  const dirty = Object.keys(draftEdits()).length > 0;
+  S.draftDirty = dirty;
+  const b = $("[data-save-btn]"); if (b) b.hidden = !dirty;
+  const n = $("[data-dirty-note]"); if (n) n.textContent = dirty ? "Unsaved edits" : "";
 }
 
 async function generateBrief(btn) {
@@ -2325,86 +2508,76 @@ async function generateBrief(btn) {
     store.set("dailyBrief", { data: r, at: new Date().toISOString(), lang, done: [] });
     toast(`Daily brief ready${r.usage ? " (" + fmtCost(r.usage.cost_usd) + ")" : ""}.`, "ok");
   } catch (e) { toastErr(e); }
-  const card = $("#brief-card");
-  if (card) card.outerHTML = dailyBriefCard();
+  const card = $("#brief-card"); if (card) card.outerHTML = dailyBriefCard();
 }
-
 async function openPersonAnywhere(pid) {
-  try {
-    const p = await api(`/api/people/${pid}`);
-    go(personHash(p.event_id, pid));
-  } catch (e) { toastErr(e); }
+  try { const p = await api(`/api/people/${pid}`); go(personHash(p.event_id, pid)); } catch (e) { toastErr(e); }
 }
 
 const ACTIONS = {
   reload: () => location.reload(),
   "reload-tab": () => renderTab(),
   "close-modal": () => closeModal(),
+  "close-sheet": () => closeSheet(),
   "new-event": (el) => newEventModal(el.dataset.mode),
   "load-demo": (el) => loadDemo(el),
   "wel-sample": (el) => importSample($("#wel-sample").value, el),
-  "open-run": () => { if (S.ev) openRunModal(); },
+  "open-sheet": (el) => { closePopovers(); setQuery("sheet", el.dataset.sheet); },
+  "open-event": (el) => go(evHash(+el.dataset.eid, el.dataset.tab || "plan")),
+  "go-next": (el, e) => { e.stopPropagation(); goNext(el); },
   "run-agents": (el) => startRun(el),
-  "conflict-use": (el) => { const i = $(`[data-conf-input="${el.dataset.i}"]`); if (i) { i.value = el.dataset.v; i.focus(); i.select(); } },
+  "conflict-use": (el) => { const i = el.closest("[data-cf-box]")?.querySelector("[data-conf-input]"); if (i) { i.value = el.dataset.v; i.focus(); i.select(); } },
   "conflict-resolve": (el) => resolveConflict(el),
-  reimport: (el) => reimport(el),
+  "issue-set": async (el) => {
+    setBusy(el, true, "");
+    try {
+      await api(`/api/issues/${el.dataset.id}`, { method: "PATCH", body: { status: el.dataset.s } });
+      toast({ resolved: "Marked resolved.", ignored: "Ignored.", open: "Reopened." }[el.dataset.s], "ok", 1800);
+      await refreshEventView();
+    } catch (e) { toastErr(e); setBusy(el, false); }
+  },
+  "find-slot": (el) => {
+    const slot = (el.dataset.slot || "").replace(/\s*\([^)]*\)\s*$/, "");
+    const s = (((S.ev || {}).strategy || {}).slots || []).find((x) => x.name === el.dataset.slot) || {};
+    S.findPrefill = `People for “${slot}”, ${Math.max(3, Math.min(8, (s.gap || 2) + 2))} names`;
+    go(evHash(S.evId, "people", "", "sheet=find"));
+  },
+  "list-example": (el) => { const t = $("[data-list-brief]"); if (t) { t.value = el.dataset.v; store.set("listBrief", t.value); t.focus(); } },
+  "list-generate": (el) => generateList(el),
   "list-mode": (el) => {
     store.set("listMode", el.dataset.v);
     $$('[data-act="list-mode"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v));
     const h = $("[data-list-mode-hint]"); if (h) h.textContent = LIST_MODES[listMode()].hint + " · nothing is sent to anyone";
   },
-  "list-example": (el) => { const t = $("[data-list-brief]"); t.value = el.dataset.v; store.set("listBrief", t.value); t.focus(); },
-  "list-generate": (el) => generateList(el),
-  "list-csv": (el, e) => { e.stopPropagation(); exportListCSV(+el.dataset.i); },
   "plan-person": (el, e) => { e.stopPropagation(); planPerson(+el.dataset.pid, el); },
-  "open-person": (el) => {
-    if (S.route.parts[0] === "event") setQuery("p", el.dataset.pid);
-    else openPersonAnywhere(+el.dataset.pid);
-  },
+  "open-person": (el) => { closePopovers(); if (S.route.parts[0] === "event") setQuery("p", el.dataset.pid); else openPersonAnywhere(+el.dataset.pid); },
   "open-person-any": (el) => openPersonAnywhere(+el.dataset.pid),
-  "close-drawer": () => closeDrawer(),
-  "gf-entity": (el) => { S.guestsFilter.entity = el.dataset.v; store.set("guestsFilter", S.guestsFilter); $$('[data-act="gf-entity"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v)); renderGuestRows(); },
-  "scroll-queue": () => { const q = $("#queue"); if (q) q.scrollIntoView({ behavior: "smooth", block: "start" }); },
-  "g-view": (el) => { store.set("guestView", el.dataset.v); $$('[data-act="g-view"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v)); renderGuestRows(); },
-  "gf-needs": (el) => { S.guestsFilter.needs = !S.guestsFilter.needs; el.setAttribute("aria-pressed", S.guestsFilter.needs); store.set("guestsFilter", S.guestsFilter); renderGuestRows(); },
-  "gf-clear": () => { S.guestsFilter = { q: "", tier: "", status: "", slot: "", origin: "", entity: S.guestsFilter.entity, needs: false }; store.set("guestsFilter", S.guestsFilter); renderTab(); },
+  "open-profile": (el) => setQuery("g", el.dataset.gid),
   copy: async (el, e) => {
-    e.stopPropagation();
+    e.stopPropagation(); closePopovers();
     const v = el.hasAttribute("data-copy-body") ? ($("[data-draft-field='body']") || {}).value || el.dataset.v : el.dataset.v;
-    try { await navigator.clipboard.writeText(v); toast("Copied to clipboard.", "ok", 1800); }
-    catch { toast("Couldn't access the clipboard — select the text and copy it manually.", "error"); }
+    try { await navigator.clipboard.writeText(v); toast("Copied to clipboard.", "ok", 1800); } catch { toast("Couldn't access the clipboard — select the text and copy it manually.", "error"); }
   },
   "save-owner": () => patchPerson({ owner: $("[data-owner]").value.trim() }, "Owner saved."),
-  "add-note": () => { const n = $("[data-note]").value.trim(); if (!n) { toast("Write a note first.", "error"); return; } patchPerson({ note: n }, "Note added to the timeline."); },
+  "add-note": () => { const n = $("[data-note]").value.trim(); if (!n) { toast("Write a note first.", "error"); return; } patchPerson({ note: n }, "Note added to the history."); },
   "log-reply": (el) => logReply(el),
-  "draft-serif": (el) => { store.set("letterSerif", el.dataset.v === "1"); $$('[data-act="draft-serif"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v)); $("[data-draft-field='body']")?.classList.toggle("serifed", el.dataset.v === "1"); },
   "draft-save": (el) => draftAction("save", el),
-  "draft-status": (el) => draftAction("status", el),
-  "draft-review": (el) => draftAction("review", el),
+  "draft-status": (el) => { closePopovers(); draftAction("status", el); },
+  "draft-review": (el) => { closePopovers(); draftAction("review", el); },
   "draft-comment": (el) => draftAction("comment", el),
-  "if-status": (el) => { S.issueFilter.status = el.dataset.v; renderIssues(); },
-  "if-kind": (el) => { S.issueFilter.kind = S.issueFilter.kind === el.dataset.v ? "" : el.dataset.v; renderIssues(); },
-  "issue-set": async (el) => {
-    setBusy(el, true, "");
-    try {
-      await api(`/api/issues/${el.dataset.id}`, { method: "PATCH", body: { status: el.dataset.s } });
-      const i = (S.issues || []).find((x) => x.id === +el.dataset.id); if (i) i.status = el.dataset.s;
-      renderIssues();
-      toast({ resolved: "Marked resolved.", ignored: "Ignored.", open: "Reopened." }[el.dataset.s], "ok", 1800);
-      loadEvent(S.evId).then(() => { const b = $$(".tab .count-badge.hot")[0]; if (b) b.textContent = S.ev.counts.issues || ""; }).catch(() => {});
-    } catch (e) { toastErr(e); setBusy(el, false); }
-  },
+  "draft-edit": () => { closePopovers(); const t = $("[data-draft-field='body']"); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } },
+  "draft-serif": (el) => { store.set("letterSerif", el.dataset.v === "1"); $$('[data-act="draft-serif"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v)); $("[data-draft-field='body']")?.classList.toggle("serifed", el.dataset.v === "1"); },
   "fu-done": async (el, e) => {
-    e.stopPropagation();
-    setBusy(el, true, "");
+    e.stopPropagation(); setBusy(el, true, "");
     try {
       await api(`/api/followups/${el.dataset.id}`, { method: "PATCH", body: { status: "done" } });
-      toast("Follow-up done — logged on the person's timeline.", "ok", 2200);
-      if (S.route.parts[0] === "today") { S.mainKey = null; route(); } else await refreshEventView();
+      toast("Follow-up done — logged on the person's history.", "ok", 2200);
+      if (S.tab === "messages") { await refreshDraftsList(); } else await refreshEventView();
     } catch (err) { toastErr(err); setBusy(el, false); }
   },
   "drive-open": (el) => setQuery("f", el.dataset.path, true),
-  nav: (el) => go(el.dataset.href),
+  "files-seg": (el) => setQuery("seg", el.dataset.v, true),
+  "open-doc": (el) => setQuery("doc", el.dataset.id),
   "toggle-run": (el) => { const d = $(`[data-run-detail="${el.dataset.id}"]`); if (d) d.hidden = !d.hidden; },
   "li-import": (el) => importLinkedIn(el),
   "brief-gen": (el) => generateBrief(el),
@@ -2416,17 +2589,37 @@ const ACTIONS = {
     store.set("dailyBrief", s);
     const card = $("#brief-card"); if (card) card.outerHTML = dailyBriefCard();
   },
+  "pop-toggle": (el, e) => { e.stopPropagation(); const p = el.parentElement.querySelector(`[data-popover="${el.dataset.pop}"]`); if (!p) return; const show = p.hidden; closePopovers(p); p.hidden = !show; if (show) { const f = p.querySelector("select, input, button, a"); if (f) f.focus(); } },
+  "pf-clear": () => { S.pf = { q: "", tier: "", list: "", source: "", orgs: false, team: false }; savePf(); closePopovers(); renderTab(); },
+  "p-view": (el) => { store.set("peopleView", el.dataset.v); $$('[data-act="p-view"]').forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === el.dataset.v)); renderPeopleView(); },
+  "p-more": (el) => { S.peopleMore[el.dataset.col] = true; renderPeopleView(); },
+  "p-declined": () => { S.showDeclined = !S.showDeclined; renderPeopleView(); },
+  "hist-all": (el) => { const pid = +el.dataset.pid; S.histAll = S.histAll === pid ? null : pid; if (S.sheetKey && S.sheetKey.startsWith("g:")) openProfileSheet(+S.sheetKey.slice(2)); else renderPersonSheet(); },
+  "people-photos": async (el) => {
+    closePopovers();
+    toast("Looking up public photos on Wikimedia Commons… this can take a minute.", "info", 4000);
+    try {
+      const r = await api(`/api/events/${S.evId}/photos`, { method: "POST" });
+      const n = r && (r.found ?? r.updated ?? (r.photos || []).length);
+      toast(n != null ? `Found ${plural(n, "photo")}.` : "Photos updated.", "ok");
+      await refreshEventView();
+    } catch (e) { toastErr(e); }
+  },
+  "people-csv": () => { closePopovers(); exportPeopleCSV(); },
 };
 
 document.addEventListener("click", (e) => {
+  if (!e.target.closest(".pop-wrap")) closePopovers();
   const el = e.target.closest("[data-act]");
   if (!el || el.disabled) return;
   const a = e.target.closest("a[href]");
-  if (a && a !== el && el.contains(a)) return; // let real links inside clickable rows work
+  if (a && a !== el && el.contains(a)) return;
+  const btn = e.target.closest("button");
+  if (btn && btn !== el && el.contains(btn)) return;
   if (el.tagName === "INPUT" && el.type === "checkbox") { ACTIONS[el.dataset.act]?.(el, e); return; }
   const fn = ACTIONS[el.dataset.act];
   if (!fn) return;
-  if (el.tagName === "A" || el.tagName === "BUTTON" || el.tagName === "TR" || el.tagName === "SUMMARY" || el.classList.contains("kpi") || el.classList.contains("backdrop")) e.preventDefault();
+  if (el.tagName !== "LABEL") e.preventDefault();
   fn(el, e);
 });
 
@@ -2435,13 +2628,18 @@ document.addEventListener("change", (e) => {
   if (el.dataset.actChange === "p-status") patchPerson({ status: el.value }, `Status set to ${(PSTATUS[el.value] || [el.value])[0]}.`);
   else if (el.dataset.actChange === "p-tier" && el.value) patchPerson({ tier: el.value }, `Tier set to ${el.value}.`);
   else if (el.dataset.actChange === "run-sel") { S.runSel = el.value === "all" ? "all" : +el.value; paintRun(true); }
-  else if (el.dataset.gf && el.dataset.gf !== "q") { S.guestsFilter[el.dataset.gf] = el.value; store.set("guestsFilter", S.guestsFilter); renderGuestRows(); }
+  else if (el.dataset.actChange === "reimport") reimportFile(el);
+  else if (el.dataset.pf && el.dataset.pf !== "q") {
+    S.pf[el.dataset.pf] = el.type === "checkbox" ? el.checked : el.value; savePf();
+    renderPeopleView();
+    const fb = $('[data-pop="filter"]'); if (fb) { const n = activeFilterCount(); fb.innerHTML = `${icon("list")}Filter${n ? `<span class="count-badge accent">${n}</span>` : ""}`; }
+  }
 });
 
 const dirSearch = debounce(() => loadDirectory(), 250);
 document.addEventListener("input", (e) => {
   const el = e.target;
-  if (el.dataset.gf === "q") { S.guestsFilter.q = el.value; store.set("guestsFilter", S.guestsFilter); renderGuestRows(); }
+  if (el.dataset.pf === "q") { S.pf.q = el.value; savePf(); renderPeopleView(); }
   else if (el.hasAttribute("data-dir-q")) { S.dirQ = el.value; dirSearch(); }
   else if (el.dataset.draftField) onDraftInput();
   else if (el.hasAttribute("data-list-brief")) store.set("listBrief", el.value);
@@ -2450,17 +2648,18 @@ document.addEventListener("input", (e) => {
 document.addEventListener("keydown", (e) => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
   if (e.key === "Escape") {
+    const openPop = $$(".popover").find((p) => !p.hidden);
+    if (openPop) { closePopovers(); return; }
     if ($("#modal-root").innerHTML) { closeModal(); return; }
-    if (S.drawerPid) { closeDrawer(); return; }
+    if (S.sheetKey) { closeSheet(); return; }
   }
   if (e.key === "/" && !typing) { const s = $("[data-search]"); if (s) { e.preventDefault(); s.focus(); s.select(); } }
-  if (e.key === "Enter" && !typing && document.activeElement?.matches("tr[data-act]")) document.activeElement.click();
+  if (e.key === "Enter" && !typing && document.activeElement?.matches("tr[data-act], article[data-act]")) document.activeElement.click();
   if (e.key === "Enter" && document.activeElement?.matches("[data-owner]")) $('[data-act="save-owner"]')?.click();
   if (e.key === "Enter" && document.activeElement?.matches("[data-note]")) $('[data-act="add-note"]')?.click();
   if (e.key === "Enter" && document.activeElement?.matches("[data-c-text]")) $('[data-act="draft-comment"]')?.click();
-  if ((e.metaKey || e.ctrlKey) && e.key === "s" && S.tab === "drafts" && S.draftDirty) { e.preventDefault(); $("[data-save-btn]")?.click(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === "s" && S.tab === "messages" && S.draftDirty) { e.preventDefault(); $("[data-save-btn]")?.click(); }
 });
-
 window.addEventListener("beforeunload", (e) => { if (S.draftDirty) { e.preventDefault(); e.returnValue = ""; } });
 
 /* ================================================================== boot */
@@ -2473,16 +2672,14 @@ async function boot() {
   }
   renderBanner();
   await loadEvents();
+  loadProjects().then(() => renderSidebar());
   window.addEventListener("hashchange", route);
   route();
-  // keep sidebar "running" dots honest and catch runs that end while you look elsewhere
   setInterval(async () => {
     if (!S.events.some((e) => e.running)) return;
     const before = new Map(S.events.map((e) => [e.id, e.running]));
     await loadEvents();
-    for (const e of S.events) {
-      if (before.get(e.id) && !e.running && S.evId === e.id && !(S.poll && S.poll.eid === e.id)) refreshEventView();
-    }
+    for (const e of S.events) if (before.get(e.id) && !e.running && S.evId === e.id && !(S.poll && S.poll.eid === e.id)) refreshEventView();
   }, 5000);
 }
 boot();

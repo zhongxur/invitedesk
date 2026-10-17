@@ -196,7 +196,13 @@ def _route_sentence(p: dict[str, Any], r: dict[str, Any] | None) -> str:
     if kind == "intermediary_intro" and via:
         return f"Ask {via} to introduce {p['name']}"
     if kind == "existing_thread":
-        return f"Follow up with {p['name']} on the existing {ch or 'thread'}".replace("existing existing", "existing")
+        short = ch.split(" via ")[0].split("(")[0].strip()
+        through = tgt if tgt and "@" not in tgt and tgt != p["name"] and len(tgt) < 40 else ""
+        if through:
+            return f"Follow up with {p['name']} through {through} (existing thread)"
+        if short and len(short) <= 20 and short.lower() not in ("thread", "existing thread"):
+            return f"Follow up with {p['name']} on the existing {short} thread"
+        return f"Follow up with {p['name']} on the existing thread"
     if kind == "official_management":
         return f"Contact {p['name']}'s management" + (f" ({tgt})" if tgt and '@' not in tgt else "")
     if kind == "partner_org" and via:

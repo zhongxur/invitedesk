@@ -52,7 +52,7 @@ def health():
 def list_events():
     out = []
     for e in db.q("SELECT id, name, org, source, created_at, status, budget_usd, spent_usd, fact_sheet FROM events "
-                  "ORDER BY id"):
+                  "ORDER BY sort_order IS NULL, sort_order, id"):
         fs = e.pop("fact_sheet") or {}
         n = db.one("SELECT COUNT(*) AS n FROM people WHERE event_id=?", (e["id"],))["n"]
         d = db.one("SELECT COUNT(*) AS n FROM drafts WHERE event_id=? AND status!='superseded'", (e["id"],))["n"]
@@ -632,6 +632,21 @@ def clear_person_photo(pid: int):
     db.update("people", pid, photo_url=None, photo_source=None, photo_checked=db.now())
     db.timeline(pid, "photo", "Photo removed", actor="You")
     return {"ok": True}
+
+
+class OrderIn(BaseModel):
+    ids: list[int]
+
+
+@app.post("/api/events/order")
+def order_events(body: OrderIn):
+    """Save the order of events chosen by dragging (Projects home and sidebar)."""
+    known = {e["id"] for e in db.q("SELECT id FROM events")}
+    ids = [i for i in dict.fromkeys(body.ids) if i in known]
+    ids += sorted(known - set(ids))
+    for pos, eid in enumerate(ids):
+        db.execute("UPDATE events SET sort_order=? WHERE id=?", (pos, eid))
+    return {"order": ids}
 
 
 @app.delete("/api/events/{eid}")

@@ -1609,3 +1609,13 @@ a.src:hover { color: var(--accent-ink); box-shadow: 0 0 0 1px var(--border-stron
 .av.has-photo > i { display: grid; place-items: center; position: absolute; inset: 0; font-style: normal; color: hsl(var(--h) 60% var(--av-text-l)); }
 .av.has-photo img { position: relative; z-index: 1; }
 .av.has-photo::after { z-index: 2; }
+
+/* reorder events */
+.proj-card .grip { position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; display: grid; place-items: center; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: grab; opacity: 0; transition: opacity var(--t), background var(--t); z-index: 2; }
+.proj-card:hover .grip, .proj-card .grip:focus-visible { opacity: 0.85; }
+.proj-card .grip:hover { background: rgba(45, 212, 191, 0.10); color: var(--accent-ink); }
+.proj-card .grip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.proj-card.dragging, .nav-sub.dragging { opacity: 0.45; transform: scale(0.98); }
+.nav-sub[draggable="true"] { cursor: pointer; }
+.nav-sub.dragging { background: rgba(45, 212, 191, 0.10); }
+@media (hover: none) { .proj-card .grip { opacity: 0.7; } }

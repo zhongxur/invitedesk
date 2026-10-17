@@ -70,7 +70,7 @@ def today() -> dict[str, Any]:
                   "i.status='open' AND i.severity='high' ORDER BY i.id DESC LIMIT 30")
     recent = db.q("SELECT t.*, p.name, e.name AS event_name FROM timeline t JOIN people p ON p.id=t.person_id "
                   "JOIN events e ON e.id=t.event_id ORDER BY t.id DESC LIMIT 25")
-    events = db.q("SELECT id, name, org, status, fact_sheet, strategy FROM events ORDER BY id")
+    events = db.q("SELECT id, name, org, status, fact_sheet, strategy FROM events ORDER BY sort_order IS NULL, sort_order, id")
     ev_cards = []
     for e in events:
         fs = e.get("fact_sheet") or {}
@@ -212,7 +212,7 @@ def projects() -> dict[str, Any]:
     """One card per event: progress, things waiting on you, and the single most important next step."""
     t = date.today()
     cards, waiting_total = [], 0
-    for e in db.q("SELECT id, name, org, status, fact_sheet, strategy, spent_usd FROM events ORDER BY id"):
+    for e in db.q("SELECT id, name, org, status, fact_sheet, strategy, spent_usd FROM events ORDER BY sort_order IS NULL, sort_order, id"):
         fs, st = e.get("fact_sheet") or {}, e.get("strategy") or {}
         eid = e["id"]
         people = db.q("SELECT * FROM people WHERE event_id=? AND relationship!='team_member' AND "

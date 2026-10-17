@@ -79,11 +79,13 @@ async def create_from_brief(name: str, org: str = "", url: str = "", notes: str 
     try:
         memo, use = await run_agent(agents.event_researcher(), prompt, name="Event Researcher", meter=meter,
                                     deps=Ctx(eid, rid, {}), request_limit=4)
-        text = "\n".join([f"# Research memo — {memo.title}", "", memo.summary, "", "## Facts (with sources)",
+        title = re.sub(r"^\s*research memo\s*[—:-]\s*", "", memo.title or name, flags=re.I)
+        text = "\n".join([f"# Research memo — {title}", "", memo.summary, "", "## Facts (with sources)",
                           *[f"- {f}" for f in memo.facts], "", "## Past speakers", *[f"- {x}" for x in memo.past_speakers],
                           "", "## Past sponsors", *[f"- {x}" for x in memo.past_sponsors], "", "## Organiser team (public)",
                           *[f"- {x}" for x in memo.organiser_team], "", "## Not found (to be estimated)",
                           *[f"- {x}" for x in memo.unknowns], "", "## Organiser notes", notes or "-"])
+        text = re.sub(r"\s*\ue200?cite(?:\ue202?turn\d+\w+?\d+)+\ue201?", "", text)  # model citation markers
         files = event_dir(eid) / "files"
         files.mkdir(parents=True, exist_ok=True)
         (files / "Research_memo.md").write_text(text)

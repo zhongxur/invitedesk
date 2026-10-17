@@ -1432,7 +1432,7 @@ function renderSidebar() {
   const [head, a] = S.route.parts;
   const evs = S.events.map((e) => {
     const act = head === "event" && +a === e.id;
-    return `<a class="nav-sub ${act ? "active" : ""}" href="${evHash(e.id, defaultTabFor(e.id))}" title="${esc(e.name)}" style="--h:${hueOf(e.name)}" ${act ? 'aria-current="page"' : ""}>
+    return `<a class="nav-sub ${act ? "active" : ""}" data-reorder="${e.id}" draggable="true" href="${evHash(e.id, defaultTabFor(e.id))}" title="${esc(e.name)} — drag to reorder" style="--h:${hueOf(e.name)}" ${act ? 'aria-current="page"' : ""}>
       <span class="edot"></span><span class="ellipsis">${esc(shortEventName(e.name))}</span>${e.running ? '<span class="live-dot" title="Agents running"></span>' : ""}</a>`;
   }).join("");
   $("#sidebar").innerHTML = `
@@ -1447,6 +1447,66 @@ function renderSidebar() {
       <button class="btn ghost block nav-new" data-act="new-event">${icon("plus")}New event</button>
       <button class="nav-item" data-act="open-sheet" data-sheet="settings">${icon("cpu")}<span>Settings</span>${S.health && !S.health.key_present ? '<span class="count hot" title="No API key">!</span>' : ""}</button>
     </div>`;
+  enableReorder($("#sidebar .nav-subs"), "[data-reorder]");
+}
+
+/* ---- reorder events (drag on Projects cards and sidebar; ↑/↓ on a focused card handle) ---- */
+const GRIP = '<svg viewBox="0 0 10 16" width="10" height="16" aria-hidden="true"><g fill="currentColor"><circle cx="2.5" cy="3" r="1.3"/><circle cx="7.5" cy="3" r="1.3"/><circle cx="2.5" cy="8" r="1.3"/><circle cx="7.5" cy="8" r="1.3"/><circle cx="2.5" cy="13" r="1.3"/><circle cx="7.5" cy="13" r="1.3"/></g></svg>';
+function enableReorder(box, sel) {
+  if (!box || box.dataset.reorderOn) return;
+  box.dataset.reorderOn = "1";
+  let dragged = null, moved = false;
+  box.addEventListener("dragstart", (e) => {
+    const it = e.target.closest && e.target.closest(sel);
+    if (!it || !box.contains(it)) return;
+    dragged = it; moved = false;
+    it.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    try { e.dataTransfer.setData("text/plain", it.dataset.reorder); } catch { /* ignore */ }
+  });
+  box.addEventListener("dragover", (e) => {
+    if (!dragged) return;
+    e.preventDefault();
+    const over = e.target.closest && e.target.closest(sel);
+    if (!over || over === dragged || !box.contains(over)) return;
+    const r = over.getBoundingClientRect();
+    const grid = getComputedStyle(box).display === "grid";
+    const after = grid ? (e.clientY > r.top + r.height / 2 && e.clientX > r.left) || e.clientX > r.left + r.width / 2 : e.clientY > r.top + r.height / 2;
+    over.parentNode.insertBefore(dragged, after ? over.nextSibling : over);
+    moved = true;
+  });
+  box.addEventListener("drop", (e) => { if (dragged) e.preventDefault(); });
+  box.addEventListener("dragend", () => {
+    if (!dragged) return;
+    dragged.classList.remove("dragging");
+    const was = dragged; dragged = null;
+    if (moved) saveEventOrder($$(sel, box).map((x) => +x.dataset.reorder), was);
+  });
+  box.addEventListener("keydown", (e) => {
+    const g = e.target.closest && e.target.closest("[data-grip]");
+    if (!g || !["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    e.preventDefault();
+    const it = g.closest(sel), items = $$(sel, box), i = items.indexOf(it);
+    const j = e.key === "ArrowUp" || e.key === "ArrowLeft" ? i - 1 : i + 1;
+    if (j < 0 || j >= items.length) return;
+    if (j < i) box.insertBefore(it, items[j]); else box.insertBefore(it, items[j].nextSibling);
+    g.focus();
+    saveEventOrder($$(sel, box).map((x) => +x.dataset.reorder), it);
+  });
+}
+async function saveEventOrder(ids, el) {
+  try {
+    await api("/api/events/order", { method: "POST", body: { ids } });
+    const pos = new Map(ids.map((id, k) => [id, k]));
+    const by = (a, b) => (pos.get(a.id) ?? 1e9) - (pos.get(b.id) ?? 1e9);
+    S.events.sort(by);
+    if (S.projects && S.projects.events) S.projects.events.sort(by);
+    if (el && el.closest(".proj-grid")) renderSidebar();
+    else if (el && el.closest("#sidebar") && $(".proj-grid")) {
+      const grid = $(".proj-grid"), add = $(".proj-new", grid);
+      ids.forEach((id) => { const c = $(`.proj-card[data-eid="${id}"]`, grid); if (c) grid.insertBefore(c, add); });
+    }
+  } catch (e) { toastErr(e); }
 }
 
 function renderBanner() {
@@ -1485,9 +1545,10 @@ function projCard(e) {
   else if (!badges.length && !e.overdue) badges.push("On track");
   const lead = (n.kind === "person" || n.kind === "draft") && n.name ? avatar(n.name, "sm")
     : `<span class="av sm ic">${icon({ decision: "alert", find: "search", run: "play", ok: "check" }[n.kind] || "zap")}</span>`;
-  return `<article class="card proj-card" data-eid="${e.id}" style="--h:${hueOf(e.name)}">
+  return `<article class="card proj-card" data-eid="${e.id}" data-reorder="${e.id}" draggable="true" style="--h:${hueOf(e.name)}">
+    <button class="grip" data-grip aria-label="Move ${esc(e.name)} — drag, or use the arrow keys" title="Drag to reorder (or focus and press ↑ ↓)">${GRIP}</button>
     <div class="eyebrow ellipsis">${esc(e.org || "Event")}${e.demo ? ` <span class="demo-tag">Demo</span>` : ""}</div>
-    <h3 class="pc-title"><a href="${evHash(e.id, tab)}">${esc(e.name)}</a></h3>
+    <h3 class="pc-title"><a href="${evHash(e.id, tab)}" draggable="false">${esc(e.name)}</a></h3>
     <div class="small muted">${esc(daysLine(e))}</div>
     ${progress}
     <button class="pc-next" data-act="go-next" data-eid="${e.id}" data-kind="${esc(n.kind)}" data-pid="${n.person_id || ""}" data-did="${n.draft_id || ""}">
@@ -1511,6 +1572,7 @@ async function viewProjects() {
     <div class="proj-grid">${evs.map(projCard).join("")}
       <button class="proj-new" data-act="new-event">${icon("plus")}<span>New event</span><small>Import a folder, try a sample, or start from a public event</small></button>
     </div></div>`;
+  enableReorder($(".proj-grid"), "[data-reorder]");
   syncReviewBadges(evs);
 }
 

@@ -2304,12 +2304,53 @@ function profileHero(p, o) {
        <label class="chip-sel"><select data-act-change="p-tier" aria-label="Tier">${["A", "B", "C"].map((t) => `<option value="${t}" ${p.tier === t ? "selected" : ""}>Tier ${t}</option>`).join("")}${!p.tier ? '<option selected value="">No tier</option>' : ""}</select></label>`;
   return `<div class="pf-hero"><div class="pf-hero-in">
       <div class="pf-ring-wrap"><div class="pf-ring ${fit == null ? "nofit" : ""}" style="--fit:${fit || 0}">${avatar(p.name, "xl", p.photo_url)}${fit != null ? `<span class="pf-fit"><b>${fit}</b>FIT</span>` : ""}</div>
-        ${p.photo_url ? `<a class="pf-photo-src" href="${esc(p.photo_source || p.photo_url)}" target="_blank" rel="noopener noreferrer" title="Public photo — check it is the right person">Photo · Wikimedia Commons</a>` : ""}</div>
+        ${photoCaption(p, o)}</div>
       <div class="pf-id"><div class="mono-label">${esc(o.eyebrow || "")}</div>
         <h2 class="pf-name">${esc(p.name)}</h2>
         ${(p.aliases || []).length ? `<div class="pf-alias">${esc(p.aliases.slice(0, 2).join(" · "))}</div>` : ""}
         <div class="pf-role" title="${esc(p.role || "")}">${esc(sub.join(" · "))}</div>
         <div class="pf-ctl">${ctl}</div></div></div></div>`;
+}
+
+function photoCaption(p, o) {
+  const own = p.photo_url && String(p.photo_url).startsWith("/api/");
+  const link = /^https?:/.test(p.photo_source || "") ? p.photo_source : "";
+  const label = !p.photo_url ? "" : own ? "Photo · added by you" : "Photo · Wikimedia Commons";
+  const cap = !p.photo_url ? "" : link
+    ? `<a class="pf-photo-src" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="Where this photo came from — check it is the right person">${label}</a>`
+    : `<span class="pf-photo-src">${label}</span>`;
+  const edit = o.readonly ? "" : `<button class="pf-photo-edit" data-act="p-photo" data-pid="${p.id}">${p.photo_url ? "Change photo" : "Add photo"}</button>`;
+  return `<div class="pf-photo-meta">${cap}${edit}</div>`;
+}
+function photoModal(pid) {
+  const p = S.drawer && S.drawer.id === pid ? S.drawer : { id: pid };
+  openModal({
+    title: p.photo_url ? "Change photo" : "Add photo",
+    sub: "Paste an image link you copied (for example from a speaker page or a profile you can see), or upload a file. A copy is kept on this computer, so the link can expire later.",
+    body: `<div class="field"><label for="ph-url">Image link</label><input id="ph-url" class="input" type="url" placeholder="https://…/photo.jpg" autocomplete="off"></div>
+      <div class="small muted" style="margin:10px 0 6px">or</div>
+      <div class="field"><label for="ph-file">Image file <span class="faint">(JPEG, PNG, WebP · max 5 MB)</span></label><input id="ph-file" class="input" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></div>`,
+    foot: `${p.photo_url ? `<button class="btn ghost" data-act="p-photo-remove" data-pid="${pid}" style="margin-right:auto">Remove photo</button>` : ""}
+      <button class="btn ghost" data-act="close-modal">Cancel</button><button class="btn primary" data-act="p-photo-save" data-pid="${pid}">Save photo</button>`,
+  });
+}
+async function savePhoto(el, remove = false) {
+  const pid = +el.dataset.pid;
+  try {
+    if (remove) await api(`/api/people/${pid}/photo`, { method: "DELETE" });
+    else {
+      const form = new FormData();
+      const f = $("#ph-file").files[0], u = $("#ph-url").value.trim();
+      if (!f && !u) { toast("Paste an image link or choose a file.", "info", 3000); return; }
+      if (f) form.append("file", f); else form.append("url", u);
+      el.disabled = true; el.textContent = "Saving…";
+      await api(`/api/people/${pid}/photo`, { method: "POST", form });
+    }
+    closeModal();
+    toast(remove ? "Photo removed." : "Photo saved.", "ok", 2500);
+    if (S.drawerPid === pid) await loadPersonSheet(pid);
+    refreshBehindDrawer();
+  } catch (e) { el.disabled = false; el.textContent = "Save photo"; toastErr(e); }
 }
 
 function routeViz(p, routes, paths, o) {
@@ -2518,6 +2559,9 @@ const ACTIONS = {
   reload: () => location.reload(),
   "reload-tab": () => renderTab(),
   "close-modal": () => closeModal(),
+  "p-photo": (el) => photoModal(+el.dataset.pid),
+  "p-photo-save": (el) => savePhoto(el),
+  "p-photo-remove": (el) => savePhoto(el, true),
   "close-sheet": () => closeSheet(),
   "new-event": (el) => newEventModal(el.dataset.mode),
   "load-demo": (el) => loadDemo(el),

@@ -134,7 +134,8 @@ workspace/             your local data (git-ignored)
   file in Event › Files, and a reply that tries to instruct the desk never changes a status automatically.
 - No contact detail is invented: every contact point shows its source; scouted candidates must cite URLs.
 - Estimates (e.g. an assumed budget) are always labelled as estimates.
-- Photos come only from Wikimedia Commons for public figures with a Wikidata entry, matched on name and on
-  role/employer words; everyone else keeps an initials avatar.
+- Photos are looked up automatically only on Wikimedia Commons, for public figures with a Wikidata entry, matched on
+  name and on role/employer words. You can add, change or remove any photo yourself (paste an image link or upload
+  a file; a copy stays in `workspace/photos/`); the desk never scrapes social networks.
 - Per-run **budget guard** and per-agent request/tool-call limits stop runaway spending.
 - Drafts must pass the Reviewer and a human; approved drafts are written to `Drive/outbox/` for you to send yourself.

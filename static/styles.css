@@ -1600,6 +1600,9 @@ a.src:hover { color: var(--accent-ink); box-shadow: 0 0 0 1px var(--border-stron
 .pf-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .pf-photo-src { font-family: var(--mono-ui); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); white-space: nowrap; }
 .pf-photo-src:hover { color: var(--accent-ink); }
+.pf-photo-meta { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 4px; }
+.pf-photo-edit { font-family: var(--mono-ui); font-size: 9.5px; letter-spacing: 0.06em; color: var(--accent-ink); background: none; border: 0; padding: 2px 4px; cursor: pointer; opacity: 0.8; }
+.pf-photo-edit:hover, .pf-photo-edit:focus-visible { opacity: 1; text-decoration: underline; }
 .pf-ring .av.has-photo { background: #0B1F24; }
 @media (prefers-reduced-motion: reduce) { .av img { transition: none; } }
 .av.has-photo { color: inherit; background: hsl(var(--h) var(--av-s) var(--av-l)); }

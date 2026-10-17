@@ -5,12 +5,14 @@ from __future__ import annotations
 import asyncio
 import shutil
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
+import httpx2 as httpx
 from pydantic import BaseModel
 
 from . import agents, config, coordinator, db, graph, snapshot, views
@@ -560,6 +562,76 @@ def person_paths(pid: int):
 async def person_photo(pid: int, force: bool = False):
     """Public portrait (Wikimedia Commons) for a person, looked up once and cached; url is null when none."""
     return await coordinator.find_photo_for(pid, force=force)
+
+
+_IMG_SIG = {b"\xff\xd8\xff": ".jpg", b"\x89PNG": ".png", b"RIFF": ".webp", b"GIF8": ".gif"}
+_MAX_PHOTO = 5 * 1024 * 1024
+
+
+def _photo_ext(data: bytes) -> str:
+    ext = next((e for sig, e in _IMG_SIG.items() if data.startswith(sig)), "")
+    if not ext or (ext == ".webp" and data[8:12] != b"WEBP"):
+        raise HTTPException(400, "That is not a JPEG, PNG, WebP or GIF image.")
+    return ext
+
+
+@app.post("/api/people/{pid}/photo")
+async def set_person_photo(pid: int, url: str = Form(""), file: UploadFile | None = File(None)):
+    """Add a photo you chose (an image link you copied, or an uploaded file). A copy is kept in the local
+    workspace, so links that expire later still work. Nothing is fetched unless you ask."""
+    p = db.one("SELECT id, global_id FROM people WHERE id=?", (pid,))
+    if not p:
+        raise HTTPException(404, "person not found")
+    if file is not None and file.filename:
+        data, source = await file.read(_MAX_PHOTO + 1), "uploaded by you"
+    elif url.strip().lower().startswith(("http://", "https://")):
+        try:
+            async with httpx.AsyncClient(timeout=20, follow_redirects=True,
+                                         headers={"User-Agent": "Mozilla/5.0 InviteDesk"}) as c:
+                r = await c.get(url.strip())
+                r.raise_for_status()
+                data, source = r.content[:_MAX_PHOTO + 1], url.strip()
+        except httpx.HTTPError as exc:
+            raise HTTPException(400, f"Couldn't download that image ({type(exc).__name__}). "
+                                     "Save it and upload the file instead.") from exc
+    else:
+        raise HTTPException(400, "Paste an image link (https://…) or choose an image file.")
+    if len(data) > _MAX_PHOTO:
+        raise HTTPException(400, "Image is larger than 5 MB.")
+    ext = _photo_ext(data)
+    folder = config.WORKSPACE / "photos"
+    folder.mkdir(parents=True, exist_ok=True)
+    for old in folder.glob(f"{pid}.*"):
+        old.unlink()
+    (folder / f"{pid}{ext}").write_bytes(data)
+    photo_url = f"/api/people/{pid}/photo.img?v={int(time.time())}"
+    db.update("people", pid, photo_url=photo_url, photo_source=source, photo_checked=db.now())
+    if p.get("global_id"):  # same person in other events, if they have no photo yet
+        db.execute("UPDATE people SET photo_url=?, photo_source=?, photo_checked=? WHERE global_id=? AND id!=? "
+                   "AND photo_url IS NULL", (photo_url, source, db.now(), p["global_id"], pid))
+    db.timeline(pid, "photo", "Photo added by you", actor="You")
+    return {"url": photo_url, "source": source}
+
+
+@app.get("/api/people/{pid}/photo.img")
+def person_photo_file(pid: int):
+    hit = next(iter(sorted((config.WORKSPACE / "photos").glob(f"{pid}.*"))), None) \
+        if (config.WORKSPACE / "photos").exists() else None
+    if not hit:
+        raise HTTPException(404, "no stored photo")
+    return FileResponse(hit, headers={"Cache-Control": "private, max-age=86400"})
+
+
+@app.delete("/api/people/{pid}/photo")
+def clear_person_photo(pid: int):
+    """Remove a photo (e.g. a public match that is the wrong person); it will not be looked up again."""
+    if not db.one("SELECT id FROM people WHERE id=?", (pid,)):
+        raise HTTPException(404, "person not found")
+    for old in (config.WORKSPACE / "photos").glob(f"{pid}.*") if (config.WORKSPACE / "photos").exists() else []:
+        old.unlink()
+    db.update("people", pid, photo_url=None, photo_source=None, photo_checked=db.now())
+    db.timeline(pid, "photo", "Photo removed", actor="You")
+    return {"ok": True}
 
 
 @app.post("/api/events/{eid}/photos")

@@ -43,7 +43,11 @@ def find_paths(pid: int, limit: int = 8) -> list[dict[str, Any]]:
     roster = [p for p in db.q("SELECT * FROM people WHERE event_id=? AND id!=?", (eid, pid))]
     team = [p for p in roster if p["relationship"] == "team_member"]
     contacts = db.q("SELECT * FROM contacts WHERE person_id=?", (pid,))
-    notes = " ".join([target.get("intro") or "", target.get("rationale") or "",
+    # For people the Talent Scout proposed, intro/rationale are model-written: a name there is a suggestion, not
+    # evidence that the two know each other. Only documents, history and sourced intermediary contacts count.
+    scouted = target.get("origin") == "scout"
+    ai_notes = " ".join([target.get("intro") or "", target.get("rationale") or ""]) if scouted else ""
+    notes = " ".join([("" if scouted else (target.get("intro") or "") + " " + (target.get("rationale") or "")),
                       " ".join(h.get("note", "") + " " + h.get("by", "") for h in target.get("history") or []),
                       " ".join(f"{c['label']} {c['value']}" for c in contacts if c["channel"] == "intermediary")])
     paths: list[dict[str, Any]] = []
@@ -83,6 +87,11 @@ def find_paths(pid: int, limit: int = 8) -> list[dict[str, Any]]:
             add(kind, p["name"], chain, "warm",
                 f"{p['name']} is named in {target['name']}'s notes ({p['relationship'].replace('_', ' ')}, "
                 f"status {p['status']})")
+        elif ai_notes and _mentions(ai_notes, p) and p["name"] != target.get("owner"):
+            owner = p.get("owner") or (team[0]["name"] if team else "team")
+            add("suggested_intro", p["name"], [owner, p["name"], target["name"]], "cold",
+                f"Suggested by the Talent Scout, not evidence of a relationship: no document, history or source shows "
+                f"that {p['name']} knows {target['name']}. Ask {p['name']} first.")
 
     # 4. organisations the target is tied to (agency, employer, partner org) that are on the roster
     for p in roster:

@@ -16,7 +16,7 @@ public event, and its agents:
   mismatches, unprovable claims, prompt-injection text), follow-ups, reimbursements, a Drive folder of outputs, and
   memory across events (per-person timelines, an integrated directory, and who on the team owns which relationship).
 
-**One desk for the whole event lifecycle, run for the organisation.** It plans (Fact Sheet, program slots,
+**Not just a people finder: the organiser's working core and the team's control panel.** It plans (Fact Sheet, program slots,
 priorities), finds people, reaches them, invites and reviews, tracks replies and follow-ups, and closes the books
 (reimbursement checks against the budget). Budget alignment runs through every step: the working budget is read from
 the documents or estimated and labelled, invitations may not promise money beyond the guest policy or the sponsorship
@@ -24,7 +24,7 @@ tiers, price mismatches across documents are flagged, expenses are tracked again
 a hard spend cap. Relationships and history belong to the organisation and survive volunteer and staff turnover.
 
 Built first for **NGOs and summit / conference organisers** (case studies: the Chinese Rainbow Network's Global Gala and
-the Yale Innovation Summit); student clubs that run conferences are a secondary use. Humans approve everything; the
+the Yale Innovation Summit, plus a step-by-step showcase on the Yale SOM Responsible AI in Global Business Conference 2027); student clubs that run conferences are a secondary use. Humans approve everything; the
 desk never sends a message itself.
 
 > Yale SOM MGT 409 (Fall 2026) final project · model: `gpt-6-luna` via the course Portkey key ·
@@ -48,6 +48,7 @@ desk never sends a message itself.
 | **Close & control** | **Consistency audit** of every document (old dates, wrong links, price mismatches, unprovable claims, prompt-injection text), flagged on each file | Event › Files, "to confirm" pill |
 | | **Reimbursement checks** against the budget (currency, missing receipts or approvals, items over $1,000) | Event › Plan › Budget |
 | | **Budget Guard** spend cap per run; tokens and cost per agent and run; live agent board | Agent status pill, Settings |
+| **Team control panel** | **Projects** home ordered the way you work (drag to reorder), one next step per event; "to confirm" sheet; one review queue for every letter; delete an event and everything the desk made for it | Projects, event header |
 | **Organisation memory** | **Integrated directory** across events, **Team** view of who owns which relationship (handover), Drive folder of consistent outputs | People (Everyone / Team), Event › Files |
 
 ## Run it (about 1 minute)
@@ -94,6 +95,11 @@ Your own data stays in `workspace/` (git-ignored). To start clean, stop the app 
 To use a different workspace: `INVITEDESK_WORKSPACE=/some/path uv run app.py`.
 `uv run app.py --help` lists all command-line options (import, run a pipeline headless, port, budget).
 
+### A real end-to-end run, step by step
+[`docs/showcase_responsible_ai_2027.md`](docs/showcase_responsible_ai_2027.md) records one run on a public event (the Yale
+SOM AI Association's Responsible AI in Global Business Conference 2027): what to click, which agents ran, and the
+measured time, tokens and cost of each step (8 min 26 s, $0.42 end to end).
+
 ### Reproduce the evaluation
 `uv run scripts/evaluate.py` runs every agent on the three samples in its own workspace (`workspace/eval`, ~15 min,
 ~$1.2) and writes `output/eval_results.json` + `output/eval_summary.md` (consistency audit vs the planted answer key,
@@ -126,6 +132,7 @@ sample_event/          fictional sample events + demo snapshot (test data)
 scripts/               sample-data generator and evaluation
 output/                evaluation evidence used in the report
 deliverables/          report.html and slides.html
+docs/                  step-by-step record of a real showcase run
 workspace/             your local data (git-ignored)
 ```
 

@@ -720,7 +720,7 @@ async function planPerson(pid, btn) {
 
 const PATH_KIND = {
   existing_thread: ["Existing thread", ""], owner: ["Relationship owner", ""], team_intro: ["Team member intro", ""],
-  intermediary: ["Intermediary", ""], organisation: ["Through organisation", ""], past_event: ["Past event", ""],
+  intermediary: ["Intermediary", ""], suggested_intro: ["Suggested intro (unverified)", ""], organisation: ["Through organisation", ""], past_event: ["Past event", ""],
   linkedin_1st: ["LinkedIn 1st-degree", ""], linkedin_colleague: ["LinkedIn colleague", ""],
 };
 

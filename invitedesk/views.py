@@ -180,3 +180,95 @@ def usage_summary() -> dict[str, Any]:
     runs = db.q("SELECT r.*, COALESCE(e.name, 'All events (daily brief)') AS event_name FROM runs r "
                 "LEFT JOIN events e ON e.id=r.event_id ORDER BY r.id DESC")
     return {"runs": runs}
+
+
+# ---------------------------------------------------------------- projects home
+
+
+def _route_sentence(p: dict[str, Any], r: dict[str, Any] | None) -> str:
+    """Plain-language 'best way in' for a person (used by the projects home and the person sheet)."""
+    if not r:
+        return f"Plan the best way to reach {p['name']}"
+    via, ch, tgt = (r.get("via") or "").split(";")[0].strip(), r.get("channel") or "", r.get("target") or ""
+    kind = r.get("route_type")
+    if kind == "intermediary_intro" and via:
+        return f"Ask {via} to introduce {p['name']}"
+    if kind == "existing_thread":
+        return f"Follow up with {p['name']} on the existing {ch or 'thread'}".replace("existing existing", "existing")
+    if kind == "official_management":
+        return f"Contact {p['name']}'s management" + (f" ({tgt})" if tgt and '@' not in tgt else "")
+    if kind == "partner_org" and via:
+        return f"Reach {p['name']} through {via}"
+    if kind == "public_contact":
+        return f"Use {p['name']}'s official contact channel"
+    if kind == "direct_dm":
+        return f"Message {p['name']} directly on {ch or 'social media'}"
+    return f"Reach {p['name']} via {ch or kind}"
+
+
+def projects() -> dict[str, Any]:
+    """One card per event: progress, things waiting on you, and the single most important next step."""
+    t = date.today()
+    cards, waiting_total = [], 0
+    for e in db.q("SELECT id, name, org, status, fact_sheet, strategy, spent_usd FROM events ORDER BY id"):
+        fs, st = e.get("fact_sheet") or {}, e.get("strategy") or {}
+        eid = e["id"]
+        people = db.q("SELECT * FROM people WHERE event_id=? AND relationship!='team_member' AND "
+                      "COALESCE(entity,'person')='person'", (eid,))
+        confirmed = sum(1 for p in people if p["status"] == "confirmed")
+        needed = sum(int(s.get("needed") or 0) for s in (st.get("slots") or []))
+        found = sum(1 for p in people if p["origin"] == "scout")
+        to_review = db.one("SELECT COUNT(*) n FROM drafts WHERE event_id=? AND status IN "
+                           "('ready_for_review','needs_changes','in_review')", (eid,))["n"]
+        decisions = db.one("SELECT COUNT(*) n FROM issues WHERE event_id=? AND status='open' AND severity='high'",
+                           (eid,))["n"]
+        overdue = db.q("SELECT f.*, p.name, p.tier FROM followups f JOIN people p ON p.id=f.person_id WHERE "
+                       "f.event_id=? AND f.status='open' AND f.due<? ORDER BY CASE p.tier WHEN 'A' THEN 0 ELSE 1 END, "
+                       "f.due", (eid, t.isoformat()))
+        date_v = ((fs.get("date") or {}).get("value") or "")[:10]
+        try:
+            days = (date.fromisoformat(date_v) - t).days
+        except ValueError:
+            days = None
+        nxt = None
+        if not fs:
+            nxt = {"kind": "run", "text": "Run the agents to read your files", "target": "plan"}
+        elif overdue:
+            f = overdue[0]
+            p = next((x for x in people if x["id"] == f["person_id"]), None)
+            r = db.one("SELECT * FROM routes WHERE person_id=? ORDER BY rank LIMIT 1", (f["person_id"],))
+            late = (t - date.fromisoformat(f["due"][:10])).days
+            nxt = {"kind": "person", "person_id": f["person_id"], "name": f["name"],
+                   "text": (_route_sentence(p, r) if p and r else f"Follow up with {f['name']}")
+                   + f" — {late} day{'s' if late != 1 else ''} overdue", "target": "people"}
+        if not nxt:
+            d = db.one("SELECT d.id, d.status, p.name, p.id AS pid FROM drafts d JOIN people p ON p.id=d.person_id WHERE "
+                       "d.event_id=? AND d.status IN ('needs_changes','ready_for_review') ORDER BY CASE d.status WHEN "
+                       "'needs_changes' THEN 0 ELSE 1 END, CASE p.tier WHEN 'A' THEN 0 ELSE 1 END, d.id", (eid,))
+            if d:
+                nxt = {"kind": "draft", "draft_id": d["id"], "person_id": d["pid"], "name": d["name"],
+                       "text": ("Fix" if d["status"] == "needs_changes" else "Review") + f" the message to {d['name']}",
+                       "target": "messages"}
+        if not nxt and decisions:
+            i = db.one("SELECT field FROM issues WHERE event_id=? AND status='open' AND severity='high' ORDER BY id",
+                       (eid,))
+            nxt = {"kind": "decision", "text": f"Decide: {i['field']}", "target": "plan"}
+        if not nxt:
+            open_slots = [s for s in (st.get("slots") or []) if int(s.get("gap") or 0) > 0]
+            nxt = ({"kind": "find", "text": f"Find people for {open_slots[0]['name']}", "target": "people"}
+                   if open_slots else {"kind": "ok", "text": "On track — nothing is waiting on you", "target": "plan"})
+        waiting = to_review + decisions + len(overdue)
+        waiting_total += waiting
+        cards.append({"id": eid, "name": e["name"], "org": e.get("org") or (fs.get("org_name_en") or {}).get("value", ""),
+                      "date": date_v or None, "days_to_go": days, "venue": (fs.get("venue") or {}).get("value"),
+                      "demo": e["status"] == "demo", "confirmed": confirmed, "needed": needed, "people": len(people),
+                      "found": found, "to_review": to_review, "decisions": decisions, "overdue": len(overdue),
+                      "waiting": waiting, "spent_usd": round(e.get("spent_usd") or 0, 4), "next": nxt,
+                      "budget": (fs.get("budget") or {}).get("value"), "budget_assumed": bool(fs.get("budget_assumed"))})
+    return {"events": cards, "waiting": waiting_total}
+
+
+def best_way_in(pid: int) -> dict[str, Any]:
+    p = db.one("SELECT * FROM people WHERE id=?", (pid,))
+    r = db.one("SELECT * FROM routes WHERE person_id=? ORDER BY rank LIMIT 1", (pid,)) if p else None
+    return {"sentence": _route_sentence(p, r) if p else "", "route": r}

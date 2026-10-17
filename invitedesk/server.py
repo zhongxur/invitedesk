@@ -471,6 +471,18 @@ def today():
     return views.today()
 
 
+@app.get("/api/projects")
+def projects():
+    """Projects home: one card per event with progress, waiting items and its single next step."""
+    return views.projects()
+
+
+@app.get("/api/people/{pid}/best")
+def person_best(pid: int):
+    """Plain-language best way in for a person ('Ask X to introduce Y')."""
+    return views.best_way_in(pid)
+
+
 class BriefIn(BaseModel):
     language: str = "en"
 

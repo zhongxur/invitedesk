@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from . import config, db, tools
@@ -82,7 +82,13 @@ def load() -> dict[str, Any]:
         return {"loaded": [], "already_loaded": [e["id"] for e in existing]}
     data["events"] = [b for b in data["events"] if b["event"].get("source") not in {e["source"] for e in existing}]
     (config.WORKSPACE / ".demo_dismissed").unlink(missing_ok=True)
-    days = (date.today() - date.fromisoformat(data.get("recorded_on", date.today().isoformat()))).days
+    # shift by whole days so the newest recorded timestamp lands on or before "now" (never in the future)
+    stamps = [r.get(k) for b in data["events"] for r in b["runs"] for k in ("started_at", "ended_at") if r.get(k)]
+    if stamps:
+        newest = max(datetime.fromisoformat(x) for x in stamps)
+        days = (datetime.now(timezone.utc) - newest).days
+    else:
+        days = (date.today() - date.fromisoformat(data.get("recorded_on", date.today().isoformat()))).days
     for block in data["events"]:
         for f in block["followups"]:
             f["due"] = _shift(f["due"], days)

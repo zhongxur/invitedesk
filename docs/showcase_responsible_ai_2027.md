@@ -34,7 +34,13 @@ Times are wall-clock; cost is from the app's own usage log (Settings › Usage &
 | 9 | Open **People**: a board of To find → To reach → Invited → Confirmed. Click a person. | — | The profile shows the photo inside the fit ring, then **Best way in** as a route map with warmth and channel, other routes, background, every contact with its source, messages and history. No clicks are needed to reveal them. |
 | 10 | **Messages**: read each letter, then **Approve**, or use **…** to Edit / Request changes / Re-run review. | Human approval | Approved letters go to `Drive/outbox/` as `.eml` files. The desk never sends anything itself. |
 
-**Totals for steps 1–8:** 8 min 26 s, **$0.421** ($0.084 research + $0.334 pipeline + $0.003 for one extra list).
+While the run was still going, the organiser (David) opened **People › Find people** and generated one extra list
+from the suggested brief "People for 'Panel contributors', 8 names" (73 s, $0.003). He then opened
+**Messages** and approved the Reviewer-passed letter to Ethan Mollick, which the desk wrote to
+`Drive/outbox/Ethan_Mollick__51.eml` for him to send. The run kept going in the background throughout. That is the
+control-panel workflow: agents work, humans decide.
+
+**Totals for steps 1–8:** 8 min 26 s, **$0.421** ($0.084 research + $0.334 pipeline + $0.003 for the extra list).
 The pipeline used 474,147 input tokens, 258,421 of them cached (54.5%), and 74,362 output tokens, across 116
 requests, 79 tool calls and 27 web searches. The budget cap was $0.90; the run used 37% of it.
 

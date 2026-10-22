@@ -202,14 +202,17 @@ def _route_sentence(p: dict[str, Any], r: dict[str, Any] | None) -> str:
             else f"Ask {via} to introduce {p['name']}"
     if kind == "existing_thread":
         short = ch.split(" via ")[0].split("(")[0].strip()
-        through = tgt if tgt and "@" not in tgt and tgt != p["name"] and len(tgt) < 40 else ""
+        # only name a go-between when the channel itself says the thread runs "via" that person
+        through = tgt if tgt and tgt != p["name"] and re.search(r"\bvia\s+" + re.escape(tgt), ch, re.I) else ""
         if through:
             return f"Follow up with {p['name']} through {through} (existing thread)"
         if short and len(short) <= 20 and short.lower() not in ("thread", "existing thread"):
-            return f"Follow up with {p['name']} on the existing {short} thread"
+            word = short.lower() if short.lower() in ("email", "phone", "text", "call", "sms", "letter") else short
+            return f"Follow up with {p['name']} on the existing {word} thread"
         return f"Follow up with {p['name']} on the existing thread"
     if kind == "official_management":
-        return f"Contact {p['name']}'s management" + (f" ({tgt})" if tgt and '@' not in tgt else "")
+        return f"Contact {p['name']}'s management" + (f" ({tgt})" if tgt and '@' not in tgt
+                                                       and not tgt.startswith("(") and len(tgt) < 60 else "")
     if kind == "partner_org" and via:
         return f"Reach {p['name']} through {via}"
     if kind == "public_contact":

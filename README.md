@@ -67,10 +67,13 @@ Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/) (recommended), o
    uv run app.py
    ```
    Port 8000 busy? `uv run app.py --port 8001`.
-   Without uv (macOS/Linux): `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python3 app.py`
+   Without uv you need Python 3.11+ (`python3 --version`; the macOS built-in `python3` is 3.9, so use uv, which
+   fetches the right Python automatically, or a newer python3 such as `/opt/homebrew/bin/python3`). Then (macOS/Linux): `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python3 app.py`
    (Windows: `.venv\Scripts\activate`, then `python app.py`.)
 4. Open **http://localhost:8000**. On first start the app loads a **demo snapshot** — a recorded real run of all
-   agents on three fictional sample events — so every screen has data immediately. Browsing costs nothing.
+   agents on three fictional sample events **plus the Responsible AI in Global Business Conference 2027 showcase run
+   traced in the report** (public figures only; personal addresses removed) — so every screen has data immediately.
+   Browsing costs nothing.
 
 ### Try the agents live (real model calls)
 | Action | Where | Typical time / cost (measured) |
@@ -87,7 +90,7 @@ Every run has a hard **budget cap** (default $0.50); if it is reached the run st
 ### Test data vs your own data
 | Data | Where | How to use |
 |---|---|---|
-| Demo snapshot (recorded run) | `sample_event/demo_snapshot.json` | loaded automatically into an empty workspace; also **+ New event → Demo** |
+| Demo snapshot (recorded runs: 3 fictional events + the report's showcase event) | `sample_event/demo_snapshot.json` | loaded automatically into an empty workspace; also **+ New event → Demo** |
 | 3 small fictional sample events | `sample_event/<name>/` (answer key in `sample_event/README.md`) | **+ New event → Sample event** |
 | Your own event folder | anywhere | **+ New event → Import .zip**, or `uv run app.py --import path/to/folder.zip --org "My Club"` |
 
@@ -128,7 +131,7 @@ share one long handbook prefix so the prompt cache is reused:
 app.py                 entry point (uv run app.py)
 invitedesk/            backend: agents/, coordinator.py, graph.py, tools.py, ingest.py, server.py, views.py, exporter.py, snapshot.py
 static/                single-page UI (no build step)
-sample_event/          fictional sample events + demo snapshot (test data)
+sample_event/          fictional sample events + demo snapshot incl. the showcase run (test data)
 scripts/               sample-data generator and evaluation
 output/                evaluation evidence used in the report
 deliverables/          report.html and slides.html

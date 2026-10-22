@@ -25893,6 +25893,5367 @@
 }
 ],
 "comments": []
+},
+{
+"event": {
+"id": 5,
+"name": "MIT Sloan Sports Analytics Conference 2027",
+"org": "MIT Sloan School of Management",
+"source": "research",
+"created_at": "2026-10-22T22:32:14+00:00",
+"status": "done",
+"fact_sheet": {
+"event_name": {
+"value": "MIT Sloan Sports Analytics Conference 2027",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "# Research memo — MIT Sloan Sports Analytics Conference 2027 — Research Memo",
+"value": "MIT Sloan Sports Analytics Conference 2027"
+}
+]
+},
+"event_name_zh": null,
+"org_name_en": {
+"value": "MIT Sloan Sports Analytics Conference",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "Organiser: MIT Sloan Sports Analytics Conference",
+"value": "MIT Sloan Sports Analytics Conference"
+}
+]
+},
+"org_name_zh": null,
+"org_description": "The MIT Sloan Sports Analytics Conference is an annual, in-person forum for sports-industry professionals, researchers, students, and fans to discuss analytics, business, and technology in sports. It is chaired by co-founders Jessica Gelman and Daryl Morey and organized by MIT Sloan students.",
+"date": {
+"value": "2027-02-25/2027-02-26",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "2027 date: February 25–26, 2027 (Thursday–Friday)",
+"value": "2027-02-25/2027-02-26"
+}
+]
+},
+"weekday": "Thursday–Friday",
+"vip_time": null,
+"main_time": null,
+"venue": {
+"value": "Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210",
+"value": "Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210"
+}
+]
+},
+"city_region": {
+"value": "Boston, MA, USA",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "415 Summer Street, Boston, MA 02210",
+"value": "Boston, MA, USA"
+}
+]
+},
+"website": {
+"value": "https://www.sloansportsconference.com/",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "Official website: https://www.sloansportsconference.com/",
+"value": "https://www.sloansportsconference.com/"
+}
+]
+},
+"event_page": {
+"value": "https://www.eventbrite.com/e/mit-sloan-sports-analytics-conference-2027-tickets-1991125033575",
+"sources": [
+{
+"document": "Research_memo.md",
+"quote": "2027 date: February 25–26, 2027 (Thursday–Friday), according to the 2027 Eventbrite listing",
+"value": "https://www.eventbrite.com/e/mit-sloan-sports-analytics-conference-2027-tickets-1991125033575"
+}
+]
+},
+"contact_email": null,
+"instagram": null,
+"audience": "Sports-industry professionals, researchers, students, and fans. More than 2,500 people attended the 2026 edition.",
+"program": [],
+"ticket_tiers": [],
+"sponsorship_tiers": [],
+"guest_policy": "Not stated in the organiser's documents. Speaker honoraria, travel support, guest admission, and VIP access are unspecified.",
+"budget": {
+"value": "Estimated working budget: $1,250,000 USD",
+"sources": []
+},
+"budget_assumed": true,
+"budget_basis": "No event budget or cost cap is stated. Planning estimate: use 2,500 attendees as a conservative baseline based on the 2026 edition's reported attendance of more than 2,500, multiplied by an assumed $500 per attendee for an all-in conference cost in Boston (venue, catering, production, staffing, and event operations): 2,500 × $500 = $1,250,000. This is an estimate, not an organiser-provided budget; speaker travel or honoraria are not separately specified.",
+"team": [
+{
+"name": "Jessica Gelman",
+"role": "Co-Chair; CEO, Kraft Analytics Group",
+"email": ""
+},
+{
+"name": "Daryl Morey",
+"role": "Co-Chair; President of Basketball Operations, Philadelphia 76ers",
+"email": ""
+},
+{
+"name": "Mike O’Connell",
+"role": "Co-Lead (2026)",
+"email": ""
+},
+{
+"name": "Patrick Scheri",
+"role": "Co-Lead (2026)",
+"email": ""
+}
+],
+"key_messages": [
+"The conference is an annual, in-person forum about analytics, business, and technology in sports.",
+"The intended audience includes sports-industry professionals, researchers, students, and fans.",
+"The 2027 conference is planned for February 25–26 in Boston.",
+"The 2027 speaker lineup and detailed agenda have not yet been announced in the reviewed materials.",
+"The organiser is seeking keynote speakers, panelists across sports analytics, AI, and betting markets, and sponsors."
+],
+"conflicts": [],
+"open_questions": [
+"Confirm the 2027 speaker and keynote lineup, agenda, tracks, and session descriptions.",
+"Confirm 2027 ticket prices and ticket tiers.",
+"Confirm the 2027 sponsor roster, available sponsorship inventory, tiers, and prices.",
+"Confirm event budget, speaker honoraria, travel support, and other guest benefits.",
+"Confirm whether any specific sessions on AI or betting markets will be included."
+]
+},
+"strategy": {
+"slots": [
+{
+"name": "Keynote speaker",
+"needed": 1,
+"filled_by": [],
+"gap": 1,
+"criteria": "Planning placeholder: one minimum keynote target inferred from the notes requesting keynote speakers; no 2027 agenda or confirmed/likely speaker is documented."
+},
+{
+"name": "Sports analytics panelists",
+"needed": 2,
+"filled_by": [],
+"gap": 2,
+"criteria": "Planning placeholder: two panelist places to make a panel; topic requested in the planning notes, but no panel size or 2027 session is published."
+},
+{
+"name": "AI in sports panelists",
+"needed": 2,
+"filled_by": [],
+"gap": 2,
+"criteria": "Planning placeholder: two panelist places to make a panel; topic requested in the planning notes, but no panel size or 2027 session is published."
+},
+{
+"name": "Betting markets panelists",
+"needed": 2,
+"filled_by": [],
+"gap": 2,
+"criteria": "Planning placeholder: two panelist places to make a panel; topic requested in the planning notes, but no panel size or 2027 session is published."
+},
+{
+"name": "Sponsor prospect",
+"needed": 1,
+"filled_by": [],
+"gap": 1,
+"criteria": "Minimum planning placeholder for sponsor outreach. No 2027 sponsor roster, tiers, inventory, or confirmed sponsor is documented; this is not a published target."
+}
+],
+"rubric": [
+{
+"name": "Mission and topic fit",
+"weight": 0.25,
+"description": "Fit with the conference’s stated scope of sports analytics, business, and technology, and the requested keynote/panel topics."
+},
+{
+"name": "Audience draw and contribution",
+"weight": 0.2,
+"description": "Potential to attract or serve the broad professional, researcher, student, and fan audience; grounded in documented public role or prior conference participation."
+},
+{
+"name": "Likelihood of acceptance",
+"weight": 0.2,
+"description": "Evidence of realistic availability or willingness. No availability is documented, so scores remain cautious."
+},
+{
+"name": "Relationship warmth",
+"weight": 0.15,
+"description": "Prior conference participation counts as past collaboration/warm; no active thread or direct contact is documented."
+},
+{
+"name": "Program balance",
+"weight": 0.1,
+"description": "Potential to add a distinct perspective across sports, business, analytics, and community segments, based only on roster notes."
+},
+{
+"name": "Cost and travel burden",
+"weight": 0.1,
+"description": "Potential logistics burden. Location, travel needs, and honoraria are unknown, so this factor is not assumed favorable."
+}
+],
+"priorities": [
+{
+"name": "Adam Silver",
+"slot": "Keynote speaker",
+"score": 85.0,
+"tier": "B",
+"rationale": "Past 2026 speaker with a documented conversation on basketball, tanking, and gambling; strong conference-topic and audience fit. Past participation supports warmth, but no 2027 interest, availability, or logistics are known, so not designated A.",
+"next_step": "Check whether the existing conference relationship has a current owner or thread, then route a keynote inquiry through an approved professional channel."
+},
+{
+"name": "Sue Bird",
+"slot": "Sports analytics panelists",
+"score": 81.0,
+"tier": "B",
+"rationale": "Past 2026 speaker and moderator, giving documented program experience and a warm relationship. Potential to contribute a player and moderator perspective; specific 2027 topic fit and availability are unconfirmed.",
+"next_step": "Identify the prior relationship owner and consider a panel invitation or moderation ask once the session topic is defined."
+},
+{
+"name": "Nate Silver",
+"slot": "Sports analytics panelists",
+"score": 80.0,
+"tier": "B",
+"rationale": "Past 2026 speaker; roster identifies him as a statistician and founder of Silver Bulletin, supporting analytics fit. No specific session match, availability, or contact route is documented.",
+"next_step": "Check for an existing thread or professional introduction, then approach with a defined sports-analytics session concept."
+},
+{
+"name": "Jason Robins",
+"slot": "Betting markets panelists",
+"score": 78.0,
+"tier": "B",
+"rationale": "Past 2026 speaker and DraftKings co-founder/CEO; relevant to the requested betting-markets topic. No 2027 availability, policy fit, or contact route is established.",
+"next_step": "Confirm the proposed session scope and identify an existing relationship owner before outreach."
+},
+{
+"name": "A’ja Wilson",
+"slot": "Keynote speaker",
+"score": 77.0,
+"tier": "B",
+"rationale": "Past 2025 speaker; roster notes identify her as a player, entrepreneur, and author, offering potential audience draw and a distinctive athlete/business perspective. Topic match and availability are unknown.",
+"next_step": "Check the prior conference contact path and assess fit for a keynote or athlete-and-business session before approaching."
+},
+{
+"name": "Megan Rapinoe",
+"slot": "Keynote speaker",
+"score": 76.0,
+"tier": "B",
+"rationale": "Past 2026 speaker; documented roles as athlete, activist, author, and co-founder of A Touch More support a distinctive sports-business and community perspective. No specific keynote concept or 2027 availability is documented.",
+"next_step": "Review prior conference outreach history and identify a specific session angle before making an invitation."
+},
+{
+"name": "David Blitzer",
+"slot": "Sports analytics panelists",
+"score": 73.0,
+"tier": "C",
+"rationale": "Past 2025 speaker and sports-business executive, making him a potential fit for a business-focused session. The roster does not establish a direct analytics or requested-topic fit, and current availability is unknown.",
+"next_step": "Consider only if a sports investment/business session is developed; check for an existing relationship owner first."
+},
+{
+"name": "John Donahoe",
+"slot": "Sports analytics panelists",
+"score": 72.0,
+"tier": "C",
+"rationale": "Past 2026 speaker and identified as Stanford Athletics Athletic Director, offering an athletics leadership perspective. A specific analytics contribution, 2027 availability, and contact path are not documented.",
+"next_step": "Review the prior session and outreach history; pursue only if a relevant athletics leadership or analytics session is planned."
+},
+{
+"name": "Wasserman Foundation",
+"slot": "Sponsor prospect",
+"score": 74.0,
+"tier": "B",
+"rationale": "Presented the 2026 conference Hackathon, providing direct past-conference involvement and a warm organizational relationship. 2027 sponsorship status, available inventory, and terms are unknown.",
+"next_step": "Check the prior Hackathon sponsorship relationship and route a renewal conversation through its existing owner; do not offer benefits or pricing before terms are confirmed."
+}
+],
+"scouting_briefs": [
+"Keynote: scout a high-impact sports analytics or sports-technology leader with a demonstrable record connecting data to decisions; prioritize U.S. availability for the Boston event, while confirming travel needs rather than assuming them.",
+"Sports analytics panel: scout an applied analytics practitioner from a team, league, or research setting who can explain methods and real-world use to professionals and students; seek perspectives not already represented by the returning-speaker prospects.",
+"AI in sports panel: scout a sports-focused AI researcher or practitioner able to discuss concrete applications and limitations, with evidence of work in sports rather than general AI alone.",
+"Betting markets panel: scout a researcher, regulator, or industry practitioner with evidence-based expertise in sports betting markets and integrity; aim for complementary perspectives and verify professional contact routes."
+]
+},
+"budget_usd": 0.5,
+"spent_usd": 0.53773684,
+"sort_order": null
+},
+"documents": [
+{
+"id": 25,
+"event_id": 5,
+"path": "Research_memo.md",
+"kind": "planning",
+"chars": 5655,
+"text": "# Research memo — MIT Sloan Sports Analytics Conference 2027 — Research Memo\n\nThe MIT Sloan Sports Analytics Conference (SSAC) is an annual, in-person forum for sports-industry professionals, researchers, students, and fans to discuss analytics, business, and technology in sports. The conference is chaired by co-founders Jessica Gelman and Daryl Morey and organized by MIT Sloan students. The organizer-provided 2027 dates and venue are corroborated by the conference’s Eventbrite listing; as of this research, the official site says 2027 speakers are still forthcoming. The latest completed edition was SSAC26, held March 6–7, 2026, with more than 2,500 attendees. The organizer’s desired 2027 topics—keynotes, sports analytics, AI, betting markets, and sponsors—are planning notes, not a published 2027 agenda.\n\n## Facts (with sources)\n- 2027 date: February 25–26, 2027 (Thursday–Friday), according to the 2027 Eventbrite listing: https://www.eventbrite.com/e/mit-sloan-sports-analytics-conference-2027-tickets-1991125033575\n- 2027 venue: Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210: https://www.eventbrite.com/e/mit-sloan-sports-analytics-conference-2027-tickets-1991125033575\n- Organiser: MIT Sloan Sports Analytics Conference; chaired by co-founders Jessica Gelman and Daryl Morey, and organized by MIT Sloan students: https://www.sloansportsconference.com/about/faqs\n- Official website: https://www.sloansportsconference.com/\n- Registration: the official site links to 2027 ticket sales, but a verifiable 2027 ticket price was not available in the pages reviewed: https://www.sloansportsconference.com/\n- Audience: more than 2,500 people attended the 2026 edition, including coaches and players from Team USA, NBA, WNBA, and other organizations: https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310\n- 2027 tracks/agenda: no specific 2027 agenda or track list located; the official site says to stay tuned for 2027 speakers. The conference describes its overall scope as sports analytics, business, and technology: https://www.sloansportsconference.com/speakers ; https://www.sloansportsconference.com/\n- Most recent completed edition (2026): March 6–7, 2026, at Menino Conference and Exhibition Center; official archive lists 300 program items, including panels, events, and research papers: https://www.sloansportsconference.com/conference/2026-conference\n- 2026 program themes included investment in sports, the sports ticket economy, innovation in leagues, hockey and basketball analytics, AI in sports, and gambling/tanking issues: https://www.sloansportsconference.com/conference/2026-conference ; https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310\n\n## Past speakers\n- Adam Silver — Commissioner, NBA (2026; conversation on basketball, tanking, and gambling) (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n- Sue Bird — Basketball Hall of Famer and 2026 conversation moderator (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n- John Donahoe — Athletic Director, Stanford Athletics (2026) (https://www.sloansportsconference.com/conference/2026-conference)\n- Megan Rapinoe — Soccer legend, activist, author, and co-founder of A Touch More (2026) (https://www.sloansportsconference.com/conference/2026-conference)\n- Jason Robins — Co-Founder, CEO and Board Chairman, DraftKings (2026) (https://www.sloansportsconference.com/conference/2026-conference)\n- Nate Silver — Statistician, author, and founder of Silver Bulletin (2026) (https://www.sloansportsconference.com/conference/2026-conference)\n- A’ja Wilson — Las Vegas Aces forward, entrepreneur, and author (2025) (https://www.sloansportsconference.com/conference/2025-conference)\n- David Blitzer — Co-Founder and Co-Managing Partner, Harris Blitzer Sports & Entertainment (2025) (https://www.sloansportsconference.com/conference/2025-conference)\n\n## Past sponsors\n- Wasserman Foundation — 2026 Hackathon presenter (https://www.sloansportsconference.com/hackathon)\n\n## Organiser team (public)\n- Jessica Gelman — Co-Chair; CEO, Kraft Analytics Group (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n- Daryl Morey — Co-Chair; President of Basketball Operations, Philadelphia 76ers (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n- Mike O’Connell — Co-Lead (2026) (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n- Patrick Scheri — Co-Lead (2026) (https://news.mit.edu/2026/mit-sloan-sports-analytics-conference-shows-why-data-makes-difference-0310)\n\n## Not found (to be estimated)\n- 2027 speaker and keynote lineup, including whether any speakers are confirmed.\n- 2027 agenda, named tracks, and session descriptions; specifically no announced sessions dedicated to AI or betting markets found.\n- 2027 ticket prices and detailed ticket tiers; ticket sales are linked from the official site, but pricing was not verifiable in reviewed pages.\n- 2027 sponsor roster, sponsor tiers, available inventory, and sponsorship prices; only the 2026 Hackathon presenter above was confirmed in reviewed official sources.\n- Event budget, speaker honoraria, travel support, and other guest benefits.\n\n## Organiser notes\nFebruary 25-26, 2027, Thomas M. Menino Convention and Exhibition Center, Boston. We need keynote speakers, panelists across sports analytics, AI and betting markets, and sponsors.",
+"flags": []
+}
+],
+"people": [
+{
+"id": 180,
+"event_id": 5,
+"name": "MIT Sloan Sports Analytics Conference",
+"aliases": [],
+"category": "sports / events",
+"role": "organizer",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Annual in-person forum for sports-industry professionals, researchers, students, and fans; chaired by co-founders Jessica Gelman and Daryl Morey and organized by MIT Sloan students.",
+"relationship": "team_member",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2580,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 181,
+"event_id": 5,
+"name": "MIT Sloan",
+"aliases": [],
+"category": "education",
+"role": "organizing institution",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "MIT Sloan students organize the conference.",
+"relationship": "partner_org",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2581,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 182,
+"event_id": 5,
+"name": "Jessica Gelman",
+"aliases": [],
+"category": "sports / business",
+"role": "co-chair; organizer team",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Conference co-chair; CEO of Kraft Analytics Group.",
+"relationship": "team_member",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2582,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 183,
+"event_id": 5,
+"name": "Daryl Morey",
+"aliases": [],
+"category": "sports / business",
+"role": "co-chair; organizer team",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Conference co-chair; President of Basketball Operations for the Philadelphia 76ers.",
+"relationship": "team_member",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2583,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Darylmorey01.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q5226214",
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 184,
+"event_id": 5,
+"name": "Mike O’Connell",
+"aliases": [],
+"category": "sports / events",
+"role": "co-lead (2026); organizer team",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Listed as a 2026 conference co-lead.",
+"relationship": "team_member",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2584,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 185,
+"event_id": 5,
+"name": "Patrick Scheri",
+"aliases": [],
+"category": "sports / events",
+"role": "co-lead (2026); organizer team",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Listed as a 2026 conference co-lead.",
+"relationship": "team_member",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2585,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 186,
+"event_id": 5,
+"name": "Adam Silver",
+"aliases": [],
+"category": "sports",
+"role": "past speaker; potential future speaker",
+"slot": "Keynote speaker",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "NBA Commissioner; appeared at the 2026 conference for a conversation on basketball, tanking, and gambling.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Spoke at SSAC26 in a conversation on basketball, tanking, and gambling."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 85.0,
+"tier": "B",
+"rationale": "Past 2026 speaker with a documented conversation on basketball, tanking, and gambling; strong conference-topic and audience fit. Past participation supports warmth, but no 2027 interest, availability, or logistics are known, so not designated A. Next: Check whether the existing conference relationship has a current owner or thread, then route a keynote inquiry through an approved professional channel.",
+"global_id": 2586,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Adam_Silver_(15847004771).jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q4679786",
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 187,
+"event_id": 5,
+"name": "Sue Bird",
+"aliases": [],
+"category": "sports",
+"role": "past speaker and moderator; potential future speaker",
+"slot": "Sports analytics panelists",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Basketball Hall of Famer and moderator of a 2026 conference conversation.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Moderated a conversation at SSAC26."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 81.0,
+"tier": "B",
+"rationale": "Past 2026 speaker and moderator, giving documented program experience and a warm relationship. Potential to contribute a player and moderator perspective; specific 2027 topic fit and availability are unconfirmed. Next: Identify the prior relationship owner and consider a panel invitation or moderation ask once the session topic is defined.",
+"global_id": 2587,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Bird-20180912_(cropped).jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q240672",
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 188,
+"event_id": 5,
+"name": "John Donahoe",
+"aliases": [],
+"category": "sports / business",
+"role": "past speaker; potential future speaker",
+"slot": "Sports analytics panelists",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Athletic Director, Stanford Athletics; listed as a 2026 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC26."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 72.0,
+"tier": "C",
+"rationale": "Past 2026 speaker and identified as Stanford Athletics Athletic Director, offering an athletics leadership perspective. A specific analytics contribution, 2027 availability, and contact path are not documented. Next: Review the prior session and outreach history; pursue only if a relevant athletics leadership or analytics session is planned.",
+"global_id": 2588,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 189,
+"event_id": 5,
+"name": "Megan Rapinoe",
+"aliases": [],
+"category": "sports / activism / media",
+"role": "past speaker; potential future speaker",
+"slot": "Keynote speaker",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Soccer legend, activist, author, and co-founder of A Touch More; listed as a 2026 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC26."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 76.0,
+"tier": "B",
+"rationale": "Past 2026 speaker; documented roles as athlete, activist, author, and co-founder of A Touch More support a distinctive sports-business and community perspective. No specific keynote concept or 2027 availability is documented. Next: Review prior conference outreach history and identify a specific session angle before making an invitation.",
+"global_id": 2589,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Megan_Rapinoe_Stat_Sports_2.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q260725",
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 190,
+"event_id": 5,
+"name": "Jason Robins",
+"aliases": [],
+"category": "sports / business",
+"role": "past speaker; potential future speaker",
+"slot": "Betting markets panelists",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Co-Founder, CEO and Board Chairman of DraftKings; listed as a 2026 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC26."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 78.0,
+"tier": "B",
+"rationale": "Past 2026 speaker and DraftKings co-founder/CEO; relevant to the requested betting-markets topic. No 2027 availability, policy fit, or contact route is established. Next: Confirm the proposed session scope and identify an existing relationship owner before outreach.",
+"global_id": 2590,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 191,
+"event_id": 5,
+"name": "Nate Silver",
+"aliases": [],
+"category": "sports / analytics / media",
+"role": "past speaker; potential future speaker",
+"slot": "Sports analytics panelists",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Statistician, author, and founder of Silver Bulletin; listed as a 2026 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC26."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 80.0,
+"tier": "B",
+"rationale": "Past 2026 speaker; roster identifies him as a statistician and founder of Silver Bulletin, supporting analytics fit. No specific session match, availability, or contact route is documented. Next: Check for an existing thread or professional introduction, then approach with a defined sports-analytics session concept.",
+"global_id": 2591,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Nate_Silver_in_Conversation_with_NY1's_Pat_Kiernan_(cropped).jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q562521",
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 192,
+"event_id": 5,
+"name": "A’ja Wilson",
+"aliases": [],
+"category": "sports / business / media",
+"role": "past speaker; potential future speaker",
+"slot": "Keynote speaker",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Las Vegas Aces forward, entrepreneur, and author; listed as a 2025 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2025",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC25."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 77.0,
+"tier": "B",
+"rationale": "Past 2025 speaker; roster notes identify her as a player, entrepreneur, and author, offering potential audience draw and a distinctive athlete/business perspective. Topic match and availability are unknown. Next: Check the prior conference contact path and assess fit for a keynote or athlete-and-business session before approaching.",
+"global_id": 2592,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 193,
+"event_id": 5,
+"name": "David Blitzer",
+"aliases": [],
+"category": "sports / business",
+"role": "past speaker; potential future speaker",
+"slot": "Sports analytics panelists",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Co-Founder and Co-Managing Partner of Harris Blitzer Sports & Entertainment; listed as a 2025 speaker.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2025",
+"channel": "conference appearance",
+"by": "",
+"note": "Listed as a speaker at SSAC25."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 73.0,
+"tier": "C",
+"rationale": "Past 2025 speaker and sports-business executive, making him a potential fit for a business-focused session. The roster does not establish a direct analytics or requested-topic fit, and current availability is unknown. Next: Consider only if a sports investment/business session is developed; check for an existing relationship owner first.",
+"global_id": 2593,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "person",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 194,
+"event_id": 5,
+"name": "Wasserman Foundation",
+"aliases": [],
+"category": "sports / philanthropy",
+"role": "past sponsor; 2026 Hackathon presenter",
+"slot": "Sponsor prospect",
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Presented the 2026 conference Hackathon.",
+"relationship": "past_collaborator",
+"origin": "roster",
+"history": [
+{
+"date": "2026",
+"channel": "conference sponsorship",
+"by": "",
+"note": "Listed as the SSAC26 Hackathon presenter."
+}
+],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": 74.0,
+"tier": "B",
+"rationale": "Presented the 2026 conference Hackathon, providing direct past-conference involvement and a warm organizational relationship. 2027 sponsorship status, available inventory, and terms are unknown. Next: Check the prior Hackathon sponsorship relationship and route a renewal conversation through its existing owner; do not offer benefits or pricing before terms are confirmed.",
+"global_id": 2594,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 195,
+"event_id": 5,
+"name": "Kraft Analytics Group",
+"aliases": [],
+"category": "sports analytics / business",
+"role": "Jessica Gelman’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Jessica Gelman is identified as its CEO.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2595,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 196,
+"event_id": 5,
+"name": "Philadelphia 76ers",
+"aliases": [],
+"category": "sports",
+"role": "Daryl Morey’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Daryl Morey is identified as President of Basketball Operations for the team.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2596,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 197,
+"event_id": 5,
+"name": "A Touch More",
+"aliases": [],
+"category": "media / business",
+"role": "Megan Rapinoe’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Identified as co-founded by Megan Rapinoe.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2597,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 198,
+"event_id": 5,
+"name": "DraftKings",
+"aliases": [],
+"category": "sports / business",
+"role": "Jason Robins’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Jason Robins is identified as its Co-Founder, CEO and Board Chairman.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2598,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 199,
+"event_id": 5,
+"name": "Silver Bulletin",
+"aliases": [],
+"category": "media",
+"role": "Nate Silver’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "Identified as founded by Nate Silver.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2599,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 200,
+"event_id": 5,
+"name": "Stanford Athletics",
+"aliases": [],
+"category": "sports",
+"role": "John Donahoe’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "John Donahoe is identified as its Athletic Director.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2600,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 201,
+"event_id": 5,
+"name": "Las Vegas Aces",
+"aliases": [],
+"category": "sports",
+"role": "A’ja Wilson’s team",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "A’ja Wilson is identified as a forward for the team.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2601,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 202,
+"event_id": 5,
+"name": "Harris Blitzer Sports & Entertainment",
+"aliases": [],
+"category": "sports / business",
+"role": "David Blitzer’s organization",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "David Blitzer is identified as its Co-Founder and Co-Managing Partner.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2602,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 203,
+"event_id": 5,
+"name": "Team USA",
+"aliases": [],
+"category": "sports",
+"role": "audience affiliation mentioned",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "The memo says the 2026 audience included coaches and players from Team USA.",
+"relationship": "cold",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2603,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 204,
+"event_id": 5,
+"name": "NBA",
+"aliases": [],
+"category": "sports",
+"role": "audience affiliation; league represented by past speaker Adam Silver",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "The memo says the 2026 audience included NBA coaches and players; Adam Silver is identified as NBA Commissioner.",
+"relationship": "known_contact",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2604,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 205,
+"event_id": 5,
+"name": "WNBA",
+"aliases": [],
+"category": "sports",
+"role": "audience affiliation mentioned",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "The memo says the 2026 audience included coaches and players from the WNBA.",
+"relationship": "cold",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2605,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 206,
+"event_id": 5,
+"name": "Thomas M. Menino Convention & Exhibition Center",
+"aliases": [],
+"category": "venue",
+"role": "2027 venue",
+"slot": null,
+"status": "unknown",
+"owner": "",
+"location": "",
+"intro": "The organizer-provided venue for the February 25–26, 2027 conference, at 415 Summer Street, Boston, MA 02210.",
+"relationship": "cold",
+"origin": "roster",
+"history": [],
+"evidence": [
+"Research_memo.md"
+],
+"priority_score": null,
+"tier": null,
+"rationale": null,
+"global_id": 2606,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:33:16+00:00",
+"entity": "organization",
+"status_variants": [
+{
+"status": "unknown",
+"docs": [
+"Research_memo.md"
+]
+}
+],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": null
+},
+{
+"id": 207,
+"event_id": 5,
+"name": "Kirk Goldsberry",
+"aliases": [],
+"category": "Sports analytics / basketball",
+"role": "Keynote: How spatial data changes basketball strategy and player evaluation",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A sports analyst whose work makes basketball data legible to both technical and general audiences; a strong direct match for a keynote on translating analytics into decisions.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q30323524",
+"https://en.wikipedia.org/wiki/Kirk_Goldsberry"
+],
+"priority_score": 86.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A sports analyst whose work makes basketball data legible to both technical and general audiences; a strong direct match for a keynote on translating analytics into decisions. Likelihood of yes: medium. Risks: Confirm current professional affiliation, availability, and travel needs; no honorarium or travel support is specified.. Possible intermediaries: Jessica Gelman; Daryl Morey",
+"global_id": 2607,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Inline-MIT-sports-stats-dirk-chart.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q30323524",
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 208,
+"event_id": 5,
+"name": "Theo Epstein",
+"aliases": [],
+"category": "Baseball leadership / analytics",
+"role": "Keynote: Building decision systems and organizations that use evidence well",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A prominent baseball executive whose leadership provides a high-impact lens on applying analysis to consequential team-building and organizational decisions.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q1057736",
+"https://en.wikipedia.org/wiki/Theo_Epstein"
+],
+"priority_score": 82.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A prominent baseball executive whose leadership provides a high-impact lens on applying analysis to consequential team-building and organizational decisions. Likelihood of yes: medium. Risks: Confirm current role and availability, as well as travel needs. Do not assume travel support.. Possible intermediaries: Jessica Gelman",
+"global_id": 2608,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Theo_Epstein_2010.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q1057736",
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 209,
+"event_id": 5,
+"name": "Sam Presti",
+"aliases": [],
+"category": "Basketball operations / decision-making",
+"role": "Keynote: Long-horizon team-building, information, and decision-making in the NBA",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A high-profile basketball executive with a natural platform to discuss how teams evaluate talent and make strategic choices; relevant to an audience spanning industry professionals and researchers.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q7408037",
+"https://en.wikipedia.org/wiki/Sam_Presti"
+],
+"priority_score": 80.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A high-profile basketball executive with a natural platform to discuss how teams evaluate talent and make strategic choices; relevant to an audience spanning industry professionals and researchers. Likelihood of yes: low. Risks: The public-profile match establishes him as a basketball executive, but the precise analytics angle should be validated before outreach. Confirm availability and travel needs.. Possible intermediaries: Daryl Morey; Jessica Gelman",
+"global_id": 2609,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 210,
+"event_id": 5,
+"name": "Cathy Engelbert",
+"aliases": [],
+"category": "League leadership / sports business",
+"role": "Keynote: Using data and technology to grow a professional sports league",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "As WNBA Commissioner and a business leader, she can connect league-level choices, technology, and the commercial growth of sports for a broad conference audience.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q19666344",
+"https://en.wikipedia.org/wiki/Cathy_Engelbert"
+],
+"priority_score": 77.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. As WNBA Commissioner and a business leader, she can connect league-level choices, technology, and the commercial growth of sports for a broad conference audience. Likelihood of yes: low. Risks: Her fit is strongest on sports-business and league decision-making; confirm a specific analytics/technology keynote angle, availability, and travel needs.. Possible intermediaries: Jessica Gelman",
+"global_id": 2610,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/260725_WNBA_All_Star_Pregame_JohnMc054_(55419461830)_(cropped).jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q19666344",
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 211,
+"event_id": 5,
+"name": "John Hollinger",
+"aliases": [],
+"category": "Basketball analytics",
+"role": "Keynote: Turning player metrics into better basketball decisions",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A sportswriter and basketball analytics voice with a clear subject fit for discussing how quantitative evaluation can inform real-world roster and strategy choices.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q6239623",
+"https://en.wikipedia.org/wiki/John_Hollinger"
+],
+"priority_score": 78.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A sportswriter and basketball analytics voice with a clear subject fit for discussing how quantitative evaluation can inform real-world roster and strategy choices. Likelihood of yes: medium. Risks: Confirm current role, availability, and travel needs; the conference has not specified speaker arrangements.. Possible intermediaries: Daryl Morey; Jessica Gelman",
+"global_id": 2611,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 212,
+"event_id": 5,
+"name": "Billy Beane",
+"aliases": [],
+"category": "Baseball leadership / analytics",
+"role": "Keynote: The enduring challenge of turning baseball data into competitive decisions",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A longtime baseball front-office executive closely associated with data-informed team-building, offering a recognizable case study for connecting analysis with organizational choices.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q26122",
+"https://en.wikipedia.org/wiki/Billy_Beane"
+],
+"priority_score": 75.0,
+"tier": "A",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A longtime baseball front-office executive closely associated with data-informed team-building, offering a recognizable case study for connecting analysis with organizational choices. Likelihood of yes: low. Risks: Confirm current responsibilities, availability, and travel needs; do not presume honorarium or travel support.. Possible intermediaries: Jessica Gelman",
+"global_id": 2612,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Billy_Beane_2006.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q26122",
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 213,
+"event_id": 5,
+"name": "Alex Anthopoulos",
+"aliases": [],
+"category": "Baseball operations",
+"role": "Keynote: Analytics, scouting, and decision-making in baseball operations",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A baseball executive who could offer an applied team-operations perspective on how evidence supports choices in talent evaluation and team construction.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q2832894",
+"https://en.wikipedia.org/wiki/Alex_Anthopoulos"
+],
+"priority_score": 72.0,
+"tier": "B",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A baseball executive who could offer an applied team-operations perspective on how evidence supports choices in talent evaluation and team construction. Likelihood of yes: medium. Risks: The public-profile result identifies him as a baseball executive; verify the specific analytics angle, current availability, and travel needs before outreach.. Possible intermediaries: Jessica Gelman",
+"global_id": 2613,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Alex_Anthopoulos_hugs_Munenori_Kawasaki.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q2832894",
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 214,
+"event_id": 5,
+"name": "Mark Cuban",
+"aliases": [],
+"category": "Sports technology / business",
+"role": "Keynote: Technology, data, and decision-making in modern sports business",
+"slot": "MIT Sloan Sports Analytics Conference 2027 — keynote candidates",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A prominent entrepreneur whose public profile offers a technology-and-business angle that may broaden the keynote beyond team analytics; consider only if organizers want a wider sports-tech framing.",
+"relationship": "known_contact",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q318503",
+"https://en.wikipedia.org/wiki/Mark_Cuban"
+],
+"priority_score": 65.0,
+"tier": "B",
+"rationale": "Scouted for “MIT Sloan Sports Analytics Conference 2027 — keynote candidates”. A prominent entrepreneur whose public profile offers a technology-and-business angle that may broaden the keynote beyond team analytics; consider only if organizers want a wider sports-tech framing. Likelihood of yes: low. Risks: Lower direct fit than the analytics-first candidates; confirm a current sports-related connection and a substantive data-to-decisions talk before prioritizing. Confirm availability and travel needs.. Possible intermediaries: Jessica Gelman; Daryl Morey",
+"global_id": 2614,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:15+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/MarkCuban2023.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q318503",
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 215,
+"event_id": 5,
+"name": "Luke Bornn",
+"aliases": [],
+"category": "Sports data science / multi-sport analytics",
+"role": "Panelist: translating tracking and other sports data into decisions",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A sports data scientist with a strong methods-and-application profile; his work is a fit for explaining how analytics becomes operational practice across sports. Adds a multi-sport research and technology perspective beyond the returning-speaker prospects.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q102402992"
+],
+"priority_score": 83.0,
+"tier": "A",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A sports data scientist with a strong methods-and-application profile; his work is a fit for explaining how analytics becomes operational practice across sports. Adds a multi-sport research and technology perspective beyond the returning-speaker prospects. Likelihood of yes: low. Risks: Public-profile result confirms identity and doctoral background, but not current role or availability; verifier should confirm current professional affiliation and panel fit. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2615,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:20+00:00"
+},
+{
+"id": 216,
+"event_id": 5,
+"name": "Meghan Chayka",
+"aliases": [],
+"category": "Hockey analytics / entrepreneurship",
+"role": "Panelist: applied analytics in hockey and team decision-making",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A data scientist, sports analyst, and entrepreneur whose hockey-analytics perspective would broaden the panel beyond basketball and football. Well suited to discussing how data products and analytical methods inform real-world sports decisions.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://en.wikipedia.org/wiki/Meghan_Chayka",
+"https://www.wikidata.org/wiki/Q104091430"
+],
+"priority_score": 86.0,
+"tier": "A",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A data scientist, sports analyst, and entrepreneur whose hockey-analytics perspective would broaden the panel beyond basketball and football. Well suited to discussing how data products and analytical methods inform real-world sports decisions. Likelihood of yes: low. Risks: Public-profile result confirms identity and sports-analytics occupation; verify current role, availability, and preferred professional outreach route. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2616,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 217,
+"event_id": 5,
+"name": "Eric Eager",
+"aliases": [],
+"category": "Football analytics / research and development",
+"role": "Panelist: applied analytics in football strategy",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A strong prospective voice on turning football data and quantitative research into practical strategy for teams and the broader industry. Adds a football-specific practitioner perspective distinct from the returning-speaker prospects. Current role: Vice President of Football Analytics, Carolina Panthers.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.sloansportsconference.com/people/eric-eager",
+"https://sds.charlotte.edu/eric-eager/"
+],
+"priority_score": 79.0,
+"tier": "A",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A strong prospective voice on turning football data and quantitative research into practical strategy for teams and the broader industry. Adds a football-specific practitioner perspective distinct from the returning-speaker prospects. Current role: Vice President of Football Analytics, Carolina Panthers. Likelihood of yes: low. Risks: Public-profile lookup did not return a match; verifier should establish identity, current affiliation, and applied role before outreach. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2617,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 218,
+"event_id": 5,
+"name": "Patrick Lucey",
+"aliases": [],
+"category": "Sports data science / computer vision and tracking",
+"role": "Panelist: tracking data, computer vision, and applied sports research",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A research-oriented sports analytics perspective could make technical methods accessible to both industry professionals and students, while offering a distinct view of how large-scale tracking data supports real-world decisions. Current role: Chief Scientist at Stats Perform.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.sloansportsconference.com/people/patrick-lucey",
+"https://www.statsperform.com/insights/how-reliable-data-defines-the-next-phase-of-ai-in-sport-insights-from-stats-perform/"
+],
+"priority_score": 78.0,
+"tier": "A",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A research-oriented sports analytics perspective could make technical methods accessible to both industry professionals and students, while offering a distinct view of how large-scale tracking data supports real-world decisions. Current role: Chief Scientist at Stats Perform. Likelihood of yes: low. Risks: Public-profile lookup did not return a match; verify current role and professional contact route. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2618,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:21+00:00"
+},
+{
+"id": 219,
+"event_id": 5,
+"name": "Kirk Goldsberry",
+"aliases": [],
+"category": "Basketball analytics / data visualization",
+"role": "Panelist: basketball analytics methods and communicating insights",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A sports analyst with a distinctive ability to explain quantitative methods and visual evidence to broad audiences. Could bridge research, applied basketball analysis, and accessible discussion for students and professionals.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://en.wikipedia.org/wiki/Kirk_Goldsberry",
+"https://www.wikidata.org/wiki/Q30323524"
+],
+"priority_score": 74.0,
+"tier": "B",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A sports analyst with a distinctive ability to explain quantitative methods and visual evidence to broad audiences. Could bridge research, applied basketball analysis, and accessible discussion for students and professionals. Likelihood of yes: low. Risks: Profile confirms sports-analyst identity, but current team/research practice should be verified; this may be a better methods communicator than an active team practitioner. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2607,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Inline-MIT-sports-stats-dirk-chart.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q30323524",
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 220,
+"event_id": 5,
+"name": "Seth Partnow",
+"aliases": [],
+"category": "Basketball analytics / team research",
+"role": "Panelist: analytics in basketball personnel and performance decisions",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "His basketball-analytics background offers a practical case-study angle on how quantitative analysis can inform front-office and on-court decisions, complementing the event's sports-industry audience. Current role: Staff Product Scientist at Teamworks (self-described on his current public Bluesky profile); basketball analytics writer, podcaster, and author. His official website still lists an older StatsBomb role, so that page appears outdated on employment..",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://bsky.app/profile/sethpartnow.bsky.social",
+"https://sethpartnow.com/"
+],
+"priority_score": 73.0,
+"tier": "B",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. His basketball-analytics background offers a practical case-study angle on how quantitative analysis can inform front-office and on-court decisions, complementing the event's sports-industry audience. Current role: Staff Product Scientist at Teamworks (self-described on his current public Bluesky profile); basketball analytics writer, podcaster, and author. His official website still lists an older StatsBomb role, so that page appears outdated on employment.. Likelihood of yes: low. Risks: Public-profile lookup did not return a match; verify current professional role and whether his experience fits the brief's applied-practitioner requirement before outreach. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2619,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:22+00:00"
+},
+{
+"id": 221,
+"event_id": 5,
+"name": "Ben Alamar",
+"aliases": [],
+"category": "Sports analytics research and education",
+"role": "Panelist: connecting sports analytics research to industry application",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "An educator and sports analytics specialist could explain analytical concepts clearly to students while grounding the discussion in professional sports applications. Adds a research-and-teaching perspective to the panel.",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://www.wikidata.org/wiki/Q139440071"
+],
+"priority_score": 72.0,
+"tier": "B",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. An educator and sports analytics specialist could explain analytical concepts clearly to students while grounding the discussion in professional sports applications. Adds a research-and-teaching perspective to the panel. Likelihood of yes: low. Risks: Profile result confirms identity and university-teacher occupation, but not current sports-industry work; verifier should check current affiliation and applied role. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2620,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": null,
+"photo_source": null,
+"photo_checked": "2026-10-22T22:36:23+00:00"
+},
+{
+"id": 222,
+"event_id": 5,
+"name": "Dean Oliver",
+"aliases": [],
+"category": "Basketball analytics / team operations",
+"role": "Panelist: translating quantitative basketball analysis into team practice",
+"slot": "Sports analytics panel — applied practitioners",
+"status": "not_started",
+"owner": null,
+"location": null,
+"intro": "A veteran basketball analytics perspective could offer concrete examples of how quantitative methods move from analysis into front-office or coaching decisions, useful to the conference's mixed professional and student audience. Current role: Sports Data Scientist at ESPN, focused on basketball player metrics and the NBA Basketball Power Index (BPI)..",
+"relationship": "cold",
+"origin": "scout",
+"history": [],
+"evidence": [
+"https://espnpressroom.com/bio/dean-oliver/",
+"https://www.sloansportsconference.com/people/dean-oliver"
+],
+"priority_score": 70.0,
+"tier": "B",
+"rationale": "Scouted for “Sports analytics panel — applied practitioners”. A veteran basketball analytics perspective could offer concrete examples of how quantitative methods move from analysis into front-office or coaching decisions, useful to the conference's mixed professional and student audience. Current role: Sports Data Scientist at ESPN, focused on basketball player metrics and the NBA Basketball Power Index (BPI).. Likelihood of yes: low. Risks: Public-profile lookup did not return a match; verify current activity, affiliation, and role before treating as an active practitioner. No roster connection found.. Possible intermediaries: none known",
+"global_id": 2621,
+"status_source": "documents",
+"updated_at": "2026-10-22T22:34:16+00:00",
+"entity": "person",
+"status_variants": [],
+"hold": "",
+"photo_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Dean_2016_conference.jpg?width=320",
+"photo_source": "https://www.wikidata.org/wiki/Q5246392",
+"photo_checked": "2026-10-22T22:36:23+00:00"
+}
+],
+"drafts": [
+{
+"id": 38,
+"event_id": 5,
+"person_id": 215,
+"kind": "invitation",
+"channel": "LinkedIn direct message",
+"language": "en",
+"recipient": "Luke Bornn",
+"subject": "",
+"body": "Hello Luke,\n\nI’m reaching out from the MIT Sloan Sports Analytics Conference team. We’re planning our 2027 conference for February 25–26 (Thursday–Friday) in Boston, and would love to invite you to join a panel on translating tracking and other sports data into decisions.\n\nYour doctoral background stood out as relevant to the discussion. Would you be open to considering the invitation? The detailed agenda and schedule are still being developed, and we’d be happy to share more as plans take shape.\n\nBest,\nMIT Sloan Sports Analytics Conference team",
+"status": "approved",
+"review": {
+"final": {
+"verdict": "pass",
+"issues": [],
+"corrected_subject": "",
+"corrected_body": ""
+},
+"history": [
+{
+"version": 1,
+"verdict": "pass",
+"issues": []
+}
+]
+},
+"claims": [
+{
+"claim": "Luke Bornn has a doctoral background.",
+"evidence": "https://www.wikidata.org/wiki/Q102402992"
+}
+],
+"version": 1,
+"created_at": "2026-10-22T22:34:58+00:00",
+"updated_at": "2026-10-22T22:37:12+00:00"
+},
+{
+"id": 39,
+"event_id": 5,
+"person_id": 216,
+"kind": "invitation",
+"channel": "Official Stathletes contact form",
+"language": "en",
+"recipient": "Stathletes team, for forwarding to Meghan Chayka",
+"subject": "Invitation for Meghan Chayka: MIT Sloan Sports Analytics Conference 2027",
+"body": "Dear Meghan,\n\nThe MIT Sloan Sports Analytics Conference would be pleased to invite you to join a panel on applied analytics in hockey and team decision-making at the 2027 conference, taking place February 25–26, 2027 (Thursday–Friday), at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.\n\nWould you be open to discussing the invitation? The speaker lineup and detailed agenda have not yet been announced. Speaker honoraria and travel support are unspecified, and we’d be happy to discuss arrangements.\n\nBest,\nMIT Sloan Sports Analytics Conference team\n\nUse only after a verified professional contact route for Meghan is confirmed.",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "The draft identifies an “Official Stathletes contact form,” but no form URL or evidence confirming that route is provided. The footer also acknowledges the route still needs verification.",
+"fix": "Confirm the official professional contact route before use; do not guess or invent a form URL."
+},
+{
+"severity": "medium",
+"type": "format",
+"text": "The message is described as being sent to the Stathletes team for forwarding, but it opens “Dear Meghan” and ends with an internal-use instruction. That note should not appear in an invitee-facing message.",
+"fix": "Address the Stathletes team, make forwarding Meghan the single ask, and remove the internal-use note."
+},
+{
+"severity": "low",
+"type": "fact",
+"text": "The body uses the organiser name rather than the Fact Sheet’s official event name.",
+"fix": "Use “MIT Sloan Sports Analytics Conference 2027” in the invitation."
+}
+],
+"corrected_subject": "Invitation for Meghan Chayka: MIT Sloan Sports Analytics Conference 2027",
+"corrected_body": "Dear Stathletes team,\n\nCould you please forward this invitation to Meghan Chayka?\n\nThe MIT Sloan Sports Analytics Conference 2027 would be pleased to invite her to join a panel on applied analytics in hockey and team decision-making. The conference takes place February 25–26, 2027 (Thursday–Friday), at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.\n\nThe speaker lineup and detailed agenda have not yet been announced. Speaker honoraria and travel support are unspecified, and we’d be happy to discuss arrangements.\n\nThank you,\nMIT Sloan Sports Analytics Conference team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "high",
+"type": "claim",
+"text": "The draft specifies an “Official Stathletes contact form” and asks its team to forward the invitation, but no contact-form URL or evidence that this is an available professional contact route is provided. The staff-page URL supports the stated association claim, not the existence of a contact form.",
+"fix": "Verify and cite the official form before using it, or use another verified professional channel. Do not send via the proposed route until verified."
+},
+{
+"severity": "low",
+"type": "format",
+"text": "The venue is abbreviated to “...in Boston,” rather than using the complete venue/address stated in the Fact Sheet.",
+"fix": "Use “Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.”"
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "The draft identifies an “Official Stathletes contact form,” but no form URL or evidence confirming that route is provided. The footer also acknowledges the route still needs verification.",
+"fix": "Confirm the official professional contact route before use; do not guess or invent a form URL."
+},
+{
+"severity": "medium",
+"type": "format",
+"text": "The message is described as being sent to the Stathletes team for forwarding, but it opens “Dear Meghan” and ends with an internal-use instruction. That note should not appear in an invitee-facing message.",
+"fix": "Address the Stathletes team, make forwarding Meghan the single ask, and remove the internal-use note."
+},
+{
+"severity": "low",
+"type": "fact",
+"text": "The body uses the organiser name rather than the Fact Sheet’s official event name.",
+"fix": "Use “MIT Sloan Sports Analytics Conference 2027” in the invitation."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "Meghan Chayka is listed on Stathletes’ staff page.",
+"evidence": "https://stathletes.com/staff/meghan-chayka"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:35:14+00:00",
+"updated_at": "2026-10-22T22:35:14+00:00"
+},
+{
+"id": 40,
+"event_id": 5,
+"person_id": 207,
+"kind": "invitation",
+"channel": "email",
+"language": "en",
+"recipient": "All American Speakers Bureau — booking team",
+"subject": "Availability inquiry: Kirk Goldsberry | MIT Sloan Sports Analytics Conference 2027",
+"body": "Hello All American Speakers Bureau team,\n\nWe’re exploring Kirk Goldsberry as a keynote speaker for the MIT Sloan Sports Analytics Conference 2027, taking place Thursday–Friday, February 25–26, 2027, at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.\n\nThe proposed keynote would focus on how spatial data changes basketball strategy and player evaluation. The 2027 speaker lineup and detailed agenda have not yet been announced. Could you let us know whether Kirk may be available and what booking requirements or arrangements we should consider? Speaker honoraria and travel support are not specified, so we would be happy to discuss arrangements.\n\nThank you,\nMIT Sloan Sports Analytics Conference team",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft is addressed to All American Speakers Bureau and designated for email, but no verified professional email address or other usable contact point is included in the supplied materials. The cited listing URL supports the claim that a listing exists, but the contact route itself has not been established here.",
+"fix": "Before outreach, verify a professional booking contact directly on the cited public listing or another authoritative public page, and use that exact contact. Do not guess an email address."
+}
+],
+"corrected_subject": "Availability inquiry: Kirk Goldsberry | MIT Sloan Sports Analytics Conference 2027",
+"corrected_body": "Hello booking team,\n\nWe’re exploring Kirk Goldsberry as a keynote speaker for the MIT Sloan Sports Analytics Conference 2027, taking place Thursday–Friday, February 25–26, 2027, at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.\n\nThe proposed keynote would focus on how spatial data changes basketball strategy and player evaluation. The 2027 speaker lineup and detailed agenda have not yet been announced. Could you let us know whether Kirk may be available and what booking requirements or arrangements we should consider? Speaker honoraria and travel support are not specified, so we would be happy to discuss arrangements.\n\nThank you,\nMIT Sloan Sports Analytics Conference team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "low",
+"type": "fact",
+"text": "The venue is abbreviated to the convention center name and city; the Fact Sheet gives the full address and says to use venue details exactly.",
+"fix": "Use “Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.”"
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft is addressed to All American Speakers Bureau and designated for email, but no verified professional email address or other usable contact point is included in the supplied materials. The cited listing URL supports the claim that a listing exists, but the contact route itself has not been established here.",
+"fix": "Before outreach, verify a professional booking contact directly on the cited public listing or another authoritative public page, and use that exact contact. Do not guess an email address."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "All American Speakers Bureau has a listing for Kirk Goldsberry.",
+"evidence": "https://www.allamericanspeakers.com/speakers/468273/Kirk-Goldsberry"
+},
+{
+"claim": "Kirk Goldsberry is identified as a sports analyst.",
+"evidence": "https://en.wikipedia.org/wiki/Kirk_Goldsberry"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:35:16+00:00",
+"updated_at": "2026-10-22T22:35:16+00:00"
+},
+{
+"id": 41,
+"event_id": 5,
+"person_id": 208,
+"kind": "invitation",
+"channel": "Speaker-booking email",
+"language": "en",
+"recipient": "(address on file)",
+"subject": "Theo Epstein availability — MIT Sloan Sports Analytics Conference 2027",
+"body": "Hello,\n\nI’m writing on behalf of the MIT Sloan Sports Analytics Conference to inquire about Theo Epstein’s availability for a keynote at the MIT Sloan Sports Analytics Conference 2027, taking place February 25–26, 2027 (Thursday–Friday) at the Thomas M. Menino Convention & Exhibition Center in Boston.\n\nWe’re considering a keynote on building decision systems and organizations that use evidence well. Would you let us know whether Mr. Epstein may be available and what the appropriate booking process would be? We’d be happy to discuss arrangements.\n\nThank you,\nMIT Sloan Sports Analytics Conference Team\nhttps://www.sloansportsconference.com/\n\nNote for human routing: verify a professional booking contact before sending.",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "high",
+"type": "fact",
+"text": "The recipient address contact@athletespeakers.com and the Athlete Speakers booking-team route are not supported by the Fact Sheet or a cited public contact source. The invitee record lists no contacts; the draft must not present this as a verified contact.",
+"fix": "Remove the unverified recipient and email address. Before sending, a human should verify a professional booking channel from a public source or organiser record."
+},
+{
+"severity": "medium",
+"type": "format",
+"text": "“Note for human routing: verify a professional booking contact before sending” is internal routing text included in the outbound message.",
+"fix": "Remove the internal note from the message body and keep the routing check outside the sendable draft."
+},
+{
+"severity": "low",
+"type": "fact",
+"text": "The venue is identified by name and city, but the Fact Sheet gives the full address as 415 Summer Street, Boston, MA 02210.",
+"fix": "Use the venue name and full address in the corrected draft."
+}
+],
+"corrected_subject": "Theo Epstein availability — MIT Sloan Sports Analytics Conference 2027",
+"corrected_body": "Hello,\n\nI’m writing on behalf of the MIT Sloan Sports Analytics Conference to inquire about Theo Epstein’s availability for a keynote at the MIT Sloan Sports Analytics Conference 2027, taking place February 25–26, 2027 (Thursday–Friday) at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210.\n\nWe’re considering a keynote on building decision systems and organizations that use evidence well. Would you let us know whether Mr. Epstein may be available and what the appropriate booking process would be? We’d be happy to discuss arrangements.\n\nThank you,\nMIT Sloan Sports Analytics Conference Team\nhttps://www.sloansportsconference.com/"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "high",
+"type": "fact",
+"text": "The recipient and contact point “Athlete Speakers booking team (contact@athletespeakers.com)” are not supported by the Fact Sheet or cited evidence. The invitee record lists no contacts, and the available evidence does not establish that this agency represents Theo Epstein.",
+"fix": "Do not use this agency name or email until a professional booking contact is verified from a cited public page or organiser document. Keep the copy generic for human routing."
+},
+{
+"severity": "low",
+"type": "claim",
+"text": "The separate claim that Theo Epstein is “prominent” is subjective and not substantiated by a specific cited passage. The email body itself does not need this characterization.",
+"fix": "Omit “prominent” unless supported by specific evidence; the revised body avoids the claim."
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "high",
+"type": "fact",
+"text": "The recipient address contact@athletespeakers.com and the Athlete Speakers booking-team route are not supported by the Fact Sheet or a cited public contact source. The invitee record lists no contacts; the draft must not present this as a verified contact.",
+"fix": "Remove the unverified recipient and email address. Before sending, a human should verify a professional booking channel from a public source or organiser record."
+},
+{
+"severity": "medium",
+"type": "format",
+"text": "“Note for human routing: verify a professional booking contact before sending” is internal routing text included in the outbound message.",
+"fix": "Remove the internal note from the message body and keep the routing check outside the sendable draft."
+},
+{
+"severity": "low",
+"type": "fact",
+"text": "The venue is identified by name and city, but the Fact Sheet gives the full address as 415 Summer Street, Boston, MA 02210.",
+"fix": "Use the venue name and full address in the corrected draft."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "Theo Epstein is a prominent baseball executive whose leadership is relevant to consequential team-building and organizational decisions.",
+"evidence": "https://en.wikipedia.org/wiki/Theo_Epstein"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:35:17+00:00",
+"updated_at": "2026-10-22T22:35:17+00:00"
+},
+{
+"id": 42,
+"event_id": 5,
+"person_id": 209,
+"kind": "invitation",
+"channel": "Oklahoma City Thunder Speakers Bureau inquiry form",
+"language": "en",
+"recipient": "Oklahoma City Thunder Speakers Bureau",
+"subject": "Speaking inquiry: Sam Presti — MIT Sloan Sports Analytics Conference 2027",
+"body": "Hello,\n\nCould you let us know whether the Thunder Speakers Bureau handles keynote requests for out-of-market conferences? If so, would you advise us on how to route a request for Sam Presti?\n\nWe are planning the MIT Sloan Sports Analytics Conference 2027 in Boston on February 25–26, 2027 (Thursday–Friday), at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. We are exploring a keynote on long-horizon team-building, information, and decision-making in the NBA. Would you be able to advise whether this request is within your remit?\n\nThank you,\nMIT Sloan Sports Analytics Conference Team",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft names an “Oklahoma City Thunder Speakers Bureau” and an “inquiry form,” but neither that bureau nor the form/contact route is supported by the provided materials. No contact point is listed.",
+"fix": "Verify an official public Thunder contact route before use. Use neutral wording that asks for the appropriate representative rather than asserting a Speakers Bureau exists."
+}
+],
+"corrected_subject": "Speaking inquiry: Sam Presti — MIT Sloan Sports Analytics Conference 2027",
+"corrected_body": "Hello Oklahoma City Thunder team,\n\nCould you please advise us on the appropriate professional channel for submitting a keynote invitation for Sam Presti, or forward this inquiry to the relevant representative if appropriate?\n\nWe are planning the MIT Sloan Sports Analytics Conference 2027 in Boston on February 25–26, 2027 (Thursday–Friday), at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. We are exploring a keynote on long-horizon team-building, information, and decision-making in the NBA. Would you be able to advise whether this request is within your remit?\n\nThank you,\nMIT Sloan Sports Analytics Conference Team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "“We understand your bureau may focus on serving Oklahoma audiences” is unsupported by the supplied evidence and may misstate the bureau’s remit.",
+"fix": "Remove this assumption and ask directly whether the bureau handles out-of-market keynote requests."
+},
+{
+"severity": "medium",
+"type": "privacy",
+"text": "The stated channel, “Oklahoma City Thunder Speakers Bureau inquiry form,” is not substantiated by a cited public page or organiser document; no contact point is provided in the roster.",
+"fix": "Verify the form is an official, professional public channel before using it. Do not guess or create a URL or contact detail."
+},
+{
+"severity": "low",
+"type": "format",
+"text": "The draft gives the dates without the weekdays, although the handbook calls for the date with weekday.",
+"fix": "State February 25–26, 2027 (Thursday–Friday)."
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft names an “Oklahoma City Thunder Speakers Bureau” and an “inquiry form,” but neither that bureau nor the form/contact route is supported by the provided materials. No contact point is listed.",
+"fix": "Verify an official public Thunder contact route before use. Use neutral wording that asks for the appropriate representative rather than asserting a Speakers Bureau exists."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "Sam Presti is a basketball executive.",
+"evidence": "https://en.wikipedia.org/wiki/Sam_Presti"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:36:00+00:00",
+"updated_at": "2026-10-22T22:36:00+00:00"
+},
+{
+"id": 43,
+"event_id": 5,
+"person_id": 211,
+"kind": "invitation",
+"channel": "email",
+"language": "en",
+"recipient": "(address on file)",
+"subject": "John Hollinger — keynote invitation | MIT Sloan Sports Analytics Conference 2027",
+"body": "Hello John,\n\nWe’d be glad to explore your interest and availability to give a keynote, “Turning player metrics into better basketball decisions,” at the MIT Sloan Sports Analytics Conference 2027.\n\nThe conference will take place Thursday–Friday, February 25–26, 2027, at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. Our audience includes sports-industry professionals, researchers, students, and fans. More information: https://www.sloansportsconference.com/\n\nCould you let us know whether you might be interested and available? Speaker arrangements have not been specified; we would be happy to discuss arrangements.\n\nBest,\nMIT Sloan Sports Analytics Conference Team",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "format",
+"text": "The draft is addressed to the Athlete Speakers booking team but opens “Hello John” and asks John directly to respond. The salutation and ask do not match the stated recipient.",
+"fix": "Address the booking team and make the request conditional on their representing John, asking them to forward the invitation or advise on the appropriate next step."
+},
+{
+"severity": "medium",
+"type": "fact",
+"text": "The invitee record lists no contact points, so the draft does not establish that Athlete Speakers is John Hollinger’s representative or provide a verified professional email channel.",
+"fix": "Verify the agency relationship and a professional/public email address before sending; do not infer or guess contact details."
+}
+],
+"corrected_subject": "Invitation for John Hollinger — MIT Sloan Sports Analytics Conference 2027",
+"corrected_body": "Hello Athlete Speakers booking team,\n\nIf your team represents John Hollinger, would you please forward this invitation to him? We’d be glad to explore whether he might be interested and available to give a keynote, “Turning player metrics into better basketball decisions,” at the MIT Sloan Sports Analytics Conference 2027.\n\nThe conference will take place Thursday–Friday, February 25–26, 2027, at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. Our audience includes sports-industry professionals, researchers, students, and fans. More information: https://www.sloansportsconference.com/\n\nCould you let us know whether he might be interested and available, or advise us on the appropriate next step? Speaker arrangements have not been specified; we would be happy to discuss arrangements.\n\nBest,\nMIT Sloan Sports Analytics Conference Team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft is addressed to “Athlete Speakers booking team,” but the provided materials do not establish that this agency represents John Hollinger or provide a verified contact route for it.",
+"fix": "Remove the unsupported agency addressee. Use the revised invitation only after a verified professional contact point or introduction route is established."
+},
+{
+"severity": "low",
+"type": "format",
+"text": "The venue is abbreviated to “...Convention & Exhibition Center in Boston,” rather than giving the venue details exactly as stated in the Fact Sheet.",
+"fix": "Use the full venue name and address from the Fact Sheet."
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "format",
+"text": "The draft is addressed to the Athlete Speakers booking team but opens “Hello John” and asks John directly to respond. The salutation and ask do not match the stated recipient.",
+"fix": "Address the booking team and make the request conditional on their representing John, asking them to forward the invitation or advise on the appropriate next step."
+},
+{
+"severity": "medium",
+"type": "fact",
+"text": "The invitee record lists no contact points, so the draft does not establish that Athlete Speakers is John Hollinger’s representative or provide a verified professional email channel.",
+"fix": "Verify the agency relationship and a professional/public email address before sending; do not infer or guess contact details."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "John Hollinger is a sportswriter and basketball analytics voice, relevant to the proposed keynote topic.",
+"evidence": "https://en.wikipedia.org/wiki/John_Hollinger"
+},
+{
+"claim": "John Hollinger is associated with basketball analytics.",
+"evidence": "https://www.wikidata.org/wiki/Q6239623"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:36:14+00:00",
+"updated_at": "2026-10-22T22:36:14+00:00"
+},
+{
+"id": 44,
+"event_id": 5,
+"person_id": 217,
+"kind": "intro_request",
+"channel": "email",
+"language": "en",
+"recipient": "MIT Sloan Sports Analytics Conference organizing team",
+"subject": "Could you help connect us with Eric Eager?",
+"body": "Hello,\n\nWe’re putting together a panel on applied analytics in football strategy for the MIT Sloan Sports Analytics Conference 2027, and wondered whether your team could help connect us with Eric Eager. We don’t have a verified contact for him, so we’d also appreciate your help confirming that we have the right person and current affiliation before we reach out.\n\nThe conference takes place February 25–26 (Thursday–Friday) at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. Would you be able to advise on an appropriate introduction or public contact route?\n\nThank you for considering it. No pressure if an introduction isn’t possible.\n\nBest,\nMIT Sloan Sports Analytics Conference team",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "“We’re putting together a panel” may imply a confirmed program slot, but the Fact Sheet says the 2027 lineup and detailed agenda have not yet been announced.",
+"fix": "Use “We’re exploring a panel” to describe this as a proposed topic rather than a confirmed session."
+}
+],
+"corrected_subject": "Could you help connect us with Eric Eager?",
+"corrected_body": "Hello,\n\nWe’re exploring a panel on applied analytics in football strategy for the MIT Sloan Sports Analytics Conference 2027, and wondered whether your team could help connect us with Eric Eager. We don’t have a verified contact for him, so we’d also appreciate your help confirming that we have the right person and current affiliation before we reach out.\n\nThe conference takes place February 25–26 (Thursday–Friday) at the Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. Would you be able to advise on an appropriate introduction or public contact route?\n\nThank you for considering it. No pressure if an introduction isn’t possible.\n\nBest,\nMIT Sloan Sports Analytics Conference team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The draft is formatted as an email to the organizing team, but the Fact Sheet provides no contact email and the invitee record contains no verified email contact for the team. The message has no verified delivery route.",
+"fix": "Before sending, locate and verify an official, professional contact channel in an organiser document or cited public page. Do not guess an email address."
+},
+{
+"severity": "low",
+"type": "format",
+"text": "The proposed forwardable note is enclosed in a long quotation, contrary to the handbook's instruction to keep quotes short (≤120 characters).",
+"fix": "Remove the quoted forwardable note and make the introduction request directly."
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "“We’re putting together a panel” may imply a confirmed program slot, but the Fact Sheet says the 2027 lineup and detailed agenda have not yet been announced.",
+"fix": "Use “We’re exploring a panel” to describe this as a proposed topic rather than a confirmed session."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "A MIT Sloan Sports Analytics Conference profile is listed for Eric Eager.",
+"evidence": "https://www.sloansportsconference.com/people/eric-eager"
+},
+{
+"claim": "A University of North Carolina at Charlotte profile is listed for Eric Eager.",
+"evidence": "https://sds.charlotte.edu/eric-eager/"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:36:16+00:00",
+"updated_at": "2026-10-22T22:36:16+00:00"
+},
+{
+"id": 45,
+"event_id": 5,
+"person_id": 218,
+"kind": "intro_request",
+"channel": "email",
+"language": "en",
+"recipient": "MIT Sloan / SSAC organizing team",
+"subject": "Could you help connect us with Patrick Lucey?",
+"body": "Hello SSAC organizing team,\n\nIf this is the right channel, would you be able to point us to the appropriate contact who could facilitate an introduction to Patrick Lucey? We don’t have a verified direct contact or an existing relationship, so we’d be grateful for your guidance before approaching him directly.\n\nIf helpful, please feel free to forward this note:\n\n—\nDear Patrick,\n\nWe’d like to invite you to join a panel on tracking data, computer vision, and applied sports research at the MIT Sloan Sports Analytics Conference 2027, taking place Thursday–Friday, February 25–26, in Boston at the Thomas M. Menino Convention & Exhibition Center.\n\nWould you be open to discussing the invitation? The detailed agenda is not yet announced, and we’d be happy to share more as it takes shape.\n\nBest,\nMIT Sloan Sports Analytics Conference team\n—\n\nThank you for any help connecting us.\n\nBest,\nMIT Sloan Sports Analytics Conference team",
+"status": "needs_changes",
+"review": {
+"final": {
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "“Invite you to join a panel on tracking data, computer vision, and applied sports research” can imply that this specific panel is already part of the program. The Fact Sheet says the detailed agenda has not been announced and does not list this panel.",
+"fix": "Frame it as a proposed or exploratory panel discussion and ask whether he would be open to discussing participation."
+},
+{
+"severity": "medium",
+"type": "fact",
+"text": "The Fact Sheet has no contact email or other verified outreach route for the organizing team. The draft is therefore not ready to send through email until an official channel is identified.",
+"fix": "Use only an official organizer contact channel once verified; do not infer or guess an address."
+}
+],
+"corrected_subject": "Could you advise on an appropriate contact for Patrick Lucey?",
+"corrected_body": "Hello SSAC organizing team,\n\nIf this is the right channel, could you point us to an official contact route or appropriate colleague who might advise on an introduction to Patrick Lucey? We haven’t identified a verified direct contact, so we’d be grateful for your guidance.\n\nIf helpful, please feel free to forward this note:\n\n—\nDear Patrick,\n\nWe’d like to invite you to discuss the possibility of joining a proposed panel conversation about tracking data, computer vision, and applied sports research at the MIT Sloan Sports Analytics Conference 2027, scheduled for Thursday–Friday, February 25–26, in Boston at the Thomas M. Menino Convention & Exhibition Center.\n\nWould you be open to discussing the possibility? The detailed agenda has not yet been announced, and we’d be happy to share more as it takes shape.\n\nBest,\nMIT Sloan Sports Analytics Conference team\n—\n\nThank you for any guidance.\n\nBest,\nMIT Sloan Sports Analytics Conference team"
+},
+"history": [
+{
+"version": 1,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "fact",
+"text": "The Fact Sheet provides no organizer contact email or verified route for reaching the organizing team. The draft is addressed to that team, but no recipient address or channel is established; do not send until a professional public contact route is verified.",
+"fix": "Verify an official organizer contact route from a cited public page or organiser document before sending. Do not guess an email address."
+},
+{
+"severity": "low",
+"type": "claim",
+"text": "The attached claims metadata says Patrick Lucey has a conference speaker profile and lists a current Stats Perform role. These are not necessary to the email; the role is explicitly marked for reverification, and the cited URLs are roster evidence rather than verified contact details.",
+"fix": "Omit these claims from the outbound message unless independently verified; do not use the role as current without checking the cited page."
+}
+]
+},
+{
+"version": 2,
+"verdict": "needs_changes",
+"issues": [
+{
+"severity": "medium",
+"type": "claim",
+"text": "“Invite you to join a panel on tracking data, computer vision, and applied sports research” can imply that this specific panel is already part of the program. The Fact Sheet says the detailed agenda has not been announced and does not list this panel.",
+"fix": "Frame it as a proposed or exploratory panel discussion and ask whether he would be open to discussing participation."
+},
+{
+"severity": "medium",
+"type": "fact",
+"text": "The Fact Sheet has no contact email or other verified outreach route for the organizing team. The draft is therefore not ready to send through email until an official channel is identified.",
+"fix": "Use only an official organizer contact channel once verified; do not infer or guess an address."
+}
+]
+}
+]
+},
+"claims": [
+{
+"claim": "The roster lists Patrick Lucey’s current role as Chief Scientist at Stats Perform; this should be reverified before relying on it.",
+"evidence": "https://www.statsperform.com/insights/how-reliable-data-defines-the-next-phase-of-ai-in-sport-insights-from-stats-perform/"
+},
+{
+"claim": "The conference has a Patrick Lucey speaker profile.",
+"evidence": "https://www.sloansportsconference.com/people/patrick-lucey"
+}
+],
+"version": 2,
+"created_at": "2026-10-22T22:36:19+00:00",
+"updated_at": "2026-10-22T22:36:19+00:00"
+}
+],
+"issues": [],
+"followups": [
+{
+"id": 87,
+"event_id": 5,
+"person_id": 207,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 88,
+"event_id": 5,
+"person_id": 208,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 89,
+"event_id": 5,
+"person_id": 209,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 90,
+"event_id": 5,
+"person_id": 210,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 91,
+"event_id": 5,
+"person_id": 211,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 92,
+"event_id": 5,
+"person_id": 212,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 93,
+"event_id": 5,
+"person_id": 215,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 94,
+"event_id": 5,
+"person_id": 216,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 95,
+"event_id": 5,
+"person_id": 217,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+},
+{
+"id": 96,
+"event_id": 5,
+"person_id": 218,
+"due": "2026-10-22",
+"action": "Start outreach with the top-ranked route",
+"reason": "Tier A, not contacted yet",
+"status": "open"
+}
+],
+"expenses": [],
+"runs": [
+{
+"id": 12,
+"event_id": 5,
+"started_at": "2026-10-22T22:32:14+00:00",
+"ended_at": "2026-10-22T22:32:38+00:00",
+"status": "done",
+"budget_usd": 0.25,
+"usage": {
+"by_agent": {
+"Event Researcher": {
+"input_tokens": 24232,
+"cached_tokens": 0,
+"cache_write_tokens": 5358,
+"output_tokens": 2521,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 20,
+"cost_usd": 0.20381765000000002,
+"runs": 1
+}
+},
+"totals": {
+"input_tokens": 24232,
+"cached_tokens": 0,
+"cache_write_tokens": 5358,
+"output_tokens": 2521,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 20,
+"cost_usd": 0.20381765000000002,
+"runs": 1
+}
+},
+"note": "event research"
+},
+{
+"id": 13,
+"event_id": 5,
+"started_at": "2026-10-22T22:32:48+00:00",
+"ended_at": "2026-10-22T22:36:23+00:00",
+"status": "done",
+"budget_usd": 0.9,
+"usage": {
+"by_agent": {
+"Brief Analyst": {
+"input_tokens": 4261,
+"cached_tokens": 0,
+"cache_write_tokens": 4135,
+"output_tokens": 1716,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.001387475,
+"runs": 1
+},
+"Roster Analyst": {
+"input_tokens": 3188,
+"cached_tokens": 0,
+"cache_write_tokens": 3062,
+"output_tokens": 2846,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.0018183499999999998,
+"runs": 1
+},
+"Entity Resolver": {
+"input_tokens": 2223,
+"cached_tokens": 0,
+"cache_write_tokens": 2097,
+"output_tokens": 79,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.000314225,
+"runs": 1
+},
+"Program Strategist": {
+"input_tokens": 5151,
+"cached_tokens": 0,
+"cache_write_tokens": 5025,
+"output_tokens": 2391,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.001836225,
+"runs": 1
+},
+"Talent Scout": {
+"input_tokens": 43554,
+"cached_tokens": 30071,
+"cache_write_tokens": 12475,
+"output_tokens": 7680,
+"requests": 8,
+"tool_calls": 23,
+"web_searches": 0,
+"cost_usd": 0.0058008849999999995,
+"runs": 2
+},
+"Verifier": {
+"input_tokens": 41387,
+"cached_tokens": 15561,
+"cache_write_tokens": 8937,
+"output_tokens": 1860,
+"requests": 4,
+"tool_calls": 0,
+"web_searches": 6,
+"cost_usd": 0.063891635,
+"runs": 4
+},
+"Contact Researcher": {
+"input_tokens": 94695,
+"cached_tokens": 36253,
+"cache_write_tokens": 7811,
+"output_tokens": 4817,
+"requests": 8,
+"tool_calls": 0,
+"web_searches": 22,
+"cost_usd": 0.228810505,
+"runs": 8
+},
+"Route Planner": {
+"input_tokens": 55797,
+"cached_tokens": 33059,
+"cache_write_tokens": 20722,
+"output_tokens": 8599,
+"requests": 16,
+"tool_calls": 23,
+"web_searches": 0,
+"cost_usd": 0.00742194,
+"runs": 8
+},
+"Drafter": {
+"input_tokens": 56471,
+"cached_tokens": 38972,
+"cache_write_tokens": 14509,
+"output_tokens": 6042,
+"requests": 19,
+"tool_calls": 11,
+"web_searches": 0,
+"cost_usd": 0.005523345000000001,
+"runs": 8
+},
+"Reviewer": {
+"input_tokens": 98679,
+"cached_tokens": 62158,
+"cache_write_tokens": 25777,
+"output_tokens": 24393,
+"requests": 32,
+"tool_calls": 17,
+"web_searches": 0,
+"cost_usd": 0.017114605,
+"runs": 15
+}
+},
+"totals": {
+"input_tokens": 405406,
+"cached_tokens": 216074,
+"cache_write_tokens": 104550,
+"output_tokens": 60423,
+"requests": 91,
+"tool_calls": 74,
+"web_searches": 28,
+"cost_usd": 0.33391919,
+"runs": 49
+}
+},
+"note": ""
+}
+],
+"trace": [
+{
+"id": 372,
+"event_id": 5,
+"run_id": 12,
+"ts": "2026-10-22T22:32:14+00:00",
+"agent": "Event Researcher",
+"kind": "start",
+"message": "Researching “MIT Sloan Sports Analytics Conference 2027” on the public web…",
+"data": null
+},
+{
+"id": 373,
+"event_id": 5,
+"run_id": 12,
+"ts": "2026-10-22T22:32:38+00:00",
+"agent": "Event Researcher",
+"kind": "done",
+"message": "Memo: 9 cited facts, 8 past speakers, 1 past sponsors; unknown: 2027 speaker and keynote lineup, including whether any speakers are confirmed., 2027 agenda, named tracks, and session descriptions; specifically no announced sessions dedicated to AI or betting markets found., 2027 ticket prices and detailed ticket tiers; ticket sales are linked from the official site, but pricing was not verifiable in reviewed pages., 2027 sponsor roster, sponsor tiers, available inventory, and sponsorship prices; only the 2026 Hackathon presenter above was confirmed in reviewed official sources.",
+"data": {
+"usage": {
+"input_tokens": 24232,
+"cached_tokens": 0,
+"cache_write_tokens": 5358,
+"output_tokens": 2521,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 20,
+"cost_usd": 0.20381765000000002
+}
+}
+},
+{
+"id": 374,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:32:48+00:00",
+"agent": "Coordinator",
+"kind": "start",
+"message": "Run #13 started · budget $0.90 · stages: brief, roster, strategy, scout, outreach",
+"data": null
+},
+{
+"id": 375,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:32:48+00:00",
+"agent": "Brief Analyst",
+"kind": "start",
+"message": "Reading every document to write the Fact Sheet…",
+"data": null
+},
+{
+"id": 376,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:32:58+00:00",
+"agent": "Brief Analyst",
+"kind": "done",
+"message": "Fact Sheet ready: MIT Sloan Sports Analytics Conference 2027 · 2027-02-25/2027-02-26 · Thomas M. Menino Convention & Exhibition Center, 415 Summer Street, Boston, MA 02210. 0 conflicts across documents.",
+"data": {
+"usage": {
+"input_tokens": 4261,
+"cached_tokens": 0,
+"cache_write_tokens": 4135,
+"output_tokens": 1716,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.001387475
+}
+}
+},
+{
+"id": 377,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:32:58+00:00",
+"agent": "Roster Analyst",
+"kind": "start",
+"message": "Extracting people from 3 document groups in parallel…",
+"data": null
+},
+{
+"id": 378,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:14+00:00",
+"agent": "Roster Analyst",
+"kind": "note",
+"message": "planning/sponsorship/promotion/other: 27 people",
+"data": {
+"usage": {
+"input_tokens": 3188,
+"cached_tokens": 0,
+"cache_write_tokens": 3062,
+"output_tokens": 2846,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.0018183499999999998
+}
+}
+},
+{
+"id": 379,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:16+00:00",
+"agent": "Entity Resolver",
+"kind": "done",
+"message": "Merged 0 duplicate groups across languages/files.",
+"data": {
+"usage": {
+"input_tokens": 2223,
+"cached_tokens": 0,
+"cache_write_tokens": 2097,
+"output_tokens": 79,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.000314225
+}
+}
+},
+{
+"id": 380,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:16+00:00",
+"agent": "Roster Analyst",
+"kind": "done",
+"message": "Roster: 27 people/orgs after merging aliases (27 new, 0 updated), 3 contact points.",
+"data": null
+},
+{
+"id": 381,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:16+00:00",
+"agent": "Program Strategist",
+"kind": "start",
+"message": "Mapping program slots, rubric and priorities…",
+"data": null
+},
+{
+"id": 382,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:33+00:00",
+"agent": "Program Strategist",
+"kind": "done",
+"message": "5 slots, open gaps: Keynote speaker (+1), Sports analytics panelists (+2), AI in sports panelists (+2), Betting markets panelists (+2), Sponsor prospect (+1); ranked 9 people.",
+"data": {
+"usage": {
+"input_tokens": 5151,
+"cached_tokens": 0,
+"cache_write_tokens": 5025,
+"output_tokens": 2391,
+"requests": 1,
+"tool_calls": 0,
+"web_searches": 0,
+"cost_usd": 0.001836225
+},
+"rubric": [
+{
+"name": "Mission and topic fit",
+"weight": 0.25,
+"description": "Fit with the conference’s stated scope of sports analytics, business, and technology, and the requested keynote/panel topics."
+},
+{
+"name": "Audience draw and contribution",
+"weight": 0.2,
+"description": "Potential to attract or serve the broad professional, researcher, student, and fan audience; grounded in documented public role or prior conference participation."
+},
+{
+"name": "Likelihood of acceptance",
+"weight": 0.2,
+"description": "Evidence of realistic availability or willingness. No availability is documented, so scores remain cautious."
+},
+{
+"name": "Relationship warmth",
+"weight": 0.15,
+"description": "Prior conference participation counts as past collaboration/warm; no active thread or direct contact is documented."
+},
+{
+"name": "Program balance",
+"weight": 0.1,
+"description": "Potential to add a distinct perspective across sports, business, analytics, and community segments, based only on roster notes."
+},
+{
+"name": "Cost and travel burden",
+"weight": 0.1,
+"description": "Potential logistics burden. Location, travel needs, and honoraria are unknown, so this factor is not assumed favorable."
+}
+]
+}
+},
+{
+"id": 383,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:33+00:00",
+"agent": "Coordinator",
+"kind": "handoff",
+"message": "Fan-out: 2 Talent Scouts build lists in parallel.",
+"data": {
+"briefs": [
+"Keynote: scout a high-impact sports analytics or sports-technology leader with a demonstrable record connecting data to decisions; prioritize U.S. availability for the Boston event, while confirming travel needs rather than assuming them.",
+"Sports analytics panel: scout an applied analytics practitioner from a team, league, or research setting who can explain methods and real-world use to professionals and students; seek perspectives not already represented by the returning-speaker prospects."
+]
+}
+},
+{
+"id": 384,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:33+00:00",
+"agent": "Talent Scout",
+"kind": "start",
+"message": "Building list: Keynote: scout a high-impact sports analytics or sports-technology leader with a demonstrable record connecting data to ",
+"data": null
+},
+{
+"id": 385,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:33+00:00",
+"agent": "Talent Scout",
+"kind": "start",
+"message": "Building list: Sports analytics panel: scout an applied analytics practitioner from a team, league, or research setting who can explain",
+"data": null
+},
+{
+"id": 386,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Kirk Goldsberry",
+"data": null
+},
+{
+"id": 387,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Cathy Engelbert",
+"data": null
+},
+{
+"id": 388,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Sam Presti",
+"data": null
+},
+{
+"id": 389,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Theo Epstein",
+"data": null
+},
+{
+"id": 390,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Megan Chayka",
+"data": null
+},
+{
+"id": 391,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: John Hollinger",
+"data": null
+},
+{
+"id": 392,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Billy Beane",
+"data": null
+},
+{
+"id": 393,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:42+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Brian Burke sports analytics",
+"data": null
+},
+{
+"id": 394,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Luke Bornn",
+"data": null
+},
+{
+"id": 395,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Meghan Chayka",
+"data": null
+},
+{
+"id": 396,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Eric Eager sports analytics",
+"data": null
+},
+{
+"id": 397,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Patrick Lucey sports analytics",
+"data": null
+},
+{
+"id": 398,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Kirk Goldsberry",
+"data": null
+},
+{
+"id": 399,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Seth Partnow",
+"data": null
+},
+{
+"id": 400,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Ben Alamar",
+"data": null
+},
+{
+"id": 401,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:44+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Dean Oliver sports analytics",
+"data": null
+},
+{
+"id": 402,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:49+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Alex Anthopoulos",
+"data": null
+},
+{
+"id": 403,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:49+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Mark Cuban",
+"data": null
+},
+{
+"id": 404,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:49+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Billy Beane",
+"data": null
+},
+{
+"id": 405,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:49+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Brian Burke",
+"data": null
+},
+{
+"id": 406,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:33:49+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Megan Chayka",
+"data": null
+},
+{
+"id": 407,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:03+00:00",
+"agent": "Coordinator",
+"kind": "handoff",
+"message": "Verifier: checking 4 candidate(s) on the web",
+"data": null
+},
+{
+"id": 408,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:15+00:00",
+"agent": "Talent Scout",
+"kind": "done",
+"message": "“MIT Sloan Sports Analytics Conference 2027 — keynote candidates”: 8 verified candidates (0 dropped: duplicates or no evidence).",
+"data": {
+"usage": {
+"input_tokens": 28926,
+"cached_tokens": 21281,
+"cache_write_tokens": 7015,
+"output_tokens": 4394,
+"requests": 5,
+"tool_calls": 14,
+"web_searches": 0,
+"cost_usd": 0.003349685
+},
+"added": [
+"Kirk Goldsberry",
+"Theo Epstein",
+"Sam Presti",
+"Cathy Engelbert",
+"John Hollinger",
+"Billy Beane",
+"Alex Anthopoulos",
+"Mark Cuban"
+]
+}
+},
+{
+"id": 409,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Verifier",
+"kind": "done",
+"message": "4/4 candidates confirmed on the web",
+"data": null
+},
+{
+"id": 410,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Talent Scout",
+"kind": "done",
+"message": "“Sports analytics panel — applied practitioners”: 8 verified candidates (0 dropped: duplicates or no evidence).",
+"data": {
+"usage": {
+"input_tokens": 14628,
+"cached_tokens": 8790,
+"cache_write_tokens": 5460,
+"output_tokens": 3286,
+"requests": 3,
+"tool_calls": 9,
+"web_searches": 0,
+"cost_usd": 0.0024511999999999997
+},
+"added": [
+"Luke Bornn",
+"Meghan Chayka",
+"Eric Eager",
+"Patrick Lucey",
+"Kirk Goldsberry",
+"Seth Partnow",
+"Ben Alamar",
+"Dean Oliver"
+]
+}
+},
+{
+"id": 411,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Coordinator",
+"kind": "handoff",
+"message": "Fan-out: Route Planner → Drafter → Reviewer for 8 people (4 at a time).",
+"data": {
+"people": [
+"Kirk Goldsberry",
+"Meghan Chayka",
+"Luke Bornn",
+"Theo Epstein",
+"Sam Presti",
+"Eric Eager",
+"John Hollinger",
+"Patrick Lucey"
+]
+}
+},
+{
+"id": 412,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Kirk Goldsberry: 2 connection path(s) — best: suggested_intro via Jessica Gelman; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 413,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Meghan Chayka: 0 connection path(s) — none in records; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 414,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Luke Bornn: 0 connection path(s) — none in records; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 415,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:16+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Theo Epstein: 1 connection path(s) — best: suggested_intro via Jessica Gelman; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 416,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:20+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Meghan Chayka: 1 public channel(s)",
+"data": null
+},
+{
+"id": 417,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:22+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Meghan Chayka",
+"data": null
+},
+{
+"id": 418,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:23+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Theo Epstein: 3 public channel(s), representatives: Athlete Speakers booking agents (company identity from page; individual representative not named); All American Speakers Bureau booking team (company identity from page; individual representative not named)",
+"data": null
+},
+{
+"id": 419,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:25+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Theo Epstein",
+"data": null
+},
+{
+"id": 420,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:27+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Luke Bornn: 1 public channel(s)",
+"data": null
+},
+{
+"id": 421,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:28+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Kirk Goldsberry: 2 public channel(s)",
+"data": null
+},
+{
+"id": 422,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:29+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Meghan Chayka: public_contact via Official Stathletes contact form",
+"data": null
+},
+{
+"id": 423,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:30+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Kirk Goldsberry",
+"data": null
+},
+{
+"id": 424,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:31+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Luke Bornn",
+"data": null
+},
+{
+"id": 425,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:37+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Theo Epstein: public_contact via Speaker-booking email",
+"data": null
+},
+{
+"id": 426,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:38+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Luke Bornn: direct_dm via LinkedIn direct message",
+"data": null
+},
+{
+"id": 427,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:40+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Kirk Goldsberry: official_management via Speaker bureau booking / check availability page",
+"data": null
+},
+{
+"id": 428,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:58+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Luke Bornn: invitation (en, LinkedIn direct message) → pass, 0 issue(s), v1",
+"data": null
+},
+{
+"id": 429,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:34:58+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Sam Presti: 2 connection path(s) — best: suggested_intro via Jessica Gelman; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 430,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:13+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Sam Presti: 3 public channel(s)",
+"data": null
+},
+{
+"id": 431,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:14+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Meghan Chayka: invitation (en, Official Stathletes contact form) → needs_changes, 3 issue(s), v2",
+"data": null
+},
+{
+"id": 432,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:14+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Eric Eager: 1 connection path(s) — best: organisation via MIT Sloan; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 433,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:15+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Sam Presti",
+"data": null
+},
+{
+"id": 434,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:16+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Kirk Goldsberry: invitation (en, email) → needs_changes, 1 issue(s), v2",
+"data": null
+},
+{
+"id": 435,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:16+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "John Hollinger: 2 connection path(s) — best: suggested_intro via Jessica Gelman; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 436,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:17+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Theo Epstein: invitation (en, Speaker-booking email) → needs_changes, 3 issue(s), v2",
+"data": null
+},
+{
+"id": 437,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:17+00:00",
+"agent": "Connection Finder",
+"kind": "note",
+"message": "Patrick Lucey: 1 connection path(s) — best: organisation via MIT Sloan; no verified channel yet → Route Planner will research one",
+"data": null
+},
+{
+"id": 438,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:22+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "John Hollinger: 2 public channel(s), representatives: Athlete Speakers booking team (https://www.athletespeakers.com/speaker/john-hollinger)",
+"data": null
+},
+{
+"id": 439,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:23+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Patrick Lucey: 1 public channel(s)",
+"data": null
+},
+{
+"id": 440,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:24+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: John Hollinger",
+"data": null
+},
+{
+"id": 441,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:25+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Sam Presti: official_management via Oklahoma City Thunder Speakers Bureau inquiry form",
+"data": null
+},
+{
+"id": 442,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:26+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Eric Eager: 2 public channel(s)",
+"data": null
+},
+{
+"id": 443,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:27+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Patrick Lucey",
+"data": null
+},
+{
+"id": 444,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:29+00:00",
+"agent": "tool",
+"kind": "tool_call",
+"message": "public_profile: Eric Eager Carolina Panthers football analytics",
+"data": null
+},
+{
+"id": 445,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:34+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "John Hollinger: public_contact via Booking inquiry email listed on Athlete Speakers profile",
+"data": null
+},
+{
+"id": 446,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:36+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Patrick Lucey: partner_org via MIT Sloan / SSAC organizing team (no individual owner identified)",
+"data": null
+},
+{
+"id": 447,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:35:37+00:00",
+"agent": "Route Planner",
+"kind": "note",
+"message": "Eric Eager: partner_org via MIT Sloan Sports Analytics Conference organizing team",
+"data": null
+},
+{
+"id": 448,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:00+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Sam Presti: invitation (en, Oklahoma City Thunder Speakers Bureau inquiry form) → needs_changes, 1 issue(s), v2",
+"data": null
+},
+{
+"id": 449,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:14+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "John Hollinger: invitation (en, email) → needs_changes, 2 issue(s), v2",
+"data": null
+},
+{
+"id": 450,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:16+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Eric Eager: intro_request (en, email) → needs_changes, 1 issue(s), v2",
+"data": null
+},
+{
+"id": 451,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:19+00:00",
+"agent": "Reviewer",
+"kind": "note",
+"message": "Patrick Lucey: intro_request (en, email) → needs_changes, 2 issue(s), v2",
+"data": null
+},
+{
+"id": 452,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:20+00:00",
+"agent": "Coordinator",
+"kind": "note",
+"message": "Integrated directory: linked 20 people across events (shared full name, email or handle).",
+"data": null
+},
+{
+"id": 453,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Contact Researcher",
+"kind": "note",
+"message": "Found 13 public photo(s) on Wikimedia Commons.",
+"data": null
+},
+{
+"id": 454,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Consistency Auditor",
+"kind": "done",
+"message": "0 issues across documents (dates, links, claims, conflicts).",
+"data": null
+},
+{
+"id": 455,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Finance Clerk",
+"kind": "done",
+"message": "Expenses tracked: $0.00; 0 items need action.",
+"data": null
+},
+{
+"id": 456,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Follow-up Planner",
+"kind": "done",
+"message": "10 follow-ups scheduled.",
+"data": null
+},
+{
+"id": 457,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Coordinator",
+"kind": "note",
+"message": "Drive folder updated (fact sheet, roster, drafts, audit, outbox).",
+"data": null
+},
+{
+"id": 458,
+"event_id": 5,
+"run_id": 13,
+"ts": "2026-10-22T22:36:23+00:00",
+"agent": "Coordinator",
+"kind": "end",
+"message": "Run #13 done · $0.3339 · 405,406 in (216,074 cached) / 60,423 out tokens",
+"data": {
+"input_tokens": 405406,
+"cached_tokens": 216074,
+"cache_write_tokens": 104550,
+"output_tokens": 60423,
+"requests": 91,
+"tool_calls": 74,
+"web_searches": 28,
+"cost_usd": 0.33391919,
+"runs": 49
+}
+}
+],
+"contacts": [
+{
+"id": 220,
+"person_id": 180,
+"channel": "website",
+"value": "https://www.sloansportsconference.com/",
+"label": "official website",
+"source": "Research_memo.md",
+"verified": 1
+},
+{
+"id": 221,
+"person_id": 180,
+"channel": "website",
+"value": "https://www.sloansportsconference.com/about/faqs",
+"label": "organizer information",
+"source": "Research_memo.md",
+"verified": 1
+},
+{
+"id": 222,
+"person_id": 206,
+"channel": "website",
+"value": "https://www.eventbrite.com/e/mit-sloan-sports-analytics-conference-2027-tickets-1991125033575",
+"label": "2027 event listing with venue details",
+"source": "Research_memo.md",
+"verified": 1
+},
+{
+"id": 223,
+"person_id": 210,
+"channel": "other",
+"value": "@CathyEngelbert (X)",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q19666344",
+"verified": 0
+},
+{
+"id": 224,
+"person_id": 214,
+"channel": "website",
+"value": "https://blogmaverick.com",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q318503",
+"verified": 0
+},
+{
+"id": 225,
+"person_id": 214,
+"channel": "other",
+"value": "@mcuban (X)",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q318503",
+"verified": 0
+},
+{
+"id": 226,
+"person_id": 214,
+"channel": "linkedin",
+"value": "mark-cuban-06a0755b",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q318503",
+"verified": 0
+},
+{
+"id": 227,
+"person_id": 215,
+"channel": "linkedin",
+"value": "lukebornn",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q102402992",
+"verified": 0
+},
+{
+"id": 228,
+"person_id": 215,
+"channel": "other",
+"value": "@LukeBornn",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q102402992",
+"verified": 0
+},
+{
+"id": 229,
+"person_id": 216,
+"channel": "linkedin",
+"value": "meghanchayka",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q104091430",
+"verified": 0
+},
+{
+"id": 230,
+"person_id": 216,
+"channel": "other",
+"value": "@MeghanChayka",
+"label": "public (unverified)",
+"source": "https://www.wikidata.org/wiki/Q104091430",
+"verified": 0
+},
+{
+"id": 231,
+"person_id": 217,
+"channel": "website",
+"value": "MIT Sloan Sports Analytics Conference speaker profile",
+"label": "public (unverified)",
+"source": "https://www.sloansportsconference.com/people/eric-eager",
+"verified": 0
+},
+{
+"id": 232,
+"person_id": 218,
+"channel": "website",
+"value": "Stats Perform profile/insights page identifying Patrick Lucey as Chief Scientist",
+"label": "public (unverified)",
+"source": "https://www.statsperform.com/insights/how-reliable-data-defines-the-next-phase-of-ai-in-sport-insights-from-stats-perform/",
+"verified": 0
+},
+{
+"id": 233,
+"person_id": 218,
+"channel": "website",
+"value": "MIT Sloan Sports Analytics Conference speaker profile",
+"label": "public (unverified)",
+"source": "https://www.sloansportsconference.com/people/patrick-lucey",
+"verified": 0
+},
+{
+"id": 234,
+"person_id": 220,
+"channel": "email",
+"value": "(public contact on file — see source link)",
+"label": "public (unverified)",
+"source": "https://sethpartnow.com/",
+"verified": 0
+},
+{
+"id": 235,
+"person_id": 222,
+"channel": "website",
+"value": "ESPN Press Room professional biography",
+"label": "public (unverified)",
+"source": "https://espnpressroom.com/bio/dean-oliver/",
+"verified": 0
+},
+{
+"id": 236,
+"person_id": 216,
+"channel": "website",
+"value": "Stathletes contact form",
+"label": "found on the web (public, verify)",
+"source": "https://stathletes.com/contact-us",
+"verified": 0
+},
+{
+"id": 237,
+"person_id": 208,
+"channel": "agency_email",
+"value": "contact@athletespeakers.com",
+"label": "found on the web (public, verify)",
+"source": "https://www.athletespeakers.com/speaker/theo-epstein",
+"verified": 0
+},
+{
+"id": 238,
+"person_id": 208,
+"channel": "phone",
+"value": "(public contact on file — see source link)",
+"label": "found on the web (public, verify)",
+"source": "https://www.athletespeakers.com/speaker/theo-epstein",
+"verified": 0
+},
+{
+"id": 239,
+"person_id": 208,
+"channel": "management",
+"value": "All American Speakers Bureau — speaker booking/check availability",
+"label": "found on the web (public, verify)",
+"source": "https://www.allamericanspeakers.com/speakers/406342/Theo-Epstein",
+"verified": 0
+},
+{
+"id": 240,
+"person_id": 215,
+"channel": "website",
+"value": "Official personal website (links to LinkedIn, Google Scholar, and X; no direct contact form or contact details surfaced)",
+"label": "found on the web (public, verify)",
+"source": "https://www.lukebornn.com/",
+"verified": 0
+},
+{
+"id": 241,
+"person_id": 207,
+"channel": "website",
+"value": "Official website (no direct booking contact details visible on the page)",
+"label": "found on the web (public, verify)",
+"source": "https://www.kirkgoldsberry.com/",
+"verified": 0
+},
+{
+"id": 242,
+"person_id": 207,
+"channel": "management",
+"value": "All American Speakers Bureau — speaker booking/check-availability page",
+"label": "found on the web (public, verify)",
+"source": "https://www.allamericanspeakers.com/speakers/468273/Kirk-Goldsberry",
+"verified": 0
+},
+{
+"id": 243,
+"person_id": 216,
+"channel": "website",
+"value": "Stathletes contact form: https://stathletes.com/contact-us",
+"label": "found by Route Planner (public, verify)",
+"source": "https://stathletes.com/contact-us",
+"verified": 0
+},
+{
+"id": 244,
+"person_id": 208,
+"channel": "website",
+"value": "All American Speakers Bureau booking team",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.allamericanspeakers.com/speakers/406342/Theo-Epstein",
+"verified": 0
+},
+{
+"id": 245,
+"person_id": 207,
+"channel": "management",
+"value": "All American Speakers Bureau — Kirk Goldsberry listing",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.allamericanspeakers.com/speakers/468273/Kirk-Goldsberry",
+"verified": 0
+},
+{
+"id": 246,
+"person_id": 209,
+"channel": "website",
+"value": "Oklahoma City Thunder Speakers Bureau — official speaking inquiry form",
+"label": "found on the web (public, verify)",
+"source": "https://www.nba.com/thunder/speakers",
+"verified": 0
+},
+{
+"id": 247,
+"person_id": 209,
+"channel": "email",
+"value": "(public contact on file — see source link)",
+"label": "found on the web (public, verify)",
+"source": "https://www.nba.com/thunder/contact",
+"verified": 0
+},
+{
+"id": 248,
+"person_id": 209,
+"channel": "website",
+"value": "Oklahoma City Thunder Basketball Operations profile for Sam Presti",
+"label": "found on the web (public, verify)",
+"source": "https://www.nba.com/thunder/frontoffice",
+"verified": 0
+},
+{
+"id": 249,
+"person_id": 211,
+"channel": "agency_email",
+"value": "contact@athletespeakers.com (booking inquiries for John Hollinger)",
+"label": "found on the web (public, verify)",
+"source": "https://www.athletespeakers.com/speaker/john-hollinger",
+"verified": 0
+},
+{
+"id": 250,
+"person_id": 211,
+"channel": "other",
+"value": "Bluesky profile: @johnhollinger.bsky.social",
+"label": "found on the web (public, verify)",
+"source": "https://bsky.app/profile/johnhollinger.bsky.social",
+"verified": 0
+},
+{
+"id": 251,
+"person_id": 218,
+"channel": "website",
+"value": "Stats Perform general contact form; public company contact route (not a Patrick Lucey-specific contact).",
+"label": "found on the web (public, verify)",
+"source": "https://www.statsperform.com/contact/",
+"verified": 0
+},
+{
+"id": 252,
+"person_id": 209,
+"channel": "management",
+"value": "https://www.nba.com/thunder/speakers",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.nba.com/thunder/speakers",
+"verified": 0
+},
+{
+"id": 253,
+"person_id": 209,
+"channel": "website",
+"value": "(personal address on file — see source)",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.nba.com/thunder/contact",
+"verified": 0
+},
+{
+"id": 254,
+"person_id": 217,
+"channel": "website",
+"value": "Linktree: https://linktr.ee/ericeager_ (linked from his public GitHub profile)",
+"label": "found on the web (public, verify)",
+"source": "https://github.com/ericeager",
+"verified": 0
+},
+{
+"id": 255,
+"person_id": 217,
+"channel": "linkedin",
+"value": "LinkedIn profile path shown on his public GitHub profile: in/eric-eager-31a2a220",
+"label": "found on the web (public, verify)",
+"source": "https://github.com/ericeager",
+"verified": 0
+},
+{
+"id": 256,
+"person_id": 211,
+"channel": "website",
+"value": "contact@athletespeakers.com",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.athletespeakers.com/speaker/john-hollinger",
+"verified": 0
+},
+{
+"id": 257,
+"person_id": 218,
+"channel": "website",
+"value": "https://www.sloansportsconference.com/",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.sloansportsconference.com/",
+"verified": 0
+},
+{
+"id": 258,
+"person_id": 218,
+"channel": "website",
+"value": "https://www.statsperform.com/contact/",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.statsperform.com/contact/",
+"verified": 0
+},
+{
+"id": 259,
+"person_id": 217,
+"channel": "website",
+"value": "MIT Sloan",
+"label": "found by Route Planner (public, verify)",
+"source": "https://www.sloansportsconference.com/",
+"verified": 0
+}
+],
+"routes": [
+{
+"id": 79,
+"person_id": 216,
+"rank": 1,
+"route_type": "public_contact",
+"via": "",
+"channel": "Official Stathletes contact form",
+"target": "Stathletes contact form: https://stathletes.com/contact-us",
+"warmth": "cold",
+"rationale": "Official company contact route; contact research identifies Meghan on Stathletes’ staff page. Ask the company to forward a brief professional invitation to her; no direct email or agency contact was identified.",
+"next_action": "After human approval, the event team should submit a concise invitation through the form and ask that it be forwarded to Meghan. Do not promise honoraria, travel support, or guest benefits; the guest policy is unspecified.",
+"evidence": "Contact Research: official company contact route; Meghan is listed on the staff page: https://stathletes.com/staff/meghan-chayka.",
+"source_url": "https://stathletes.com/contact-us"
+},
+{
+"id": 80,
+"person_id": 216,
+"rank": 2,
+"route_type": "direct_dm",
+"via": "",
+"channel": "LinkedIn direct message",
+"target": "meghanchayka",
+"warmth": "cold",
+"rationale": "A public LinkedIn handle is listed in the supplied contact research, but it is marked unverified. Treat as a secondary route and confirm the profile belongs to Meghan before sending.",
+"next_action": "If the Stathletes route is unsuitable or receives no response, verify the LinkedIn profile and have the event team send one concise, low-pressure panel invitation after human approval.",
+"evidence": "Invitee contact record lists LinkedIn handle “meghanchayka” as public (unverified), sourced to Wikidata.",
+"source_url": "https://www.wikidata.org/wiki/Q104091430"
+},
+{
+"id": 81,
+"person_id": 208,
+"rank": 1,
+"route_type": "public_contact",
+"via": "",
+"channel": "Speaker-booking email",
+"target": "(public address on file — see source)",
+"warmth": "cold",
+"rationale": "A public speaker-booking contact is listed on Athlete Speakers’ Theo Epstein page. No personal or direct contact was verified, so approach through this professional booking channel rather than a personal DM.",
+"next_action": "The conference organizing team should email the booking contact to ask about availability for the February 25–26, 2027 keynote and request the appropriate booking process. Do not state or imply any honorarium or travel support.",
+"evidence": "Contact Research lists this email and page as a professional speaker-booking route.",
+"source_url": "https://www.athletespeakers.com/speaker/theo-epstein"
+},
+{
+"id": 82,
+"person_id": 208,
+"rank": 2,
+"route_type": "public_contact",
+"via": "",
+"channel": "Speaker bureau booking/check availability",
+"target": "All American Speakers Bureau booking team",
+"warmth": "cold",
+"rationale": "A second professional speaker-booking route is listed for Theo Epstein. The research did not identify an individual representative or a direct email, so use the bureau’s page to initiate a check rather than guessing contact details.",
+"next_action": "If the first bureau route is unavailable or does not respond, submit an availability inquiry through the listed booking page for the keynote. Ask about requirements without promising arrangements.",
+"evidence": "Contact Research identifies the bureau as a booking/check-availability route.",
+"source_url": "https://www.allamericanspeakers.com/speakers/406342/Theo-Epstein"
+},
+{
+"id": 83,
+"person_id": 208,
+"rank": 3,
+"route_type": "intermediary_intro",
+"via": "Jessica Gelman",
+"channel": "Ask through the conference organizing team; no direct channel listed",
+"target": "Theo Epstein",
+"warmth": "cold",
+"rationale": "Jessica Gelman is a conference co-chair and was suggested as a possible intermediary, but the roster evidence explicitly says there is no verified relationship between her and Epstein. This is a relationship-check, not a presumed warm introduction.",
+"next_action": "Before approaching Epstein through this path, ask Jessica whether she knows him and would be comfortable making an introduction; otherwise continue via a speaker bureau.",
+"evidence": "Connection Paths: suggested intro only; no document, history, or source shows Gelman knows Epstein. Roster: Jessica Gelman is a conference co-chair.",
+"source_url": ""
+},
+{
+"id": 84,
+"person_id": 215,
+"rank": 1,
+"route_type": "direct_dm",
+"via": "",
+"channel": "LinkedIn direct message",
+"target": "lukebornn",
+"warmth": "cold",
+"rationale": "No roster connection or prior outreach is recorded. The public-profile lookup lists this LinkedIn handle; the provided contact research notes that Luke’s official site links to LinkedIn, though current role and availability remain unverified.",
+"next_action": "The event team should send one concise English panel invitation by LinkedIn DM while outreach is being planned; confirm current affiliation and interest before discussing further details.",
+"evidence": "Roster lookup: status not_started, cold, no owner or history. Contact research: https://www.lukebornn.com/ lists social-profile links. Public-profile lookup: https://www.wikidata.org/wiki/Q102402992 lists LinkedIn lukebornn.",
+"source_url": "https://www.wikidata.org/wiki/Q102402992"
+},
+{
+"id": 85,
+"person_id": 215,
+"rank": 2,
+"route_type": "direct_dm",
+"via": "",
+"channel": "X direct message",
+"target": "(public address on file — see source)",
+"warmth": "cold",
+"rationale": "A second public professional channel is listed in the public-profile lookup. No verified relationship or active thread is available, so use this only if LinkedIn is unavailable or does not receive a response.",
+"next_action": "If LinkedIn is unavailable or yields no response, the event team may send a single brief English DM on X, without duplicating outreach across channels at the same time.",
+"evidence": "Roster contact is marked public (unverified); the public-profile lookup lists X/Twitter LukeBornn. Contact research: https://www.lukebornn.com/ links to social profiles, with no direct contact details surfaced.",
+"source_url": "https://www.wikidata.org/wiki/Q102402992"
+},
+{
+"id": 86,
+"person_id": 207,
+"rank": 1,
+"route_type": "official_management",
+"via": "",
+"channel": "Speaker bureau booking / check availability page",
+"target": "All American Speakers Bureau — Kirk Goldsberry listing",
+"warmth": "cold",
+"rationale": "A public booking route is listed for Kirk Goldsberry. No named representative or direct contact detail is provided, so use the bureau's on-page booking/check-availability process; do not imply an honorarium or travel support, which are unspecified.",
+"next_action": "Before contacting Kirk directly, have the conference team submit a keynote availability inquiry through the bureau page, describing the proposed keynote and asking about availability and booking requirements.",
+"evidence": "CONTACT RESEARCH lists this as a speaker booking/check-availability page; roster has no prior outreach history or direct contacts.",
+"source_url": "https://www.allamericanspeakers.com/speakers/468273/Kirk-Goldsberry"
+},
+{
+"id": 87,
+"person_id": 207,
+"rank": 2,
+"route_type": "intermediary_intro",
+"via": "Jessica Gelman, conference co-chair",
+"channel": "Internal conference-team outreach; channel not recorded",
+"target": "Kirk Goldsberry",
+"warmth": "cold",
+"rationale": "Jessica Gelman is a conference co-chair and a team member, but the roster and connection-path evidence do not establish that she knows Kirk or can introduce him. Ask her first whether she has a current professional connection; this is not a verified warm path.",
+"next_action": "Before an external invitation, ask Jessica Gelman through the team's established internal channel whether she knows Kirk Goldsberry and, only if so, whether she is willing to make an introduction.",
+"evidence": "CONNECTION PATHS says this intro is Talent Scout-suggested only, with no documented relationship. Roster identifies Gelman as co-chair and has no contact/history for her.",
+"source_url": ""
+},
+{
+"id": 88,
+"person_id": 207,
+"rank": 3,
+"route_type": "intermediary_intro",
+"via": "Daryl Morey, conference co-chair",
+"channel": "Internal conference-team outreach; channel not recorded",
+"target": "Kirk Goldsberry",
+"warmth": "cold",
+"rationale": "Daryl Morey is a conference co-chair, but no source verifies a relationship with Kirk Goldsberry. Treat this only as an internal check for a possible connection, not a confirmed introduction.",
+"next_action": "If Jessica Gelman has no usable connection, ask Daryl Morey through the team's established internal channel whether he has a current professional route to Kirk and would be willing to introduce.",
+"evidence": "CONNECTION PATHS says this intro is Talent Scout-suggested only, with no documented relationship. Roster identifies Morey as co-chair and has no contact/history for him.",
+"source_url": ""
+},
+{
+"id": 89,
+"person_id": 209,
+"rank": 1,
+"route_type": "official_management",
+"via": "",
+"channel": "Oklahoma City Thunder Speakers Bureau inquiry form",
+"target": "https://www.nba.com/thunder/speakers",
+"warmth": "cold",
+"rationale": "Official speaking-inquiry route. The contact research notes that the bureau focuses on serving the Thunder’s Oklahoma fan base, so it may not handle an out-of-market conference keynote; confirm its remit before relying on it.",
+"next_action": "Conference outreach owner to submit a concise inquiry asking whether the bureau handles keynote requests for an out-of-market conference, and if so how to route a request for Sam Presti. Do this before preparing a full invitation; availability and arrangements are not established.",
+"evidence": "Contact Research identifies this as the official speaking inquiry form and flags its stated Oklahoma-fan-base focus.",
+"source_url": "https://www.nba.com/thunder/speakers"
+},
+{
+"id": 90,
+"person_id": 209,
+"rank": 2,
+"route_type": "intermediary_intro",
+"via": "Jessica Gelman",
+"channel": "Internal organiser coordination; no direct contact channel is listed",
+"target": "Jessica Gelman",
+"warmth": "cold",
+"rationale": "She is a conference co-chair, but the connection-path note is only a Talent Scout suggestion and provides no evidence she knows Presti. Ask whether she has a genuine route before requesting an introduction.",
+"next_action": "Conference organiser to ask Gelman internally whether she knows Presti or can identify an appropriate verified route; do not present a connection as established.",
+"evidence": "Roster lists Gelman as conference co-chair; connection-path evidence explicitly says no document, history, or source establishes that she knows Presti.",
+"source_url": ""
+},
+{
+"id": 91,
+"person_id": 209,
+"rank": 3,
+"route_type": "intermediary_intro",
+"via": "Daryl Morey",
+"channel": "Internal organiser coordination; no direct contact channel is listed",
+"target": "Daryl Morey",
+"warmth": "cold",
+"rationale": "He is a conference co-chair and a suggested possible intermediary, but no evidence verifies a relationship with Presti. Check whether a real introduction is possible before pursuing it.",
+"next_action": "Conference organiser to ask Morey internally whether he has a current, appropriate connection to Presti and would be comfortable making an introduction.",
+"evidence": "Roster lists Morey as conference co-chair; connection-path evidence explicitly says no document, history, or source establishes that he knows Presti.",
+"source_url": ""
+},
+{
+"id": 92,
+"person_id": 209,
+"rank": 4,
+"route_type": "public_contact",
+"via": "",
+"channel": "Oklahoma City Thunder general contact email",
+"target": "(public address on file — see source)",
+"warmth": "cold",
+"rationale": "A public Thunder contact is available, but it is a general business-office contact and is not identified as a direct channel to Presti. Use only as a fallback if the Speakers Bureau confirms it cannot route the request.",
+"next_action": "If the Speakers Bureau redirects the request, send a brief professional inquiry asking for the appropriate route for a conference keynote invitation; do not assume the mailbox reaches Presti.",
+"evidence": "Contact Research lists this email as a general business-office contact and explicitly notes it is not identified as a direct channel to Presti.",
+"source_url": "https://www.nba.com/thunder/contact"
+},
+{
+"id": 93,
+"person_id": 211,
+"rank": 1,
+"route_type": "public_contact",
+"via": "",
+"channel": "Booking inquiry email listed on Athlete Speakers profile",
+"target": "(public address on file — see source)",
+"warmth": "cold",
+"rationale": "The contact research lists this as Athlete Speakers’ booking contact for John Hollinger; it is a public booking channel, not a personal email or verified exclusive representative.",
+"next_action": "The conference outreach owner should email the booking team with a concise appearance inquiry and ask them to route it to John Hollinger; do not promise honorarium, travel support, or guest benefits.",
+"evidence": "Contact Research identifies “contact@athletespeakers.com” for booking inquiries and notes it is the booking team’s contact, not Hollinger’s personal email.",
+"source_url": "https://www.athletespeakers.com/speaker/john-hollinger"
+},
+{
+"id": 94,
+"person_id": 211,
+"rank": 2,
+"route_type": "intermediary_intro",
+"via": "Daryl Morey",
+"channel": "Internal outreach to conference co-chair; no direct channel found in the roster",
+"target": "John Hollinger",
+"warmth": "cold",
+"rationale": "Daryl Morey is a conference co-chair and was suggested as a possible intermediary, but there is no evidence in the roster that he knows Hollinger. Treat this as a request to verify a possible connection, not as an established warm introduction.",
+"next_action": "Before approaching Hollinger, the conference team should ask Morey internally whether he knows Hollinger and would be comfortable making an introduction; if not, use the public booking channel.",
+"evidence": "Connection Paths says the suggestion was made by the Talent Scout and that no document, history, or source shows Morey knows Hollinger. Roster lists Morey as conference co-chair; no contact or history is recorded.",
+"source_url": ""
+},
+{
+"id": 95,
+"person_id": 211,
+"rank": 3,
+"route_type": "intermediary_intro",
+"via": "Jessica Gelman",
+"channel": "Internal outreach to conference co-chair; no direct channel found in the roster",
+"target": "John Hollinger",
+"warmth": "cold",
+"rationale": "Jessica Gelman is a conference co-chair and was suggested as a possible intermediary, but no evidence establishes a relationship with Hollinger. This is only a connection-check, not a verified warm path.",
+"next_action": "The conference team should ask Gelman internally whether she knows Hollinger and would be willing to introduce him; if no connection exists, proceed through the public booking channel.",
+"evidence": "Connection Paths says the suggestion was made by the Talent Scout and that no document, history, or source shows Gelman knows Hollinger. Roster lists Gelman as conference co-chair; no contact or history is recorded.",
+"source_url": ""
+},
+{
+"id": 96,
+"person_id": 218,
+"rank": 1,
+"route_type": "partner_org",
+"via": "MIT Sloan / SSAC organizing team (no individual owner identified)",
+"channel": "Official conference website",
+"target": "https://www.sloansportsconference.com/",
+"warmth": "warm",
+"rationale": "The connection-path record identifies MIT Sloan as a partner-organization route to Patrick Lucey. The roster confirms MIT Sloan students organize the conference, but provides no named intermediary or direct contact detail; treat this as an organizational path, not a confirmed personal connection.",
+"next_action": "The SSAC organizing team should use its official site to identify an appropriate MIT Sloan/organizer contact and ask whether they can facilitate an introduction to Patrick Lucey before sending a direct invitation.",
+"evidence": "CONNECTION PATHS: team → MIT Sloan → Patrick Lucey (warm); lookup_people: MIT Sloan is the organizing institution and MIT Sloan students organize the conference.",
+"source_url": "https://www.sloansportsconference.com/"
+},
+{
+"id": 97,
+"person_id": 218,
+"rank": 2,
+"route_type": "public_contact",
+"via": "",
+"channel": "Stats Perform general contact form",
+"target": "https://www.statsperform.com/contact/",
+"warmth": "cold",
+"rationale": "Contact Research verified a public company contact form, but it is not Patrick Lucey-specific and no named representative or direct professional contact was verified. Ask for forwarding to his professional team; do not imply a personal relationship.",
+"next_action": "If the MIT Sloan route does not yield an introduction, submit a concise professional inquiry through the form asking that a speaking invitation for Patrick Lucey be forwarded to the appropriate contact.",
+"evidence": "CONTACT RESEARCH: Stats Perform general contact form is a public company contact route, not a Patrick Lucey-specific contact. Invitee evidence lists his Stats Perform Chief Scientist profile, but current role should be rechecked.",
+"source_url": "https://www.statsperform.com/contact/"
+},
+{
+"id": 98,
+"person_id": 217,
+"rank": 1,
+"route_type": "partner_org",
+"via": "MIT Sloan Sports Analytics Conference organizing team",
+"channel": "Organizer/partner route",
+"target": "MIT Sloan",
+"warmth": "warm",
+"rationale": "The connection-path record identifies MIT Sloan as a partner-organization route to Eric Eager. The roster confirms MIT Sloan students organize the conference, but lists no named intermediary or direct contact, so the team should first verify whether the organizers can facilitate an introduction.",
+"next_action": "Before any cold outreach, the conference team should ask its MIT Sloan organizing contacts whether they can facilitate an introduction to Eric Eager; if no contact is already available, use the conference’s official website to identify the appropriate organizer contact.",
+"evidence": "CONNECTION PATHS: team → MIT Sloan → Eric Eager; roster entry for MIT Sloan says MIT Sloan students organize the conference.",
+"source_url": "https://www.sloansportsconference.com/"
+},
+{
+"id": 99,
+"person_id": 217,
+"rank": 2,
+"route_type": "direct_dm",
+"via": "",
+"channel": "LinkedIn",
+"target": "in/eric-eager-31a2a220 (profile path shown on public GitHub profile)",
+"warmth": "cold",
+"rationale": "A public professional LinkedIn route is cited on Eric Eager’s GitHub profile. No existing relationship or prior outreach is recorded; verify the profile identity and current affiliation before sending.",
+"next_action": "If the MIT Sloan route is unavailable, have the conference team verify the profile belongs to the intended Eric Eager, then send a concise LinkedIn invitation in English.",
+"evidence": "CONTACT RESEARCH identifies this LinkedIn profile path on his public GitHub profile; invitee history is empty and relationship is cold.",
+"source_url": "https://github.com/ericeager"
+},
+{
+"id": 100,
+"person_id": 217,
+"rank": 3,
+"route_type": "direct_dm",
+"via": "",
+"channel": "Linktree",
+"target": "https://linktr.ee/ericeager_",
+"warmth": "cold",
+"rationale": "A public Linktree is linked from the invitee’s GitHub profile and is a secondary professional route. No representative or business email was found in the supplied contact research.",
+"next_action": "If LinkedIn is not suitable or yields no response, inspect the Linktree for a clearly offered professional contact route and use only a channel explicitly listed there.",
+"evidence": "CONTACT RESEARCH lists the Linktree as linked from Eric Eager’s public GitHub profile; no management or agency representative found.",
+"source_url": "https://github.com/ericeager"
+}
+],
+"timeline": [
+{
+"id": 341,
+"person_id": 180,
+"global_id": 2580,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (organizer, status unknown)",
+"data": null
+},
+{
+"id": 342,
+"person_id": 181,
+"global_id": 2581,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (organizing institution, status unknown)",
+"data": null
+},
+{
+"id": 343,
+"person_id": 182,
+"global_id": 2582,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (co-chair; organizer team, status unknown)",
+"data": null
+},
+{
+"id": 344,
+"person_id": 183,
+"global_id": 2583,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (co-chair; organizer team, status unknown)",
+"data": null
+},
+{
+"id": 345,
+"person_id": 184,
+"global_id": 2584,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (co-lead (2026); organizer team, status unknown)",
+"data": null
+},
+{
+"id": 346,
+"person_id": 185,
+"global_id": 2585,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (co-lead (2026); organizer team, status unknown)",
+"data": null
+},
+{
+"id": 347,
+"person_id": 186,
+"global_id": 2586,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 348,
+"person_id": 186,
+"global_id": 2586,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Spoke at SSAC26 in a conversation on basketball, tanking, and gambling.",
+"data": null
+},
+{
+"id": 349,
+"person_id": 187,
+"global_id": 2587,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker and moderator; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 350,
+"person_id": 187,
+"global_id": 2587,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Moderated a conversation at SSAC26.",
+"data": null
+},
+{
+"id": 351,
+"person_id": 188,
+"global_id": 2588,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 352,
+"person_id": 188,
+"global_id": 2588,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC26.",
+"data": null
+},
+{
+"id": 353,
+"person_id": 189,
+"global_id": 2589,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 354,
+"person_id": 189,
+"global_id": 2589,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC26.",
+"data": null
+},
+{
+"id": 355,
+"person_id": 190,
+"global_id": 2590,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 356,
+"person_id": 190,
+"global_id": 2590,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC26.",
+"data": null
+},
+{
+"id": 357,
+"person_id": 191,
+"global_id": 2591,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 358,
+"person_id": 191,
+"global_id": 2591,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC26.",
+"data": null
+},
+{
+"id": 359,
+"person_id": 192,
+"global_id": 2592,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 360,
+"person_id": 192,
+"global_id": 2592,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2025",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC25.",
+"data": null
+},
+{
+"id": 361,
+"person_id": 193,
+"global_id": 2593,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past speaker; potential future speaker, status unknown)",
+"data": null
+},
+{
+"id": 362,
+"person_id": 193,
+"global_id": 2593,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2025",
+"kind": "outreach",
+"actor": "team",
+"note": "conference appearance : Listed as a speaker at SSAC25.",
+"data": null
+},
+{
+"id": 363,
+"person_id": 194,
+"global_id": 2594,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (past sponsor; 2026 Hackathon presenter, status unknown)",
+"data": null
+},
+{
+"id": 364,
+"person_id": 194,
+"global_id": 2594,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026",
+"kind": "outreach",
+"actor": "team",
+"note": "conference sponsorship : Listed as the SSAC26 Hackathon presenter.",
+"data": null
+},
+{
+"id": 365,
+"person_id": 195,
+"global_id": 2595,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (Jessica Gelman’s organization, status unknown)",
+"data": null
+},
+{
+"id": 366,
+"person_id": 196,
+"global_id": 2596,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (Daryl Morey’s organization, status unknown)",
+"data": null
+},
+{
+"id": 367,
+"person_id": 197,
+"global_id": 2597,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (Megan Rapinoe’s organization, status unknown)",
+"data": null
+},
+{
+"id": 368,
+"person_id": 198,
+"global_id": 2598,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (Jason Robins’s organization, status unknown)",
+"data": null
+},
+{
+"id": 369,
+"person_id": 199,
+"global_id": 2599,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (Nate Silver’s organization, status unknown)",
+"data": null
+},
+{
+"id": 370,
+"person_id": 200,
+"global_id": 2600,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (John Donahoe’s organization, status unknown)",
+"data": null
+},
+{
+"id": 371,
+"person_id": 201,
+"global_id": 2601,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (A’ja Wilson’s team, status unknown)",
+"data": null
+},
+{
+"id": 372,
+"person_id": 202,
+"global_id": 2602,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (David Blitzer’s organization, status unknown)",
+"data": null
+},
+{
+"id": 373,
+"person_id": 203,
+"global_id": 2603,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (audience affiliation mentioned, status unknown)",
+"data": null
+},
+{
+"id": 374,
+"person_id": 204,
+"global_id": 2604,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (audience affiliation; league represented by past speaker Adam Silver, status unknown)",
+"data": null
+},
+{
+"id": 375,
+"person_id": 205,
+"global_id": 2605,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (audience affiliation mentioned, status unknown)",
+"data": null
+},
+{
+"id": 376,
+"person_id": 206,
+"global_id": 2606,
+"event_id": 5,
+"ts": "2026-10-22T22:33:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Roster Analyst",
+"note": "Added to roster from documents (2027 venue, status unknown)",
+"data": null
+},
+{
+"id": 377,
+"person_id": 207,
+"global_id": 2607,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 86)",
+"data": null
+},
+{
+"id": 378,
+"person_id": 208,
+"global_id": 2608,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 82)",
+"data": null
+},
+{
+"id": 379,
+"person_id": 209,
+"global_id": 2609,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 80)",
+"data": null
+},
+{
+"id": 380,
+"person_id": 210,
+"global_id": 2610,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 77)",
+"data": null
+},
+{
+"id": 381,
+"person_id": 211,
+"global_id": 2611,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 78)",
+"data": null
+},
+{
+"id": 382,
+"person_id": 212,
+"global_id": 2612,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 75)",
+"data": null
+},
+{
+"id": 383,
+"person_id": 213,
+"global_id": 2613,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 72)",
+"data": null
+},
+{
+"id": 384,
+"person_id": 214,
+"global_id": 2614,
+"event_id": 5,
+"ts": "2026-10-22T22:34:15+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “MIT Sloan Sports Analytics Conference 2027 — keynote candidates” (fit 65)",
+"data": null
+},
+{
+"id": 385,
+"person_id": 215,
+"global_id": 2615,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 83)",
+"data": null
+},
+{
+"id": 386,
+"person_id": 216,
+"global_id": 2616,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 86)",
+"data": null
+},
+{
+"id": 387,
+"person_id": 217,
+"global_id": 2617,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 79)",
+"data": null
+},
+{
+"id": 388,
+"person_id": 218,
+"global_id": 2618,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 78)",
+"data": null
+},
+{
+"id": 389,
+"person_id": 219,
+"global_id": 2607,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 74)",
+"data": null
+},
+{
+"id": 390,
+"person_id": 220,
+"global_id": 2619,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 73)",
+"data": null
+},
+{
+"id": 391,
+"person_id": 221,
+"global_id": 2620,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 72)",
+"data": null
+},
+{
+"id": 392,
+"person_id": 222,
+"global_id": 2621,
+"event_id": 5,
+"ts": "2026-10-22T22:34:16+00:00",
+"date": "2026-10-22",
+"kind": "added",
+"actor": "Talent Scout",
+"note": "Scouted for list “Sports analytics panel — applied practitioners” (fit 70)",
+"data": null
+},
+{
+"id": 393,
+"person_id": 215,
+"global_id": 2615,
+"event_id": 5,
+"ts": "2026-10-22T22:34:58+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, LinkedIn direct message) via direct_dm; reviewer: pass",
+"data": null
+},
+{
+"id": 394,
+"person_id": 216,
+"global_id": 2616,
+"event_id": 5,
+"ts": "2026-10-22T22:35:14+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, Official Stathletes contact form) via public_contact; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 395,
+"person_id": 207,
+"global_id": 2607,
+"event_id": 5,
+"ts": "2026-10-22T22:35:16+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, email) via official_management; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 396,
+"person_id": 208,
+"global_id": 2608,
+"event_id": 5,
+"ts": "2026-10-22T22:35:17+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, Speaker-booking email) via public_contact; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 397,
+"person_id": 209,
+"global_id": 2609,
+"event_id": 5,
+"ts": "2026-10-22T22:36:00+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, Oklahoma City Thunder Speakers Bureau inquiry form) via official_management; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 398,
+"person_id": 211,
+"global_id": 2611,
+"event_id": 5,
+"ts": "2026-10-22T22:36:14+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "invitation drafted (en, email) via public_contact; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 399,
+"person_id": 217,
+"global_id": 2617,
+"event_id": 5,
+"ts": "2026-10-22T22:36:16+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "intro_request drafted (en, email) via partner_org; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 400,
+"person_id": 218,
+"global_id": 2618,
+"event_id": 5,
+"ts": "2026-10-22T22:36:19+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "Drafter + Reviewer",
+"note": "intro_request drafted (en, email) via partner_org; reviewer: needs_changes",
+"data": null
+},
+{
+"id": 401,
+"person_id": 208,
+"global_id": 2608,
+"event_id": 5,
+"ts": "2026-10-22T22:36:20+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on baseball, executive)",
+"data": null
+},
+{
+"id": 402,
+"person_id": 207,
+"global_id": 2607,
+"event_id": 5,
+"ts": "2026-10-22T22:36:20+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on analyst, sports)",
+"data": null
+},
+{
+"id": 403,
+"person_id": 210,
+"global_id": 2610,
+"event_id": 5,
+"ts": "2026-10-22T22:36:20+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on commissioner, wnba)",
+"data": null
+},
+{
+"id": 404,
+"person_id": 212,
+"global_id": 2612,
+"event_id": 5,
+"ts": "2026-10-22T22:36:20+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on baseball, current, executive)",
+"data": null
+},
+{
+"id": 405,
+"person_id": 186,
+"global_id": 2586,
+"event_id": 5,
+"ts": "2026-10-22T22:36:21+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on basketball, commissioner)",
+"data": null
+},
+{
+"id": 406,
+"person_id": 187,
+"global_id": 2587,
+"event_id": 5,
+"ts": "2026-10-22T22:36:21+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on basketball, player)",
+"data": null
+},
+{
+"id": 407,
+"person_id": 189,
+"global_id": 2589,
+"event_id": 5,
+"ts": "2026-10-22T22:36:21+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on soccer)",
+"data": null
+},
+{
+"id": 408,
+"person_id": 191,
+"global_id": 2591,
+"event_id": 5,
+"ts": "2026-10-22T22:36:22+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on statistician)",
+"data": null
+},
+{
+"id": 409,
+"person_id": 213,
+"global_id": 2613,
+"event_id": 5,
+"ts": "2026-10-22T22:36:22+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on baseball, executive)",
+"data": null
+},
+{
+"id": 410,
+"person_id": 214,
+"global_id": 2614,
+"event_id": 5,
+"ts": "2026-10-22T22:36:22+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on entrepreneur)",
+"data": null
+},
+{
+"id": 411,
+"person_id": 219,
+"global_id": 2607,
+"event_id": 5,
+"ts": "2026-10-22T22:36:22+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on analyst, sports)",
+"data": null
+},
+{
+"id": 412,
+"person_id": 222,
+"global_id": 2621,
+"event_id": 5,
+"ts": "2026-10-22T22:36:23+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on basketball, player)",
+"data": null
+},
+{
+"id": 413,
+"person_id": 183,
+"global_id": 2583,
+"event_id": 5,
+"ts": "2026-10-22T22:36:23+00:00",
+"date": "2026-10-22",
+"kind": "photo",
+"actor": "Contact Researcher",
+"note": "Public photo found on Wikimedia Commons (matched on basketball, sports)",
+"data": null
+},
+{
+"id": 414,
+"person_id": 215,
+"global_id": 2615,
+"event_id": 5,
+"ts": "2026-10-22T22:37:12+00:00",
+"date": "2026-10-22",
+"kind": "draft",
+"actor": "organiser",
+"note": "Draft #38 ready_for_review → approved",
+"data": null
+}
+],
+"comments": []
 }
 ],
 "directory": [
@@ -27183,6 +32544,300 @@
 "aliases": [],
 "notes": "",
 "created_at": "2026-10-17T04:28:24+00:00"
+},
+{
+"id": 2580,
+"name": "MIT Sloan Sports Analytics Conference",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2581,
+"name": "MIT Sloan",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2582,
+"name": "Jessica Gelman",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2583,
+"name": "Daryl Morey",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2584,
+"name": "Mike O’Connell",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2585,
+"name": "Patrick Scheri",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2586,
+"name": "Adam Silver",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2587,
+"name": "Sue Bird",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2588,
+"name": "John Donahoe",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2589,
+"name": "Megan Rapinoe",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2590,
+"name": "Jason Robins",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2591,
+"name": "Nate Silver",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2592,
+"name": "A’ja Wilson",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2593,
+"name": "David Blitzer",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2594,
+"name": "Wasserman Foundation",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2595,
+"name": "Kraft Analytics Group",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2596,
+"name": "Philadelphia 76ers",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2597,
+"name": "A Touch More",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2598,
+"name": "DraftKings",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2599,
+"name": "Silver Bulletin",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2600,
+"name": "Stanford Athletics",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2601,
+"name": "Las Vegas Aces",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2602,
+"name": "Harris Blitzer Sports & Entertainment",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2603,
+"name": "Team USA",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2604,
+"name": "NBA",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2605,
+"name": "WNBA",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2606,
+"name": "Thomas M. Menino Convention & Exhibition Center",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:33:16+00:00"
+},
+{
+"id": 2607,
+"name": "Kirk Goldsberry",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2608,
+"name": "Theo Epstein",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2609,
+"name": "Sam Presti",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2610,
+"name": "Cathy Engelbert",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2611,
+"name": "John Hollinger",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2612,
+"name": "Billy Beane",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2613,
+"name": "Alex Anthopoulos",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2614,
+"name": "Mark Cuban",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:15+00:00"
+},
+{
+"id": 2615,
+"name": "Luke Bornn",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2616,
+"name": "Meghan Chayka",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2617,
+"name": "Eric Eager",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2618,
+"name": "Patrick Lucey",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2619,
+"name": "Seth Partnow",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2620,
+"name": "Ben Alamar",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
+},
+{
+"id": 2621,
+"name": "Dean Oliver",
+"aliases": [],
+"notes": "",
+"created_at": "2026-10-22T22:34:16+00:00"
 }
 ],
 "recorded_on": "2026-10-14"

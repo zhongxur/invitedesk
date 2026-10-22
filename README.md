@@ -72,7 +72,7 @@ Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/) (recommended), o
    (Windows: `.venv\Scripts\activate`, then `python app.py`.)
 4. Open **http://localhost:8000**. On first start the app loads a **demo snapshot** — a recorded real run of all
    agents on three fictional sample events **plus the Responsible AI in Global Business Conference 2027 showcase run
-   traced in the report** (public figures only; personal addresses removed) — so every screen has data immediately.
+   traced in the report and the MIT Sloan Sports Analytics Conference 2027 run created live in the demo video** (public figures only; personal addresses removed) — so every screen has data immediately.
    Browsing costs nothing.
 
 ### Try the agents live (real model calls)
@@ -90,7 +90,7 @@ Every run has a hard **budget cap** (default $0.50); if it is reached the run st
 ### Test data vs your own data
 | Data | Where | How to use |
 |---|---|---|
-| Demo snapshot (recorded runs: 3 fictional events + the report's showcase event) | `sample_event/demo_snapshot.json` | loaded automatically into an empty workspace; also **+ New event → Demo** |
+| Demo snapshot (recorded runs: 3 fictional events + the report's showcase event + the demo video's live event) | `sample_event/demo_snapshot.json` | loaded automatically into an empty workspace; also **+ New event → Demo** |
 | 3 small fictional sample events | `sample_event/<name>/` (answer key in `sample_event/README.md`) | **+ New event → Sample event** |
 | Your own event folder | anywhere | **+ New event → Import .zip**, or `uv run app.py --import path/to/folder.zip --org "My Club"` |
 

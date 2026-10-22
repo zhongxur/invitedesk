@@ -19,7 +19,8 @@ SNAPSHOT = config.SAMPLE_EVENT / "demo_snapshot.json"
 EVENT_TABLES = ["documents", "people", "drafts", "issues", "followups", "expenses", "runs", "trace"]
 
 
-def dump(event_ids: list[int]) -> dict[str, Any]:
+def dump(event_ids: list[int], redact: bool = True) -> dict[str, Any]:
+    """Write the demo snapshot. redact=False keeps sourced public contacts (only for events about public figures)."""
     data: dict[str, Any] = {"events": [], "directory": []}
     gids = set()
     for eid in event_ids:
@@ -38,7 +39,7 @@ def dump(event_ids: list[int]) -> dict[str, Any]:
         data["events"].append(block)
     data["directory"] = [db.one("SELECT * FROM directory WHERE id=?", (g,)) for g in sorted(gids)]
     data["recorded_on"] = date.today().isoformat()
-    for block in data["events"]:  # never ship private-looking addresses found on the web
+    for block in (data["events"] if redact else []):  # never ship private-looking addresses found on the web
         for c in block["contacts"]:
             if c["channel"] in ("email", "phone") and not re.search(r"example\.", c["value"] or "") and not c["verified"]:
                 c["value"] = "(public contact on file — see source link)"
@@ -50,9 +51,10 @@ def dump(event_ids: list[int]) -> dict[str, Any]:
                 r["target"] = "(public address on file — see source)"
     text = json.dumps(data, ensure_ascii=False, indent=0, default=str)
     generic = re.compile(r"^(info|pr|press|media|contact|hello|events|speakers|partnerships|office)$", re.I)
-    text = re.sub(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+",
-                  lambda m: m.group(0) if ("example." in m.group(0) or generic.match(m.group(0).split("@")[0]))
-                  else "(personal address on file — see source)", text)
+    if redact:
+        text = re.sub(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+",
+                      lambda m: m.group(0) if ("example." in m.group(0) or generic.match(m.group(0).split("@")[0]))
+                      else "(personal address on file — see source)", text)
     SNAPSHOT.write_text(text)
     return {"events": len(event_ids), "bytes": SNAPSHOT.stat().st_size}
 
